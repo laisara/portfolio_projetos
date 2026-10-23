@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  PillButton — botão em forma de pílula usado nas abas, nos detalhes,
+  no destaque e nas configurações. Não recebe foco do sistema: o
+  componente pai decide qual botão está realçado ("highlighted") e trata
+  as teclas, mantendo um único dono do foco por região.
+-->
+<component name="PillButton" extends="Group">
+    <interface>
+        <field id="text" type="string" onChange="relayout" />
+        <field id="variant" type="string" value="button" onChange="relayout" />
+        <field id="minWidth" type="float" value="0" onChange="relayout" />
+        <field id="highlighted" type="boolean" value="false" onChange="refresh" />
+        <field id="active" type="boolean" value="false" onChange="refresh" />
+        <!-- Definido pelo componente pai a cada troca de tema. -->
+        <field id="themeId" type="string" onChange="refresh" />
+        <!-- Saídas: tamanho calculado a partir do texto. -->
+        <field id="width" type="float" />
+        <field id="height" type="float" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/source/shared/Util.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/AppStateLogic.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/DemoContent.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/Theme.brs" />
+    <script type="text/brightscript" uri="pkg:/components/shared/Ui.brs" />
+    <script type="text/brightscript" uri="pkg:/components/PillButton.brs" />
+
+    <children>
+        <Poster id="bg" />
+        <Label id="label" horizAlign="center" vertAlign="center" />
+    </children>
+</component>

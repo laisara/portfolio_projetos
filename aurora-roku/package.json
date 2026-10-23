@@ -1,0 +1,23 @@
+{
+  "name": "aurora-roku",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Aurora TV — app Roku SceneGraph (ferramentas de desenvolvimento; nada aqui vai para o aparelho).",
+  "license": "UNLICENSED",
+  "scripts": {
+    "validate": "bsc --project bsconfig.json && node tools/check-project.js",
+    "test:unit": "node tools/run-unit-tests.js",
+    "test": "npm run validate && npm run test:unit",
+    "package": "python3 tools/package.py",
+    "simulate": "node tools/simulator/run-simulation.js"
+  },
+  "devDependencies": {
+    "@rokucommunity/bslint": "^0.8.47",
+    "brighterscript": "0.73.8",
+    "brs-node": "2.6.1"
+  },
+  "optionalDependencies": {
+    "brs-engine": "2.6.1",
+    "brs-scenegraph": "0.6.1"
+  }
+}

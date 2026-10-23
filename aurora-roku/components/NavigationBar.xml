@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  NavigationBar — barra superior: marca + abas de categoria.
+  Quando focada, trata esquerda/direita (move o realce) e OK (seleciona a
+  aba). Cima, baixo e Voltar não são tratados: sobem para o MainScene.
+-->
+<component name="NavigationBar" extends="Group">
+    <interface>
+        <!-- Aba ativa (definida pelo MainScene). -->
+        <field id="selectedId" type="string" value="home" onChange="onSelectedChanged" />
+        <!-- Evento de saída: id da aba escolhida com OK. -->
+        <field id="tabSelected" type="string" alwaysNotify="true" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/source/shared/Util.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/AppStateLogic.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/DemoContent.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/Theme.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/NavigationLogic.brs" />
+    <script type="text/brightscript" uri="pkg:/components/shared/Ui.brs" />
+    <script type="text/brightscript" uri="pkg:/components/NavigationBar.brs" />
+
+    <children>
+        <Poster id="mark" translation="[96, 48]" width="72" height="72" uri="pkg:/images/brand/brand_mark.png" />
+        <Label id="brand" translation="[180, 39]" height="51" vertAlign="center" />
+        <Group id="tabs" translation="[504, 54]" />
+        <Label id="demoBadge" translation="[180, 87]" width="300" height="33" vertAlign="center" />
+    </children>
+</component>

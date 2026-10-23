@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Toast — aviso curto na parte de baixo da tela. Some sozinho após
+  alguns segundos (Timer de disparo único, sem laço contínuo).
+-->
+<component name="Toast" extends="Group">
+    <interface>
+        <field id="message" type="string" alwaysNotify="true" onChange="show" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/source/shared/Util.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/AppStateLogic.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/DemoContent.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/Theme.brs" />
+    <script type="text/brightscript" uri="pkg:/components/shared/Ui.brs" />
+    <script type="text/brightscript" uri="pkg:/components/Toast.brs" />
+
+    <children>
+        <Group id="box" visible="false">
+            <Poster id="bg" height="78" />
+            <Label id="label" height="78" vertAlign="center" horizAlign="center" />
+        </Group>
+        <Timer id="timer" duration="3" repeat="false" />
+    </children>
+</component>

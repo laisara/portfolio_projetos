@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  ContentCard — item dos RowList (itemComponentName="ContentCard").
+  Os campos de interface abaixo são preenchidos pelo próprio RowList,
+  como no sample oficial rokudev/samples (AdvancedRowList).
+  Imagem 16:9 de 432x243 (design FHD) + título + metadados.
+-->
+<component name="ContentCard" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="onContentChanged" />
+        <field id="width" type="float" />
+        <field id="height" type="float" />
+        <field id="focusPercent" type="float" onChange="onFocusChanged" />
+        <field id="rowFocusPercent" type="float" />
+        <field id="rowHasFocus" type="boolean" />
+        <field id="rowListHasFocus" type="boolean" onChange="onFocusChanged" />
+        <field id="itemHasFocus" type="boolean" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/source/shared/Util.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/AppStateLogic.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/DemoContent.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/Theme.brs" />
+    <script type="text/brightscript" uri="pkg:/components/shared/Ui.brs" />
+    <script type="text/brightscript" uri="pkg:/components/ContentCard.brs" />
+
+    <children>
+        <!-- O grupo escala a partir do centro da imagem quando focado. -->
+        <Group id="frame" scaleRotateCenter="[216, 121]">
+            <Rectangle id="placeholder" width="432" height="243" />
+            <Poster id="art" width="432" height="243" loadDisplayMode="scaleToFill" />
+            <Rectangle id="progressTrack" translation="[24, 219]" width="384" height="6" visible="false" />
+            <Rectangle id="progressFill" translation="[24, 219]" width="0" height="6" visible="false" />
+            <Poster id="ring" translation="[-9, -9]" width="450" height="261" opacity="0" />
+        </Group>
+        <Label id="title" translation="[0, 264]" width="432" height="36" />
+        <Label id="meta" translation="[0, 300]" width="432" height="30" />
+    </children>
+</component>

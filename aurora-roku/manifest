@@ -1,0 +1,24 @@
+#  Aurora TV — manifest do aplicativo Roku
+#  Formato: um par nome=valor por linha (atributos diferenciam maiúsculas).
+#  O nome exibido pelo sistema vem daqui; o nome dentro do app vem de
+#  source/shared/Theme.brs (AppConfig). Ao trocar a marca, altere os dois.
+
+title=Aurora TV
+major_version=0
+minor_version=1
+build_version=00001
+
+# Ícone do app na tela inicial do Roku (FHD 540x405 / HD 290x218)
+mm_icon_focus_fhd=pkg:/images/brand/icon_focus_fhd.png
+mm_icon_focus_hd=pkg:/images/brand/icon_focus_hd.png
+
+# Splash (FHD 1920x1080 / HD 1280x720)
+splash_screen_fhd=pkg:/images/brand/splash_fhd.jpg
+splash_screen_hd=pkg:/images/brand/splash_hd.jpg
+splash_color=#080B14
+splash_min_time=1
+
+# Layout desenhado em 1920x1080; o sistema escala para HD (o Roku Express
+# 3960X tem interface de no máximo 720p).
+ui_resolutions=fhd
+rsg_version=1.2

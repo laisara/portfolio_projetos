@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  SettingsScreen — opções que funcionam de verdade (tema e limpar
+  favoritos) e um painel de informações/diagnóstico lidas do aparelho.
+-->
+<component name="SettingsScreen" extends="Group">
+    <interface>
+        <field id="message" type="string" alwaysNotify="true" />
+        <function name="focusContent" />
+        <function name="restoreFocus" />
+        <function name="dispose" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/source/shared/Util.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/AppStateLogic.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/DemoContent.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/Theme.brs" />
+    <script type="text/brightscript" uri="pkg:/components/shared/Ui.brs" />
+    <script type="text/brightscript" uri="pkg:/components/SettingsScreen.brs" />
+
+    <children>
+        <Group translation="[96, 192]">
+            <Label id="heading" width="840" height="81" />
+            <Label id="subheading" translation="[0, 84]" width="840" height="39" />
+            <Group id="options" translation="[0, 174]">
+                <PillButton id="themeOption" minWidth="744" />
+                <PillButton id="clearOption" translation="[0, 96]" minWidth="744" />
+            </Group>
+            <Label id="hint" translation="[0, 384]" width="780" height="102" wrap="true" maxLines="3" lineSpacing="6" />
+        </Group>
+        <Poster id="panel" translation="[1008, 192]" width="816" height="732" />
+        <Group id="infoList" translation="[1056, 228]" />
+    </children>
+</component>

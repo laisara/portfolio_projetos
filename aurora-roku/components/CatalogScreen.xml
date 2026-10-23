@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  CatalogScreen — tela de prateleiras usada por Filmes, Séries, Minha
+  biblioteca e Favoritos (campo "kind"). Um único componente evita
+  duplicar layout, foco e painel de informações; só a fonte de dados muda:
+    movies / series : fileiras por gênero (DemoContent_layout)
+    library         : biblioteca demonstrativa com progresso fictício
+    favorites       : títulos marcados (m.global.favorites), com estado vazio
+-->
+<component name="CatalogScreen" extends="Group">
+    <interface>
+        <field id="kind" type="string" onChange="build" />
+        <field id="itemSelected" type="node" alwaysNotify="true" />
+        <function name="focusContent" />
+        <function name="restoreFocus" />
+        <function name="focusRow" />
+        <function name="dispose" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/source/shared/Util.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/AppStateLogic.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/DemoContent.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/Theme.brs" />
+    <script type="text/brightscript" uri="pkg:/components/shared/Ui.brs" />
+    <script type="text/brightscript" uri="pkg:/components/shared/ContentBuilder.brs" />
+    <script type="text/brightscript" uri="pkg:/components/CatalogScreen.brs" />
+
+    <children>
+        <Group id="info" translation="[96, 177]">
+            <Label id="kicker" width="1200" height="36" />
+            <Label id="title" translation="[0, 39]" width="1200" height="81" />
+            <Label id="meta" translation="[0, 126]" width="1200" height="39" />
+            <Label id="synopsis" translation="[0, 171]" width="1080" height="84" wrap="true" maxLines="2" lineSpacing="6" />
+        </Group>
+        <Label id="notice" translation="[1176, 186]" width="648" height="72" wrap="true" maxLines="2" horizAlign="right" />
+        <Group id="empty" translation="[96, 312]" visible="false">
+            <Poster id="emptyPanel" width="1056" height="246" />
+            <Label id="emptyTitle" translation="[48, 42]" width="960" height="54" />
+            <Label id="emptyText" translation="[48, 105]" width="960" height="102" wrap="true" maxLines="2" lineSpacing="6" />
+        </Group>
+        <RowList
+            id="rows"
+            translation="[96, 459]"
+            itemComponentName="ContentCard"
+            numRows="2"
+            itemSize="[1824, 378]"
+            rowItemSize="[[432, 324]]"
+            rowItemSpacing="[[30, 0]]"
+            itemSpacing="[0, 30]"
+            showRowLabel="[true]"
+            rowLabelOffset="[[0, 15]]"
+            drawFocusFeedback="false"
+            rowFocusAnimationStyle="floatingFocus" />
+    </children>
+</component>

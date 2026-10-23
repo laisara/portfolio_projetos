@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  HomeScreen — tela inicial: imagem em destaque em tela inteira, bloco de
+  destaque (HeroSection) e duas fileiras (RowList). Ao descer para as
+  fileiras, o conteúdo sobe e o destaque esmaece (animação curta); ao
+  subir, volta. Sem animação, as posições finais são as mesmas.
+-->
+<component name="HomeScreen" extends="Group">
+    <interface>
+        <!-- Eventos de saída observados pelo MainScene. -->
+        <field id="itemSelected" type="node" alwaysNotify="true" />
+        <field id="navigateTo" type="assocarray" alwaysNotify="true" />
+        <field id="message" type="string" alwaysNotify="true" />
+        <function name="focusContent" />
+        <function name="restoreFocus" />
+        <function name="resetView" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/source/shared/Util.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/AppStateLogic.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/DemoContent.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/Theme.brs" />
+    <script type="text/brightscript" uri="pkg:/components/shared/Ui.brs" />
+    <script type="text/brightscript" uri="pkg:/components/shared/ContentBuilder.brs" />
+    <script type="text/brightscript" uri="pkg:/components/HomeScreen.brs" />
+
+    <children>
+        <Poster id="backdrop" width="1920" height="1080" loadDisplayMode="scaleToFill" />
+        <Rectangle id="dim" width="1920" height="1080" opacity="0" />
+        <Group id="content">
+            <HeroSection id="hero" translation="[96, 282]" />
+            <RowList
+                id="rows"
+                translation="[96, 801]"
+                itemComponentName="ContentCard"
+                numRows="2"
+                itemSize="[1824, 378]"
+                rowItemSize="[[432, 324]]"
+                rowItemSpacing="[[30, 0]]"
+                itemSpacing="[0, 30]"
+                showRowLabel="[true]"
+                rowLabelOffset="[[0, 15]]"
+                drawFocusFeedback="false"
+                rowFocusAnimationStyle="floatingFocus" />
+        </Group>
+
+        <!-- Recolhe o destaque quando o foco vai para as fileiras. -->
+        <Animation id="shift" duration="0.3" easeFunction="outCubic" repeat="false">
+            <Vector2DFieldInterpolator id="shiftContent" key="[0.0, 1.0]" keyValue="[[0, 0], [0, -531]]" fieldToInterp="content.translation" />
+            <FloatFieldInterpolator id="shiftHero" key="[0.0, 1.0]" keyValue="[1.0, 0.0]" fieldToInterp="hero.opacity" />
+            <FloatFieldInterpolator id="shiftDim" key="[0.0, 1.0]" keyValue="[0.0, 0.6]" fieldToInterp="dim.opacity" />
+        </Animation>
+    </children>
+</component>

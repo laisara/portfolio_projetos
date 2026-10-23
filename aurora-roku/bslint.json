@@ -1,0 +1,19 @@
+{
+  "rules": {
+    "block-if-style": "off",
+    "inline-if-style": "off",
+    "aa-comma-style": "off",
+    "color-format": "never",
+    "unused-variable": "error",
+    "assign-all-paths": "error",
+    "unsafe-path-loop": "error",
+    "unsafe-iterators": "error",
+    "unreachable-code": "error",
+    "case-sensitivity": "error",
+    "consistent-return": "error",
+    "no-stop": "error",
+    "no-todo": "off",
+    "no-print": "off"
+  },
+  "ignores": ["source/shared/Theme.brs"]
+}

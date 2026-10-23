@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  HeroSection — bloco de texto e ações do título em destaque.
+  A imagem de fundo fica no HomeScreen (tela inteira). Quando focado,
+  trata esquerda/direita entre os botões e OK; o resto sobe ao pai.
+-->
+<component name="HeroSection" extends="Group">
+    <interface>
+        <field id="content" type="node" onChange="onContentChanged" />
+        <!-- Evento de saída: "details" ou "favorite". -->
+        <field id="action" type="string" alwaysNotify="true" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/source/shared/Util.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/AppStateLogic.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/DemoContent.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/Theme.brs" />
+    <script type="text/brightscript" uri="pkg:/components/shared/Ui.brs" />
+    <script type="text/brightscript" uri="pkg:/components/shared/ContentBuilder.brs" />
+    <script type="text/brightscript" uri="pkg:/components/HeroSection.brs" />
+
+    <children>
+        <Label id="kicker" width="1080" height="36" />
+        <Label id="title" translation="[0, 39]" width="1080" height="105" />
+        <Label id="meta" translation="[0, 150]" width="1080" height="39" />
+        <Label id="synopsis" translation="[0, 201]" width="780" height="120" wrap="true" maxLines="3" lineSpacing="6" />
+        <Group id="buttons" translation="[0, 345]">
+            <PillButton id="detailsButton" text="Ver detalhes" minWidth="252" />
+            <PillButton id="favoriteButton" />
+        </Group>
+    </children>
+</component>

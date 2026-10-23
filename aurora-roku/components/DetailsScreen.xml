@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  DetailsScreen — camada sobre a tela atual com os detalhes de um título.
+  A ação principal NÃO reproduz nada: avisa que o conteúdo é
+  demonstrativo. O Voltar é tratado pelo MainScene (fecha a camada e
+  devolve o foco ao cartão de origem).
+-->
+<component name="DetailsScreen" extends="Group">
+    <interface>
+        <field id="content" type="node" onChange="onContentChanged" />
+        <!-- Evento de saída: mensagem para o aviso (Toast) do MainScene. -->
+        <field id="message" type="string" alwaysNotify="true" />
+        <function name="dispose" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/source/shared/Util.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/AppStateLogic.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/DemoContent.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/Theme.brs" />
+    <script type="text/brightscript" uri="pkg:/components/shared/Ui.brs" />
+    <script type="text/brightscript" uri="pkg:/components/shared/ContentBuilder.brs" />
+    <script type="text/brightscript" uri="pkg:/components/DetailsScreen.brs" />
+
+    <children>
+        <Rectangle id="base" width="1920" height="1080" />
+        <Poster id="backdrop" width="1920" height="1080" loadDisplayMode="scaleToFill" />
+        <Group translation="[96, 270]">
+            <Label id="kicker" width="1200" height="36" />
+            <Label id="title" translation="[0, 39]" width="1200" height="105" />
+            <Label id="meta" translation="[0, 150]" width="1200" height="39" />
+            <Label id="synopsis" translation="[0, 207]" width="900" height="165" wrap="true" maxLines="4" lineSpacing="6" />
+            <Group id="buttons" translation="[0, 402]">
+                <PillButton id="primaryButton" minWidth="240" />
+                <PillButton id="favoriteButton" />
+            </Group>
+            <Label id="note" translation="[0, 507]" width="1200" height="36" />
+        </Group>
+    </children>
+</component>

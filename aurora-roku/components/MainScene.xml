@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  MainScene — raiz do app. Camadas (de baixo para cima):
+    fundo do tema > tela da aba > barra de navegação > detalhes > aviso
+  É o ÚNICO componente que trata Voltar e a passagem de foco entre a
+  barra de abas e o conteúdo. As decisões vêm de NavigationLogic.brs.
+-->
+<component name="MainScene" extends="Scene">
+    <script type="text/brightscript" uri="pkg:/source/shared/Util.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/AppStateLogic.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/DemoContent.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/Theme.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/NavigationLogic.brs" />
+    <script type="text/brightscript" uri="pkg:/components/shared/Ui.brs" />
+    <script type="text/brightscript" uri="pkg:/components/MainScene.brs" />
+
+    <children>
+        <Poster id="background" width="1920" height="1080" loadDisplayMode="scaleToFill" />
+        <Group id="screenLayer" />
+        <NavigationBar id="nav" />
+        <Group id="overlayLayer" />
+        <Toast id="toast" />
+    </children>
+</component>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Aurora TV — simulador local (brs-engine)</title>
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  <style>
+    html, body { margin: 0; background: #000; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <!--
+    Harness de desenvolvimento: executa out/aurora-tv.zip no brs-engine
+    (simulador de terceiros, licença MIT) com a extensão brs-scenegraph.
+    NÃO é o Roku OS: renderização, desempenho e APIs podem diferir.
+  -->
+  <canvas id="display" width="1280" height="720"></canvas>
+  <video id="player" style="display: none" crossorigin="anonymous"></video>
+  <script src="lib/brs.api.js"></script>
+  <script>
+    window.simEvents = [];
+    window.simReady = false;
+    async function boot() {
+      brs.subscribe("harness", (event, data) => {
+        const text = typeof data === "string" ? data : JSON.stringify(data);
+        window.simEvents.push({ event, text: String(text).slice(0, 500) });
+        if (event === "started") window.simReady = true;
+      });
+      // Os arquivos de sistema do simulador são baixados ANTES e entregues
+      // prontos: deixar o initialize baixá-los criava uma corrida com o
+      // início do app (falha intermitente "invalid zip data").
+      const assets = await (await fetch("assets/common.zip")).arrayBuffer();
+      await brs.initialize(
+        {
+          deviceModel: "3960X",
+          displayMode: "720p",
+          assets,
+          extensions: new Map([[brs.SupportedExtension.SceneGraph, "./brs-sg.js"]]),
+        },
+        { debugToConsole: true }
+      );
+      const zip = await (await fetch("aurora-tv.zip")).arrayBuffer();
+      brs.execute("aurora-tv.zip", zip, { clearDisplayOnExit: false });
+    }
+    window.addEventListener("load", boot);
+  </script>
+</body>
+</html>
