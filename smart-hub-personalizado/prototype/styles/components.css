@@ -1,0 +1,183 @@
+/*
+ * Componentes: abas, destaque, cartões, opções, botões e estados.
+ * O item focado recebe .is-focused; a cor de destaque depende do tema.
+ */
+
+.row { margin: 0 0 20px 0; }
+
+.row-title {
+  margin: 0 0 10px 0;
+  font-size: 0.85em;
+  font-weight: normal;
+  color: #aab2bd;
+}
+
+/* Linhas rolam horizontalmente por código (app.js), nunca por barra. */
+.row-track {
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 8px 4px;
+}
+
+/* ---------- Abas ---------- */
+.nav-tab {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 8px 20px;
+  border-radius: 24px;
+  border: 2px solid transparent;
+  color: #aab2bd;
+  font-size: 0.85em;
+}
+
+.nav-tab.is-active { color: #fff; background: #1c2129; }
+
+/* ---------- Destaque ---------- */
+.hero {
+  display: inline-block;
+  vertical-align: top;
+  width: 520px;
+  height: 150px;
+  margin-right: 16px;
+  padding: 20px 28px;
+  border-radius: 10px;
+  background: #151a21;
+  border: 2px solid #232933;
+  white-space: normal;
+}
+
+.hero-kicker { font-size: 0.65em; text-transform: uppercase; letter-spacing: 1px; color: #8a93a0; }
+.hero-title { margin: 8px 0; font-size: 1.25em; font-weight: bold; }
+.hero-text { font-size: 0.8em; color: #c3c9d2; }
+
+/* ---------- Cartões (dimensões uniformes) ---------- */
+.card {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  width: 196px;
+  height: 140px;
+  margin-right: 16px;
+  padding: 16px;
+  border-radius: 10px;
+  background: #171b21;
+  border: 2px solid #232933;
+  white-space: normal;
+  overflow: hidden;
+}
+
+.card-monogram {
+  width: 48px;
+  height: 48px;
+  line-height: 48px;
+  border-radius: 8px;
+  background: #232a34;
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.75em;
+  color: #e8edf3;
+}
+
+.card-label { margin-top: 12px; font-size: 0.9em; font-weight: bold; }
+.card-sub { margin-top: 4px; font-size: 0.65em; color: #8a93a0; }
+
+.card-badge {
+  position: absolute;
+  top: 16px;
+  right: 12px;
+  max-width: 120px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #2b2414;
+  color: #ffd36b;
+  font-size: 0.55em;
+  text-align: right;
+}
+
+/* ---------- Opções (configurações) ----------
+ * Até 3 opções por linha cabem na largura útil (1152px). Cada linha de
+ * opções deve continuar sendo uma única linha visual, para que esquerda/
+ * direita e cima/baixo correspondam ao que se vê.
+ */
+.option {
+  display: inline-block;
+  vertical-align: top;
+  width: 316px;
+  margin: 0 16px 0 0;
+  padding: 14px 20px;
+  border-radius: 8px;
+  background: #171b21;
+  border: 2px solid #232933;
+}
+
+.option-label { display: block; font-size: 0.8em; color: #aab2bd; }
+.option-value { display: block; margin-top: 4px; font-weight: bold; }
+
+/* ---------- Botões ---------- */
+.button {
+  display: inline-block;
+  margin-right: 16px;
+  padding: 12px 28px;
+  border-radius: 8px;
+  background: #1c2129;
+  border: 2px solid #2a313b;
+}
+
+/* ---------- Estados e textos ---------- */
+.notice, .empty-state, .error-state {
+  margin: 0 0 4px 0;
+  padding: 16px 20px;
+  border-radius: 8px;
+  font-size: 0.8em;
+  white-space: normal;
+}
+
+.notice { background: #2b2414; color: #ffd36b; }
+.empty-state { background: #151a21; color: #aab2bd; }
+.error-state { background: #3a1d1d; color: #ff9a9a; }
+
+.detail-head { margin-bottom: 12px; }
+.detail-head .detail-monogram { display: inline-block; vertical-align: middle; margin-right: 16px; }
+.detail-title { display: inline-block; vertical-align: middle; margin: 0 0 8px 0; font-size: 1.5em; }
+.detail-status { margin: 8px 0; font-weight: bold; color: #ffd36b; }
+.detail-text { margin: 8px 0; max-width: 960px; color: #c3c9d2; }
+
+.big-clock { margin-top: 40px; font-size: 5em; font-weight: bold; text-align: center; }
+.big-date { margin-bottom: 40px; font-size: 1.2em; text-align: center; color: #aab2bd; }
+
+.calendar { border-collapse: collapse; font-size: 0.85em; }
+.calendar th { width: 72px; padding: 4px; color: #8a93a0; font-weight: normal; }
+.calendar td { width: 72px; height: 40px; text-align: center; border-radius: 6px; }
+
+.info-list { margin: 0; font-size: 0.75em; }
+.info-list dt { color: #8a93a0; }
+.info-list dd { margin: 0 0 8px 0; word-wrap: break-word; }
+
+.log-list { margin: 0; padding-left: 28px; font-size: 0.65em; color: #c3c9d2; }
+.log-warn { color: #ffd36b; }
+.log-error { color: #ff9a9a; }
+
+/* ---------- Foco e cor de destaque ---------- */
+.is-focused { border-color: #fff; }
+
+.accent-ciano .is-focused { border-color: #22d3ee; background: #10343c; }
+.accent-ciano .nav-tab.is-focused { background: #22d3ee; color: #041014; }
+.accent-ciano .button.is-focused { background: #22d3ee; color: #041014; }
+.accent-ciano .calendar .is-today { background: #22d3ee; color: #041014; }
+
+.accent-azul .is-focused { border-color: #4c8dff; background: #142546; }
+.accent-azul .nav-tab.is-focused { background: #4c8dff; color: #050b18; }
+.accent-azul .button.is-focused { background: #4c8dff; color: #050b18; }
+.accent-azul .calendar .is-today { background: #4c8dff; color: #050b18; }
+
+/* Animação discreta: só transform, que é barato de compor. */
+.anim-on .card,
+.anim-on .hero,
+.anim-on .option {
+  -webkit-transition: -webkit-transform 120ms ease-out;
+  transition: transform 120ms ease-out;
+}
+
+.anim-on .card.is-focused,
+.anim-on .hero.is-focused { -webkit-transform: scale(1.04); transform: scale(1.04); }

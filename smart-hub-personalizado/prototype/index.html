@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Hub Personalizado — Protótipo</title>
+  <!-- Sem fontes, imagens ou scripts externos: o protótipo funciona offline. -->
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/components.css">
+</head>
+<body>
+  <div id="stage" class="stage">
+    <header class="header">
+      <div class="brand">Smart Hub <span class="brand-sub">Personalizado</span></div>
+      <div id="screen-title" class="screen-title"></div>
+      <div class="header-status">
+        <span id="simulation-badge" class="simulation-badge">SIMULAÇÃO</span>
+        <span id="header-network" class="network"></span>
+        <span class="header-clock">
+          <span id="header-time" class="header-time"></span>
+          <span id="header-date" class="header-date"></span>
+        </span>
+      </div>
+    </header>
+
+    <main id="content" class="content"></main>
+
+    <footer class="footer">
+      <span id="key-hints"></span>
+    </footer>
+
+    <div id="toast" class="toast" role="status"></div>
+  </div>
+
+  <!-- Ordem importa: núcleo -> dados -> plataforma -> UI -> telas -> app. -->
+  <script src="scripts/core/namespace.js"></script>
+  <script src="scripts/core/logger.js"></script>
+  <script src="scripts/core/storage.js"></script>
+  <script src="scripts/core/preferences.js"></script>
+  <script src="scripts/core/keys.js"></script>
+  <script src="scripts/core/focus.js"></script>
+  <script src="scripts/core/router.js"></script>
+  <script src="scripts/core/clock.js"></script>
+  <script src="scripts/data/catalog.js"></script>
+  <script src="scripts/data/library-provider.js"></script>
+  <script src="scripts/platform/browser-adapter.js"></script>
+  <script src="scripts/ui/render.js"></script>
+  <script src="scripts/screens/home.js"></script>
+  <script src="scripts/screens/entertainment.js"></script>
+  <script src="scripts/screens/library.js"></script>
+  <script src="scripts/screens/utilities.js"></script>
+  <script src="scripts/screens/settings.js"></script>
+  <script src="scripts/app.js"></script>
+  <script>
+    // Ponto de troca de ambiente: na TV, outro adaptador seria usado aqui.
+    SmartHub.startApp(SmartHub.platform.createBrowserAdapter(window));
+  </script>
+</body>
+</html>

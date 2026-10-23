@@ -1,0 +1,20 @@
+{
+  "name": "smart-hub-personalizado",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Protótipo de interface 10-foot para a Samsung UN48H4203AG (sem implantação na TV).",
+  "license": "UNLICENSED",
+  "scripts": {
+    "test": "npm run test:unit && npm run check:legacy",
+    "test:unit": "node --test \"prototype/tests/unit/*.test.js\"",
+    "check:legacy": "node tools/check-legacy-compat.js",
+    "test:e2e": "node prototype/tests/e2e/navigation.e2e.js",
+    "serve": "node tools/serve.js"
+  },
+  "devDependencies": {
+    "acorn": "8.15.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

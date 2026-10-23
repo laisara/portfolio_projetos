@@ -1,0 +1,129 @@
+/*
+ * Base visual do Smart Hub.
+ *
+ * Restrições deliberadas (compatibilidade com navegador legado ainda não
+ * confirmada): sem variáveis CSS, sem flexbox/grid, sem calc(), sem
+ * filtros/blur. Layout com blocos absolutos e inline-block.
+ * Os temas são classes no <body>: accent-ciano | accent-azul,
+ * text-normal | text-grande, anim-on | anim-off.
+ */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  color: #f2f4f7;
+  font-family: "Segoe UI", Tahoma, Arial, Helvetica, sans-serif;
+}
+
+/* Tela lógica fixa de 1280x720, escalada por app.js. */
+.stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1280px;
+  height: 720px;
+  overflow: hidden;
+  background: #0d0f12;
+  -webkit-transform-origin: 0 0;
+  transform-origin: 0 0;
+  font-size: 24px;
+}
+
+.text-grande .stage { font-size: 28px; }
+
+/*
+ * Área segura: margens de 64px (5%) na horizontal e 36px (5%) na
+ * vertical, valor conservador para TVs que cortam as bordas (overscan).
+ */
+.header {
+  position: absolute;
+  left: 64px;
+  right: 64px;
+  top: 36px;
+  height: 64px;
+  white-space: nowrap;
+}
+
+.content {
+  position: absolute;
+  left: 64px;
+  right: 64px;
+  top: 112px;
+  bottom: 84px;
+  overflow: hidden;
+}
+
+.footer {
+  position: absolute;
+  left: 64px;
+  right: 64px;
+  bottom: 36px;
+  height: 36px;
+  line-height: 36px;
+  font-size: 0.75em;
+  color: #8a93a0;
+}
+
+.brand {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 1.25em;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.brand-sub { font-weight: normal; color: #8a93a0; }
+
+.screen-title {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 32px;
+  padding-left: 32px;
+  border-left: 2px solid #2a2f37;
+  color: #c3c9d2;
+}
+
+.header-status {
+  position: absolute;
+  right: 0;
+  top: 0;
+  text-align: right;
+}
+
+.header-clock { display: inline-block; vertical-align: middle; margin-left: 20px; }
+.header-time { display: block; font-size: 1.25em; font-weight: bold; }
+.header-date { display: block; font-size: 0.7em; color: #8a93a0; }
+
+.network,
+.simulation-badge {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 12px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.65em;
+}
+
+.network.is-online { background: #16302a; color: #6ee0b5; }
+.network.is-offline { background: #3a1d1d; color: #ff9a9a; }
+.simulation-badge { background: #3a3218; color: #ffd36b; font-weight: bold; }
+
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: 96px;
+  width: 760px;
+  margin-left: -380px;
+  padding: 16px 24px;
+  border-radius: 8px;
+  background: #1f242c;
+  border: 2px solid #3a414c;
+  text-align: center;
+  visibility: hidden;
+}
+
+.toast.is-visible { visibility: visible; }
