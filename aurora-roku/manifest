@@ -6,7 +6,7 @@
 title=Aurora TV
 major_version=0
 minor_version=2
-build_version=00001
+build_version=00002
 
 # Ícone do app na tela inicial do Roku (FHD 540x405 / HD 290x218)
 mm_icon_focus_fhd=pkg:/images/brand/icon_focus_fhd.png

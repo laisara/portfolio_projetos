@@ -124,3 +124,21 @@ Fontes e rótulos podem ocupar mais espaço no aparelho; pressão de textura em 
 `ui_resolutions=fhd` escalado para 720p pode borrar traços finos; comportamento do
 `RowList` ao segurar a seta. Mitigação: checklist de aparência (§10) e ajuste de tamanhos
 em `Theme.brs`.
+
+## 8. Correções preventivas da versão 0.2.2 (24/10/2026)
+
+Origem: auditoria técnica (achados C-1, C-2 e I-5). Alterações em `components/SettingsScreen.brs`,
+`components/shared/Ui.brs` e `components/HeroSection.brs`, mais `manifest`
+(`build_version=00002`) e `package.json` (0.2.2). Nenhuma mudança visual.
+
+| Correção | Verificação | Resultado observado |
+|---|---|---|
+| C-1: `getScene()` protegido; diagnóstico completado ao receber o foco | Leitura do diff; `bsc`/`bslint`; roteiro no simulador passa por Configurações | 0 erros; aba abre no simulador. **Não reproduz o caso `invalid` do firmware** |
+| C-2: `rowLabelFont` recebe um nó Font (obtido de uma Label auxiliar) em vez de texto | `bsc`/`bslint`; simulador percorre todas as telas com `RowList` | 0 erros e 0 erros de console. **O simulador de terceiros não comprova a compatibilidade com o firmware** |
+| I-5: validação de slides e de `CB_itemNode` no banner; OK ignorado sem slides | Leitura do diff; roteiro dos 5 banners no simulador | Banners 1–5 navegam como antes. Os caminhos de dados inválidos **não têm teste automático** |
+
+Execução de 24/10/2026 sobre o código corrigido: `npm test` (bsc + bslint + check-project +
+check-docs + 81 testes de lógica) **sem erros**; roteiro do simulador **48/48**, 0 erros de console.
+
+Continuam **dependendo do Roku físico**: abrir Configurações e ler o diagnóstico (C-1), títulos das
+fileiras com a fonte correta (C-2) e a navegação dos banners (I-5).

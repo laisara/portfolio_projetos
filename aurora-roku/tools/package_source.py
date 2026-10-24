@@ -17,7 +17,7 @@ import re
 import zipfile
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-EXCLUDE_DIRS = {"node_modules", "out", "dist", "output", "public", "__pycache__", ".git"}
+EXCLUDE_DIRS = {"node_modules", "out", "dist", "downloads", "output", "public", "__pycache__", ".git"}
 EXCLUDE_FILES = {".DS_Store"}
 
 

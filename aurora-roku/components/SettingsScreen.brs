@@ -16,6 +16,7 @@ sub init()
     m.hint.text = "A troca de tema demonstra a identidade configurável: nome, cores e imagens ficam centralizados em source/shared/Theme.brs."
 
     m.highlight = 0
+    m.designKnown = false
     m.top.observeField("focusedChild", "onFocusChanged")
     m.global.observeFieldScoped("themeId", "refresh")
     m.global.observeFieldScoped("favorites", "refresh")
@@ -49,7 +50,12 @@ sub buildInfo(theme as object)
     device = CreateObject("roDeviceInfo")
     os = device.GetOSVersion()
     ui = device.GetUIResolution()
-    design = m.top.getScene().currentDesignResolution
+    ' Em init() o nó pode ainda não estar ligado à cena: getScene() devolve
+    ' invalid. Nesse caso o painel mostra "—" e é refeito ao receber o foco.
+    design = invalid
+    scene = m.top.getScene()
+    if scene <> invalid then design = scene.currentDesignResolution
+    m.designKnown = (type(design) = "roAssociativeArray")
     ' Se alguma API não responder, o painel mostra "—" em vez de travar.
     if type(os) <> "roAssociativeArray" then os = {}
     if type(ui) <> "roAssociativeArray" then ui = {}
@@ -117,6 +123,8 @@ end function
 
 sub onFocusChanged()
     focused = m.top.isInFocusChain()
+    ' Tela já ligada à cena: completa o diagnóstico que não pôde ser lido em init().
+    if focused and not m.designKnown then refresh()
     for i = 0 to m.options.Count() - 1
         m.options[i].highlighted = focused and (i = m.highlight)
     end for

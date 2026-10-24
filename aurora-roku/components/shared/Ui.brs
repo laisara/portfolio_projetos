@@ -24,9 +24,14 @@ sub Ui_setFont(label as object, bold as boolean, size as integer)
 end sub
 
 ' Aplica a aparência padrão do Aurora aos RowList (rótulos das fileiras).
+' rowLabelFont é um campo do tipo nó (Font): recebe um nó Font, não um
+' texto "font:...". O nó vem de uma Label auxiliar, pelo mesmo caminho
+' documentado usado em Ui_setFont. Não é comprovado pelo simulador de
+' terceiros; confirmar no aparelho (TEST_PLAN.md).
 sub Ui_styleRowList(rowList as object)
-    rowList.rowLabelFont = Ui_systemFont(true)
-    rowList.rowLabelFont.size = Theme_typeScale().heading
+    helper = CreateObject("roSGNode", "Label")
+    Ui_setFont(helper, true, Theme_typeScale().heading)
+    rowList.rowLabelFont = helper.font
     rowList.rowLabelColor = Ui_theme().textPrimary
 end sub
 

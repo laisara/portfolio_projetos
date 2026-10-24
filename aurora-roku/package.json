@@ -1,6 +1,6 @@
 {
   "name": "aurora-roku",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "private": true,
   "description": "Aurora TV — app Roku SceneGraph (ferramentas de desenvolvimento; nada aqui vai para o aparelho).",
   "license": "UNLICENSED",

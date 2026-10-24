@@ -33,9 +33,13 @@ end sub
 sub onSlidesChanged()
     ' Dados incompletos: ignora ids que não existem no catálogo.
     m.slides = []
-    for each slide in m.top.slides
-        if DemoContent_safeItem(slide.id) <> invalid then m.slides.Push(slide)
-    end for
+    if type(m.top.slides) = "roArray" then
+        for each slide in m.top.slides
+            if type(slide) = "roAssociativeArray" and Util_isString(slide.id) and Util_isString(slide.tag) then
+                if DemoContent_safeItem(slide.id) <> invalid then m.slides.Push(slide)
+            end if
+        end for
+    end if
     buildDots()
     m.index = 0
     showSlide()
@@ -79,8 +83,16 @@ sub showSlide()
         m.top.current = invalid
         return
     end if
+    if m.index < 0 or m.index >= m.slides.Count() then m.index = 0
     slide = m.slides[m.index]
     node = CB_itemNode(slide.id)
+    if node = invalid then
+        ' Dado removido depois do filtro: descarta o slide e tenta o próximo.
+        m.slides.Delete(m.index)
+        buildDots()
+        showSlide()
+        return
+    end if
     node.tag = slide.tag
     m.kicker.text = slide.tag + "  ·  " + AppConfig().demoKicker
     m.title.text = node.title
@@ -107,7 +119,7 @@ function onKeyEvent(key as string, press as boolean) as boolean
         end if
         return true
     else if key = "OK" then
-        m.top.action = "details"
+        if m.slides.Count() > 0 then m.top.action = "details"
         return true
     end if
     return false
