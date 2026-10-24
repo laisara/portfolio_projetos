@@ -3,7 +3,9 @@
   ContentCard — item dos RowList (itemComponentName="ContentCard").
   Os campos de interface abaixo são preenchidos pelo próprio RowList,
   como no sample oficial rokudev/samples (AdvancedRowList).
-  Imagem 16:9 de 384x216 (design FHD) + título + metadados. Serve a títulos
+  Imagem 16:9 de 384x216 (design FHD) + título + metadados. O item tem 24 px de margem
+  à esquerda (item de 408 px) para o anel e a ampliação do foco não serem cortados
+  pela borda do RowList; o RowList é deslocado 24 px à esquerda para compensar. Serve a títulos
   e a aplicativos (mesma proporção e mesma altura de fileira).
 -->
 <component name="ContentCard" extends="Group">
@@ -27,14 +29,14 @@
 
     <children>
         <!-- O grupo escala a partir do centro da imagem quando focado. -->
-        <Group id="frame" scaleRotateCenter="[192, 108]">
+        <Group id="frame" translation="[24, 0]" scaleRotateCenter="[192, 108]">
             <Rectangle id="placeholder" width="384" height="216" />
             <Poster id="art" width="384" height="216" loadDisplayMode="scaleToFill" />
             <Rectangle id="progressTrack" translation="[24, 192]" width="336" height="6" visible="false" />
             <Rectangle id="progressFill" translation="[24, 192]" width="0" height="6" visible="false" />
             <Poster id="ring" translation="[-9, -9]" width="402" height="234" opacity="0" />
         </Group>
-        <Label id="title" translation="[0, 234]" width="384" height="36" />
-        <Label id="meta" translation="[0, 270]" width="384" height="30" />
+        <Label id="title" translation="[24, 234]" width="384" height="36" />
+        <Label id="meta" translation="[24, 270]" width="384" height="30" />
     </children>
 </component>

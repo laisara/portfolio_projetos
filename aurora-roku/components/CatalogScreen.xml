@@ -40,15 +40,15 @@
         </Group>
         <RowList
             id="rows"
-            translation="[96, 459]"
+            translation="[72, 459]"
             itemComponentName="ContentCard"
             numRows="2"
-            itemSize="[1824, 378]"
-            rowItemSize="[[432, 324]]"
-            rowItemSpacing="[[30, 0]]"
+            itemSize="[1848, 357]"
+            rowItemSize="[[408, 303]]"
+            rowItemSpacing="[[6, 0]]"
             itemSpacing="[0, 30]"
             showRowLabel="[true]"
-            rowLabelOffset="[[0, 15]]"
+            rowLabelOffset="[[24, 15]]"
             drawFocusFeedback="false"
             rowFocusAnimationStyle="floatingFocus" />
     </children>

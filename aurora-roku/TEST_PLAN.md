@@ -142,3 +142,20 @@ check-docs + 81 testes de lógica) **sem erros**; roteiro do simulador **48/48**
 
 Continuam **dependendo do Roku físico**: abrir Configurações e ler o diagnóstico (C-1), títulos das
 fileiras com a fonte correta (C-2) e a navegação dos banners (I-5).
+
+## 9. Correções de design da versão 0.2.3 (24/10/2026)
+
+Origem: auditoria (I-1, I-3, I-7), autorizadas por você. Arquivos: `components/ContentCard.xml`,
+`HomeScreen.xml`, `CatalogScreen.xml`, `SearchScreen.xml`, `NavigationBar.xml` e `DESIGN_SYSTEM.md`;
+`manifest` (`build_version=00003`) e `package.json` (0.2.3). As capturas de `docs/screenshots/` foram
+regeneradas do simulador.
+
+| Correção | Verificação | Resultado observado |
+|---|---|---|
+| I-1: cartões com a mesma grade (passo 414 px) no Início, nos catálogos e na Busca | Inspeção das capturas do simulador (Início × Aplicativos) | Mesmo espaçamento e alinhamento em x 96 nas duas telas |
+| I-3: barra superior em y 54–135 (margem vertical de 54 px) | Valores no XML; captura | Marca e abas dentro da margem; **efeito na TV real não verificável** |
+| I-7: item do cartão com 24 px de margem à esquerda, `RowList` deslocado para compensar | Captura do 1º cartão focado (Início e Aplicativos) | Anel completo, sem corte na borda esquerda, no simulador. Causa original não confirmada no firmware |
+
+Execução: `npm test` sem erros (81 testes de lógica aprovados; `check-project` 0 avisos) e roteiro do
+simulador **48/48**, 0 erros de console. Continuam dependendo do Roku físico: a aparência final,
+as margens na TV e se o recorte do anel acontece no firmware.

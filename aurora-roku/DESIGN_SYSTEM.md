@@ -27,18 +27,18 @@ A identidade é configurável: nome, cores e imagens de interface ficam centrali
   aparelho. O **Roku Express 3960X** tem interface de no máximo **720p**, então a escala é de 2/3.
 - **Toda posição e todo tamanho são múltiplos de 3** (recomendação da Roku para FHD; escala para
   HD sem frações). O `tools/check-project.js` verifica.
-- **Margem segura de 96 px** (5%) nas laterais; o conteúdo começa abaixo de y=120. A barra
-  superior está em y 39–120. Fileiras e cartões **sangram até a borda direita** de propósito,
+- **Margem segura de 96 px** (5%) nas laterais; a barra superior respeita também a margem
+  vertical de 54 px (5%) e ocupa y 54–135; o conteúdo começa abaixo disso. Fileiras e cartões **sangram até a borda direita** de propósito,
   para indicar continuação. Textos longos terminam antes de x=1056.
 
 | Região | Posição (FHD) |
 |---|---|
-| Barra superior (marca + 7 abas) | y 39–120 |
+| Barra superior (marca + 7 abas) | y 54–135 |
 | Banner: selo, título, metadados, sinopse | x 96, y 282–603 |
 | Banner: ação principal / indicador de posição | y 615 / y 723 |
-| Fileiras da tela inicial | x 96, a partir de y 795 (recolhidas: y 153) |
-| Painel de informações (Filmes, Séries, Aplicativos, Biblioteca) | x 96, y 177–432; fileiras a partir de y 459 |
-| Busca: teclado / texto digitado / resultados | x 96 y 189 / x 924 y 189 / x 96 y 615 |
+| Fileiras da tela inicial | cartões em x 96 (RowList em x 72 + 24 px de margem do item), a partir de y 795 (recolhidas: y 153) |
+| Painel de informações (Filmes, Séries, Aplicativos, Biblioteca) | x 96, y 177–432; fileiras a partir de y 459, mesma grade de cartões do Início (passo 414 px) |
+| Busca: teclado / texto digitado / resultados | x 96 y 189 / x 924 y 189 / x 96 y 615 (mesma grade de cartões) |
 | Aviso (Toast) | centralizado, y 924 |
 
 ## Paleta
