@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
-  CatalogScreen — tela de prateleiras usada por Filmes, Séries, Minha
-  biblioteca e Favoritos (campo "kind"). Um único componente evita
+  CatalogScreen — tela de prateleiras usada por Filmes, Séries,
+  Aplicativos e Biblioteca (campo "kind"). Um único componente evita
   duplicar layout, foco e painel de informações; só a fonte de dados muda:
     movies / series : fileiras por gênero (DemoContent_layout)
-    library         : biblioteca demonstrativa com progresso fictício
-    favorites       : títulos marcados (m.global.favorites), com estado vazio
+    apps            : aplicativos fictícios por categoria
+    library         : continuar assistindo (progresso fictício), Favoritos
+                      (m.global.favorites, atualiza na hora) e salvos
 -->
 <component name="CatalogScreen" extends="Group">
     <interface>
@@ -13,7 +14,6 @@
         <field id="itemSelected" type="node" alwaysNotify="true" />
         <function name="focusContent" />
         <function name="restoreFocus" />
-        <function name="focusRow" />
         <function name="dispose" />
     </interface>
 

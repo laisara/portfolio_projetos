@@ -39,7 +39,7 @@ sub onContentChanged()
     hasProgress = progress <> invalid and progress > 0
     m.progressTrack.visible = hasProgress
     m.progressFill.visible = hasProgress
-    if hasProgress then m.progressFill.width = Util_snap3(384 * progress)
+    if hasProgress then m.progressFill.width = Util_snap3(336 * progress)
 end sub
 
 sub onArtStatus()

@@ -49,14 +49,16 @@ sub onContentChanged()
     m.backdrop.uri = item.backdrop
     m.kicker.text = CB_kicker(item)
     m.title.text = item.title
-    m.meta.text = item.year + " · " + item.genre + " · " + item.duration
+    m.meta.text = item.metaFull
     m.synopsis.text = item.description
-    m.note.text = "Título fictício criado para demonstrar a interface. Nenhum vídeo é reproduzido."
-    ' Botão principal contextual: "Continuar" quando há progresso fictício.
-    if item.progress > 0 then
-        m.buttons[0].text = "Continuar"
+    ' Botão principal contextual: "Abrir" para aplicativos e "Continuar"
+    ' quando há progresso fictício. Nenhum deles faz o que o nome sugere.
+    if item.kind = "app" then
+        m.note.text = "Aplicativo fictício criado para demonstrar a interface. Nenhum aplicativo é aberto."
+        m.buttons[0].text = "Abrir"
     else
-        m.buttons[0].text = "Assistir"
+        m.note.text = "Título fictício criado para demonstrar a interface. Nenhum vídeo é reproduzido."
+        if item.progress > 0 then m.buttons[0].text = "Continuar" else m.buttons[0].text = "Assistir"
     end if
     updateFavoriteButton()
 end sub
@@ -88,7 +90,11 @@ function onKeyEvent(key as string, press as boolean) as boolean
     else if key = "OK" then
         item = m.top.content
         if m.highlight = 0 then
-            m.top.message = AppConfig().demoLabel + ": a reprodução não está disponível nesta versão."
+            if item.kind = "app" then
+                m.top.message = AppConfig().demoLabel + ": o aplicativo não pode ser aberto nesta versão."
+            else
+                m.top.message = AppConfig().demoLabel + ": a reprodução não está disponível nesta versão."
+            end if
         else if Fav_toggle(item.itemId) then
             m.top.message = item.title + " foi adicionado aos favoritos."
         else

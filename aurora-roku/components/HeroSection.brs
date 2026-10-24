@@ -3,7 +3,8 @@ sub init()
     m.title = m.top.findNode("title")
     m.meta = m.top.findNode("meta")
     m.synopsis = m.top.findNode("synopsis")
-    m.buttons = [m.top.findNode("detailsButton"), m.top.findNode("favoriteButton")]
+    m.button = m.top.findNode("detailsButton")
+    m.dots = m.top.findNode("dots")
 
     ts = Theme_typeScale()
     Ui_setFont(m.kicker, true, ts.caption)
@@ -11,10 +12,11 @@ sub init()
     Ui_setFont(m.meta, false, ts.label)
     Ui_setFont(m.synopsis, false, ts.body)
 
-    m.highlight = 0
+    m.index = 0
+    m.slides = []
+    m.dotNodes = []
     m.top.observeField("focusedChild", "onFocusChanged")
     m.global.observeFieldScoped("themeId", "applyTheme")
-    m.global.observeFieldScoped("favorites", "updateFavoriteButton")
     applyTheme()
 end sub
 
@@ -24,54 +26,88 @@ sub applyTheme()
     m.title.color = theme.textPrimary
     m.meta.color = theme.textSecondary
     m.synopsis.color = theme.textPrimary
-    for each button in m.buttons
-        button.themeId = theme.id
+    m.button.themeId = theme.id
+    refreshDots()
+end sub
+
+sub onSlidesChanged()
+    ' Dados incompletos: ignora ids que não existem no catálogo.
+    m.slides = []
+    for each slide in m.top.slides
+        if DemoContent_safeItem(slide.id) <> invalid then m.slides.Push(slide)
+    end for
+    buildDots()
+    m.index = 0
+    showSlide()
+end sub
+
+sub buildDots()
+    while m.dots.getChildCount() > 0
+        m.dots.removeChildIndex(0)
+    end while
+    m.dotNodes = []
+    for i = 0 to m.slides.Count() - 1
+        dot = m.dots.createChild("Poster")
+        dot.height = 12
+        dot.width = 12
+        m.dotNodes.Push(dot)
+    end for
+    refreshDots()
+end sub
+
+' Indicador de posição: o ponto do banner atual é uma pílula na cor de
+' destaque; os demais são pontos discretos.
+sub refreshDots()
+    theme = Ui_theme()
+    x = 0
+    for i = 0 to m.dotNodes.Count() - 1
+        dot = m.dotNodes[i]
+        if i = m.index then
+            dot.uri = theme.assets.dotOn
+            dot.width = 36
+        else
+            dot.uri = theme.assets.dotOff
+            dot.width = 12
+        end if
+        dot.translation = [x, 0]
+        x = x + dot.width + 12
     end for
 end sub
 
-sub onContentChanged()
-    item = m.top.content
-    if item = invalid then return
-    m.kicker.text = "EM DESTAQUE  ·  " + AppConfig().demoKicker
-    m.title.text = item.title
-    m.meta.text = item.year + " · " + item.genre + " · " + item.duration
-    m.synopsis.text = item.description
-    updateFavoriteButton()
-end sub
-
-sub updateFavoriteButton()
-    item = m.top.content
-    if item = invalid then return
-    if Fav_has(item.itemId) then
-        m.buttons[1].text = "Nos favoritos"
-    else
-        m.buttons[1].text = "Adicionar aos favoritos"
+sub showSlide()
+    if m.slides.Count() = 0 then
+        m.top.current = invalid
+        return
     end if
-    m.buttons[1].translation = [m.buttons[0].width + 18, 0]
+    slide = m.slides[m.index]
+    node = CB_itemNode(slide.id)
+    node.tag = slide.tag
+    m.kicker.text = slide.tag + "  ·  " + AppConfig().demoKicker
+    m.title.text = node.title
+    m.meta.text = node.metaFull
+    m.synopsis.text = node.description
+    m.top.current = node
+    refreshDots()
+    print "AURORA_BANNER " + (m.index + 1).ToStr() + "/" + m.slides.Count().ToStr() + " " + node.itemId
 end sub
 
 sub onFocusChanged()
-    focused = m.top.isInFocusChain()
-    for i = 0 to m.buttons.Count() - 1
-        m.buttons[i].highlighted = focused and (i = m.highlight)
-    end for
+    m.button.highlighted = m.top.isInFocusChain()
 end sub
 
 function onKeyEvent(key as string, press as boolean) as boolean
     if not press then return false
-    if key = "left" and m.highlight > 0 then
-        m.highlight = m.highlight - 1
-        onFocusChanged()
-        return true
-    else if key = "right" and m.highlight < m.buttons.Count() - 1 then
-        m.highlight = m.highlight + 1
-        onFocusChanged()
+    if key = "left" or key = "right" then
+        ' Esquerda/direita sempre pertencem ao carrossel; nas pontas a
+        ' tecla é consumida e o foco não "escapa" de lado.
+        if key = "left" then target = m.index - 1 else target = m.index + 1
+        if target >= 0 and target < m.slides.Count() then
+            m.index = target
+            showSlide()
+        end if
         return true
     else if key = "OK" then
-        if m.highlight = 0 then m.top.action = "details" else m.top.action = "favorite"
-        return true
-    else if key = "left" or key = "right" then
-        ' Nas pontas, a tecla é consumida para o foco não "escapar" de lado.
+        m.top.action = "details"
         return true
     end if
     return false

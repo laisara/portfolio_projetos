@@ -2,8 +2,8 @@
 ' NavigationLogic.brs — máquina de estados da navegação (pura).
 '
 ' Estado:
-'   tab      : aba ativa ("home", "movies", "series", "library",
-'              "favorites", "settings")
+'   tab      : aba ativa ("home", "movies", "series", "apps", "library",
+'              "search", "settings")
 '   zone     : onde está o foco ("nav" = barra de abas,
 '              "content" = conteúdo da aba, "overlay" = detalhes)
 '   overlay  : invalid ou "details"
@@ -18,8 +18,9 @@ function Nav_tabs() as object
         { id: "home", label: "Início" }
         { id: "movies", label: "Filmes" }
         { id: "series", label: "Séries" }
-        { id: "library", label: "Minha biblioteca" }
-        { id: "favorites", label: "Favoritos" }
+        { id: "apps", label: "Aplicativos" }
+        { id: "library", label: "Biblioteca" }
+        { id: "search", label: "Busca" }
         { id: "settings", label: "Configurações" }
     ]
 end function
@@ -69,4 +70,33 @@ function Nav_apply(state as object, action as string, arg = invalid as dynamic) 
         nextState.zone = "overlay"
     end if
     return nextState
+end function
+
+' Navegação em grade de linhas com tamanhos diferentes (teclado da Busca).
+' rowLengths: quantidade de teclas por linha. Esquerda/direita param nas
+' pontas; cima/baixo mantêm a posição horizontal relativa (uma linha
+' curta de teclas largas fica "sob" as teclas que ela cobre).
+' Devolve { row, col }, ou invalid quando o movimento sai da grade (o
+' chamador decide: subir para a barra, descer para os resultados...).
+function Nav_gridMove(rowLengths as object, row as integer, col as integer, key as string) as dynamic
+    rows = rowLengths.Count()
+    if row < 0 or row >= rows then return invalid
+    length = rowLengths[row]
+    if key = "left" then
+        if col > 0 then return { row: row, col: col - 1 }
+        return invalid
+    else if key = "right" then
+        if col < length - 1 then return { row: row, col: col + 1 }
+        return invalid
+    else if key = "up" or key = "down" then
+        if key = "up" then target = row - 1 else target = row + 1
+        if target < 0 or target >= rows then return invalid
+        ' Posição relativa do centro da tecla atual (0..1) projetada na
+        ' linha de destino.
+        centre = (col + 0.5) / length
+        newCol = Int(centre * rowLengths[target])
+        if newCol > rowLengths[target] - 1 then newCol = rowLengths[target] - 1
+        return { row: target, col: newCol }
+    end if
+    return invalid
 end function

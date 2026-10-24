@@ -3,74 +3,70 @@
 ' DemoContent.brs) em ContentNodes para RowList e telas de detalhe.
 ' ==========================================================================
 
-' Cria o ContentNode de um título. "extra" pode trazer progress e note
-' (biblioteca demonstrativa).
-function CB_itemNode(id as string, extra = invalid as dynamic) as object
-    item = DemoContent_items()[id]
+' Cria o ContentNode de um título ou aplicativo. "extra" pode trazer
+' progress e note (biblioteca demonstrativa). Devolve invalid se o id não
+' existir no catálogo: quem monta fileiras ignora esses itens, então dados
+' incompletos nunca derrubam a interface.
+function CB_itemNode(id as dynamic, extra = invalid as dynamic) as dynamic
+    item = DemoContent_safeItem(id)
+    if item = invalid then return invalid
     node = CreateObject("roSGNode", "ContentNode")
     node.title = item.title
     node.description = item.synopsis
     node.HDPosterUrl = DemoContent_posterUri(id)
     progress = 0.0
-    meta = DemoContent_metaLine(item)
+    cardMeta = DemoContent_cardMeta(item)
     if extra <> invalid then
-        if extra.progress <> invalid then progress = extra.progress
-        if Util_isString(extra.note) and extra.note <> "" then meta = item.year.ToStr() + " · " + extra.note
+        if type(extra.progress) = "Float" or type(extra.progress) = "roFloat" or type(extra.progress) = "Double" then progress = extra.progress
+        if Util_isString(extra.note) and extra.note <> "" then cardMeta = item.year.ToStr() + " · " + extra.note
     end if
+    year = ""
+    if item.year > 0 then year = item.year.ToStr()
     node.addFields({
         itemId: id
         kind: item.kind
-        year: item.year.ToStr()
+        year: year
         genre: item.genre
         duration: item.duration
-        meta: meta
+        meta: cardMeta
+        metaFull: DemoContent_metaLine(item)
         backdrop: DemoContent_backdropUri(id)
         progress: progress
+        tag: ""
     })
     return node
 end function
 
-function CB_collectionNode(collection as object) as object
-    node = CreateObject("roSGNode", "ContentNode")
-    node.title = collection.title
-    node.HDPosterUrl = DemoContent_posterUri(collection.id)
-    node.addFields({
-        itemId: collection.id
-        kind: "collection"
-        meta: DemoContent_collectionSubtitle(collection)
-        target: collection.target
-        targetRow: collection.row
-        progress: 0.0
-    })
-    return node
-end function
-
-' rows: array de { title, ids } ou { title, items: [{ id, progress, note }] }
+' Linhas aceitas (todas opcionais, na ordem de verificação):
+'   { title, ids: [ids] }                    ids simples
+'   { title, items: [{ id, progress, note }] } com progresso fictício
+' Itens inexistentes são ignorados e linhas que ficam vazias são omitidas.
 function CB_rowsNode(rows as object) as object
     root = CreateObject("roSGNode", "ContentNode")
     for each row in rows
-        rowNode = root.createChild("ContentNode")
+        rowNode = CreateObject("roSGNode", "ContentNode")
         rowNode.title = row.title
         if row.ids <> invalid then
             for each id in row.ids
-                rowNode.appendChild(CB_itemNode(id))
+                node = CB_itemNode(id)
+                if node <> invalid then rowNode.appendChild(node)
             end for
         else if row.items <> invalid then
             for each entry in row.items
-                rowNode.appendChild(CB_itemNode(entry.id, entry))
-            end for
-        else if row.nodes <> invalid then
-            for each n in row.nodes
-                rowNode.appendChild(n)
+                node = CB_itemNode(entry.id, entry)
+                if node <> invalid then rowNode.appendChild(node)
             end for
         end if
+        if rowNode.getChildCount() > 0 then root.appendChild(rowNode)
     end for
     return root
 end function
 
 ' Item selecionado de um RowList a partir de rowItemSelected [linha, coluna].
-function CB_selectedNode(rowList as object, selection as object) as object
-    if rowList.content = invalid or selection = invalid then return invalid
+function CB_selectedNode(rowList as object, selection as object) as dynamic
+    if rowList.content = invalid or type(selection) <> "roArray" then return invalid
+    if selection.Count() < 2 or selection[0] = invalid or selection[1] = invalid then return invalid
+    if selection[0] < 0 then return invalid
     row = rowList.content.getChild(selection[0])
     if row = invalid then return invalid
     return row.getChild(selection[1])
@@ -80,6 +76,8 @@ end function
 function CB_kicker(node as object) as string
     if node.kind = "series" then
         label = "SÉRIE"
+    else if node.kind = "app" then
+        label = "APLICATIVO"
     else
         label = "FILME"
     end if

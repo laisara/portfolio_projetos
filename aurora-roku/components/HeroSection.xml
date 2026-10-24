@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
-  HeroSection — bloco de texto e ações do título em destaque.
-  A imagem de fundo fica no HomeScreen (tela inteira). Quando focado,
-  trata esquerda/direita entre os botões e OK; o resto sobe ao pai.
+  HeroSection — banner em carrossel: selo, título, metadados, sinopse,
+  ação principal e indicador de posição. A imagem de fundo fica no
+  HomeScreen (tela inteira) e acompanha o banner atual.
+
+  Navegação (manual, sem avanço automático):
+    esquerda/direita  banner anterior / seguinte (param nas pontas)
+    OK                abre os detalhes do banner atual
+  Cima, baixo e Voltar não são tratados aqui: sobem para o pai.
 -->
 <component name="HeroSection" extends="Group">
     <interface>
-        <field id="content" type="node" onChange="onContentChanged" />
-        <!-- Evento de saída: "details" ou "favorite". -->
+        <!-- Entrada: lista de { id, tag } (DemoContent_layout().featured). -->
+        <field id="slides" type="array" onChange="onSlidesChanged" />
+        <!-- Saída: nó do banner atual (observado pelo HomeScreen). -->
+        <field id="current" type="node" />
+        <!-- Saída: "details" quando o usuário pressiona OK. -->
         <field id="action" type="string" alwaysNotify="true" />
     </interface>
 
@@ -24,9 +32,7 @@
         <Label id="title" translation="[0, 39]" width="1080" height="105" />
         <Label id="meta" translation="[0, 150]" width="1080" height="39" />
         <Label id="synopsis" translation="[0, 201]" width="780" height="120" wrap="true" maxLines="3" lineSpacing="6" />
-        <Group id="buttons" translation="[0, 345]">
-            <PillButton id="detailsButton" text="Ver detalhes" minWidth="252" />
-            <PillButton id="favoriteButton" />
-        </Group>
+        <PillButton id="detailsButton" translation="[0, 333]" text="Ver detalhes" minWidth="252" />
+        <Group id="dots" translation="[0, 441]" />
     </children>
 </component>

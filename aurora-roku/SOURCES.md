@@ -1,6 +1,6 @@
 # Fontes consultadas — Aurora TV
 
-**Data de todas as consultas: 23/10/2026.**
+**Data de todas as consultas: 23/10/2026** (etapas 1 e 2 do projeto, no mesmo dia).
 
 ## Como ler o nível de acesso
 
@@ -13,11 +13,20 @@
 
 ### Limitação de rede deste ambiente
 
-`developer.roku.com`, `forum.developer.roku.com`, `sdkdocs-archive.roku.com` e
-`community.roku.com` responderam **`CONNECT 403`** (proxy) ou **falha de DNS**. Por isso,
-**nenhuma página da documentação oficial da Roku foi lida diretamente**. O conteúdo
-oficial lido diretamente vem dos **samples oficiais da Roku**, hospedados no GitLab
-(`gitlab.com/rokudev/samples`, licença MIT), e do repositório arquivado no GitHub.
+`developer.roku.com`, `forum.developer.roku.com`, `sdkdocs-archive.roku.com`,
+`community.roku.com`, `support.tcl.com` e `tv.withgoogle.com` responderam **`CONNECT 403`**
+(proxy) ou **falha de DNS**. Por isso, **nenhuma página da documentação oficial da Roku foi
+lida diretamente**, e **nenhuma página da TCL nem do Google TV (tv.withgoogle.com)** foi
+acessada. O conteúdo oficial lido diretamente vem de:
+
+- os **samples oficiais da Roku** (`gitlab.com/rokudev/samples`, licença MIT);
+- as **guias de design de TV do Android Developers** (`developer.android.com`), que estavam
+  acessíveis (L6 a L11 abaixo).
+
+> **Imagens de referência do usuário:** o briefing menciona imagens de referência, mas
+> **nenhuma imagem foi recebida neste ambiente**. As decisões de design se apoiam no texto
+> do briefing, nas guias do Android TV (L6–L11) e em matérias sobre a interface do Google TV
+> (R17). Quando as imagens estiverem disponíveis, convém comparar o resultado com elas.
 
 ## 1. Páginas pedidas no escopo
 
@@ -41,6 +50,23 @@ oficial lido diretamente vem dos **samples oficiais da Roku**, hospedados no Git
 | L4 | `gitlab.com/rokudev/samples` → `ux components/lists and grids/AdvancedRowList/components/MoreInfoOnFocusGridItem/` | Campos de interface de um item de RowList (`itemContent`, `width`, `height`, `focusPercent`, `rowFocusPercent`, `rowHasFocus`, `rowListHasFocus`); padrão de realce `visible = rowListHasFocus and focusPercent > 0` |
 | L5 | `gitlab.com/rokudev/samples` → `ux components/text/` | Uso de fontes predefinidas no XML (`font="font:SmallBoldSystemFont"`, `font:MediumBoldSystemFont`) |
 
+### Referências de design lidas diretamente (Android Developers)
+
+O Google TV usa o Android TV como base; estas páginas descrevem os princípios de interface
+de TV desse ecossistema. **Foram usadas como orientação, não copiadas.**
+
+| ID | Fonte (lida diretamente) | O que sustenta | Como foi usado |
+|---|---|---|---|
+| L6 | [Navigation on TV](https://developer.android.com/training/tv/get-started/navigation) | D-pad leva o foco ao objeto mais próximo na direção; garantir que todo controle visível seja alcançável; sempre haver um item em foco; **esquema de foco uniforme**; Voltar leva ao destino anterior e **ideal é que Voltar saia do app**; sem tela de confirmação para sair; **sem botão Voltar virtual**; "categorias no eixo vertical, itens de cada categoria no horizontal"; evitar hierarquias aninhadas | Estrutura de fileiras (vertical = fileiras, horizontal = itens); foco sempre visível; Voltar sem confirmação. **Divergência consciente:** a guia recomenda "navegação em laço" (o último controle volta ao primeiro). O Aurora **não** faz laço: as pontas consomem a tecla, pois a Roku e o briefing pedem comportamento previsível nos limites |
+| L7 | [Design for TV](https://developer.android.com/design/ui/tv/guides/foundations/design-for-tv) | Distância típica de ~3 m (10 pés): texto e elementos grandes; layouts simples; feedback instantâneo e distinto ao navegar | Tipografia e escala dos cartões |
+| L8 | [Layouts](https://developer.android.com/design/ui/tv/guides/styles/layouts) | Projetar em 960×540 dp com ativos para 1080p que o sistema reduz para 720p; **margem de ~5%** (valores divergentes na própria página: 48/27 dp, 58/28 dp; marcada "verificar no kit Figma"); grade de 12 colunas; modelo **Browse**: fileiras em pilha vertical, navegação vertical entre fileiras e horizontal dentro de cada uma; **"evitar excesso de painéis"**; "mais modernos TVs não têm mais overscan" | Layout FHD com margem de 96 px (5%); escala de 1080p→720p; fileiras em pilha |
+| L9 | [Focus system](https://developer.android.com/design/ui/tv/guides/styles/focus-system) | Foco por **escala (padrões 1,025, 1,05 e 1,1×)**, brilho, contorno, borda ou mudança de cor; **só um elemento focado por vez**; sem valores de contraste ou duração | Escala de 1,05× + anel na cor de destaque nos cartões; pílula preenchida nos botões |
+| L10 | [Cards](https://developer.android.com/design/ui/tv/guides/components/cards) | Proporções **16:9** (mais comum), **1:1** e **2:3**; bloco de conteúdo com a largura da imagem; cartões compactos com texto sobre imagem exigem **gradiente semitransparente** | Cartões 16:9 de 384×216; título e metadados abaixo, na largura da imagem; gradiente embutido nas imagens de banner |
+| L11 | [Typography](https://developer.android.com/design/ui/tv/guides/styles/typography) | Tipografia grande, com contadores abertos e traços não finos; evitar fontes decorativas; escala com Display, Headline, Title, Body e Label; Display "não para títulos de seção" | Escala tipográfica do Aurora (display/title/heading/body/label/caption) e uso da fonte do sistema |
+
+Páginas **tentadas e não obtidas**: a guia do carrossel do Android TV (`.../components/carousel`,
+HTTP 404), `support.tcl.com` e `tv.withgoogle.com` (bloqueio de rede).
+
 ## 3. Documentação oficial Roku por resumo de busca (R)
 
 | ID | Página | O que o resumo sustenta |
@@ -61,6 +87,8 @@ oficial lido diretamente vem dos **samples oficiais da Roku**, hospedados no Git
 | R14 | [Release notes](https://developer.roku.com/dev/docs/release-notes) | O Roku OS 14.5 encerrou o suporte ao RSG 1.1 e os apps devem declarar `rsg_version=1.2`; certificação exige splash FHD e HD |
 | R15 | [Specifications and Feature Support / Streaming Store graphics](https://developer.roku.com/docs/specs/graphics.md) | Zona segura de título: 80% da resolução (FHD: deslocamento 192, 106; área 1534×866); zona segura de ação: 90%. Página antiga |
 | R16 | [Key Design Principles](https://developer.roku.com/dev/docs/key-design-principles), [UI philosophy](https://developer.roku.com/docs/developer-program/design/general-tv-ui-philosophy.md) | Margem de pelo menos **5%** por causa do overscan; visualização a cerca de 3 m; alto contraste e texto grande; baixa densidade de informação; testar em TV real |
+| R17 | Matérias sobre a tela inicial do Google TV: [Android Authority](https://androidauthority.com/google-tv-for-you-home-screen-refresh-3420714), [9to5Google](https://9to5google.com/2024/02/28/google-tv-your-apps-redesign/), [Cord Cutters News](https://cordcuttersnews.com/google-tv-is-getting-an-updated-home-screen-with-a-new-look-new-features/), [How-To Geek](https://www.howtogeek.com/694783/how-to-customize-the-google-tv-home-screen/) (**resumo de busca**; não são fontes oficiais) | Tela "Para você" com **carrossel de destaque no topo** e fileiras de recomendação; **fileira de aplicativos** em ícones menores; **fileira "Continue assistindo"**. Nada específico da TCL foi encontrado **Uso:** Composição geral: banner → fileiras → aplicativos. Nenhum layout foi copiado  |
+| R18 | [Roku — Design](https://developer.roku.com/develop/design/design-index) e [UI philosophy](https://developer.roku.com/docs/developer-program/design/general-tv-ui-philosophy.md) (resumo de busca) | Práticas **obrigatórias para certificação** e **recomendadas**; interface de TV deve ser "invisível"; **usar poucos tipos de tela/modelos**; testar em TV real a ~3 m em sala moderadamente escura **Uso:** Poucos componentes reutilizáveis (um `CatalogScreen` para 4 abas)  |
 
 ## 4. Comunidade e terceiros
 
@@ -79,3 +107,18 @@ oficial lido diretamente vem dos **samples oficiais da Roku**, hospedados no Git
 | Comportamento exato do 9-patch (cantos) no 3960X | Desconhecido. O simulador desenha cantos menores que os da imagem |
 | `font:BoldSystemFontFile` em nó Font | **Não funcionou no simulador**; descartado |
 | Limite de tamanho de pacote para sideload | Não encontrado na documentação obtida |
+
+## 6. Origem dos recursos visuais
+
+| Recurso | Origem | Direitos |
+|---|---|---|
+| Pôsteres e fundos dos 20 títulos | Gerados por `tools/generate_assets.py` (gradientes, formas e silhuetas **originais**, sem fotos nem personagens) | Criação deste projeto |
+| Ícones dos 8 aplicativos | Gerados pelo mesmo script (glifos geométricos simples: reprodução, nota, foto, jornal, nuvem, controle, chapéu de chef, halteres). **Não reproduzem logotipos nem marcas de nenhum produto real** | Criação deste projeto |
+| Nomes de títulos e aplicativos | Inventados. Qualquer semelhança com produtos reais é coincidência (nomes comuns como "Galeria", "Tempo", "Receitas") | Criação deste projeto |
+| Logotipo "Aurora TV" (arco em 3 cores), ícone do canal e splash | Gerados pelo mesmo script. O texto "Aurora TV" é rasterizado com a fonte **Inter** (licença SIL OFL 1.1), apenas na imagem; a fonte **não** é incluída no pacote | Criação deste projeto; fonte Inter sob OFL |
+| Fonte exibida no app | Fonte do sistema Roku (nada embarcado) | — |
+| Botões, painéis, anel de foco e pontos do indicador (PNG/9-patch) | Gerados pelo mesmo script | Criação deste projeto |
+
+**Pendências de recursos:** nenhuma imagem é fotográfica. Para uma versão com catálogo real, as
+imagens de cada id (`images/posters/<id>.png` 256×144 e `images/backgrounds/<id>.jpg` 1280×720)
+precisam ser **substituídas por ativos licenciados** pelo detentor dos direitos.

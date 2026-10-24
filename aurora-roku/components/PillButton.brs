@@ -8,11 +8,24 @@ function isTab() as boolean
     return m.top.variant = "tab"
 end function
 
+' Teclas do teclado da Busca: tamanho fixo (minWidth) e pílula pequena.
+function isKey() as boolean
+    return m.top.variant = "key"
+end function
+
+function useSmallPill() as boolean
+    return isTab() or isKey()
+end function
+
 sub relayout()
     if isTab() then
         h = 60
         size = 27
-        padding = 30
+        padding = 24
+    else if isKey() then
+        h = 66
+        size = 30
+        padding = 0
     else
         h = 72
         size = 30
@@ -27,7 +40,11 @@ sub relayout()
     textWidth = m.label.boundingRect().width
     if textWidth <= 0 then textWidth = Len(m.top.text) * size * 0.55
 
-    w = Util_snap3(Util_max(m.top.minWidth, textWidth + padding * 2))
+    if isKey() then
+        w = Util_snap3(m.top.minWidth)
+    else
+        w = Util_snap3(Util_max(m.top.minWidth, textWidth + padding * 2))
+    end if
     m.bg.width = w
     m.bg.height = h
     m.label.width = w
@@ -39,12 +56,13 @@ end sub
 
 sub refresh()
     theme = Ui_theme()
+    small = useSmallPill()
     if m.top.highlighted then
-        if isTab() then m.bg.uri = theme.assets.pillAccentSmall else m.bg.uri = theme.assets.pillAccent
+        if small then m.bg.uri = theme.assets.pillAccentSmall else m.bg.uri = theme.assets.pillAccent
         m.bg.visible = true
         m.label.color = theme.onAccent
-    else if not isTab() or m.top.active then
-        if isTab() then m.bg.uri = theme.assets.pillSurfaceSmall else m.bg.uri = theme.assets.pillSurface
+    else if isKey() or not isTab() or m.top.active then
+        if small then m.bg.uri = theme.assets.pillSurfaceSmall else m.bg.uri = theme.assets.pillSurface
         m.bg.visible = true
         m.label.color = theme.textPrimary
     else

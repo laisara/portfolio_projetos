@@ -11,7 +11,7 @@ function AppState_maxFavorites() as integer
 end function
 
 function AppState_defaults() as object
-    return { themeId: AppConfig().defaultThemeId, favorites: [] }
+    return { themeId: AppConfig().defaultThemeId, favorites: [], animations: true }
 end function
 
 ' Valida um estado lido do registro. Qualquer valor inesperado volta ao
@@ -25,6 +25,8 @@ function AppState_sanitize(raw as dynamic) as object
             if raw.themeId = id then state.themeId = id
         end for
     end if
+
+    if type(raw.animations) = "roBoolean" or type(raw.animations) = "Boolean" then state.animations = raw.animations
 
     if type(raw.favorites) = "roArray" then
         known = DemoContent_items()

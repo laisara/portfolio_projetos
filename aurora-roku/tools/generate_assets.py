@@ -33,7 +33,7 @@ THEMES = {
 }
 SCRIM = "#080B14"
 
-CARD = (288, 162)        # 432x243 no design FHD
+CARD = (256, 144)        # 384x216 no design FHD (escala 2/3 na saída HD)
 BACKDROP = (1280, 720)   # tela inteira na saída HD
 CARD_RADIUS = 12         # 18 no design FHD
 SS = 3                   # supersampling para bordas suaves
@@ -54,10 +54,21 @@ ART = {
     "s04": ("house", "#120B22", "#6A4A8C", "#F7C6FF", 22),
     "s05": ("radio", "#2A0F14", "#E0715B", "#FFE1B8", 23),
     "s06": ("sail", "#0A2340", "#3F8FD6", "#F5FAFF", 24),
-    "col_scifi": ("abstract", "#050A1E", "#23407A", "#79A9FF", 31),
-    "col_drama": ("abstract", "#1C0D16", "#7A3550", "#FFB3A1", 32),
-    "col_mystery": ("abstract", "#0A0E12", "#2F4A4F", "#B6F0E2", 33),
-    "col_binge": ("abstract", "#160F05", "#7A5420", "#FFD28A", 34),
+    "m09": ("castle", "#0A0F26", "#3A4A8C", "#FFD98A", 41),
+    "m10": ("forest", "#071A14", "#2F7A5C", "#BFFFD9", 42),
+    "m11": ("dunes", "#2A0F12", "#D2793A", "#FFE2A8", 43),
+    "s07": ("mountains", "#0B1020", "#4B5E9A", "#F2E6FF", 44),
+    "s08": ("forest", "#10122A", "#5B4E9E", "#E3D6FF", 45),
+    "s09": ("dunes", "#101A2E", "#3C7FA3", "#FFF1C2", 46),
+    # Aplicativos fictícios: (glifo, cor 1, cor 2, cor do glifo, semente)
+    "a01": ("app:play", "#1B2E6B", "#3E7BFF", "#FFFFFF", 51),
+    "a02": ("app:note", "#4A1B6B", "#B05CFF", "#FFFFFF", 52),
+    "a03": ("app:photo", "#0E4A55", "#35C2B0", "#FFFFFF", 53),
+    "a04": ("app:news", "#5B2020", "#F0705A", "#FFFFFF", 54),
+    "a05": ("app:cloud", "#12406B", "#5CB8FF", "#FFFFFF", 55),
+    "a06": ("app:game", "#1F3B22", "#5CD66A", "#FFFFFF", 56),
+    "a07": ("app:chef", "#5A3A10", "#F2A93B", "#FFFFFF", 57),
+    "a08": ("app:fit", "#3A1B4F", "#FF5C9C", "#FFFFFF", 58),
 }
 
 
@@ -158,14 +169,14 @@ def compose(motif, top, bottom, accent, seed, w, h):
     top, bottom, acc = hex_rgb(top), hex_rgb(bottom), hex_rgb(accent)
     img = vertical_gradient(w, h, top, bottom)
     dark = lerp(top, (0, 0, 0), 0.55)
-    if motif in ("planet", "aurora", "orbit", "abstract"):
+    if motif in ("planet", "aurora", "orbit", "abstract", "castle", "mountains"):
         img = glow(img, 0.72, 0.35, 0.55, lerp(bottom, acc, 0.35), 0.45)
     else:
         img = glow(img, 0.7, 0.62, 0.5, lerp(bottom, acc, 0.5), 0.5)
     layer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     d = ImageDraw.Draw(layer)
 
-    if motif in ("planet", "aurora", "orbit", "lighthouse", "house", "abstract"):
+    if motif in ("planet", "aurora", "orbit", "lighthouse", "house", "abstract", "castle", "mountains", "forest"):
         stars(d, w, h, rnd, 160, 0.7)
 
     if motif == "planet":
@@ -280,6 +291,62 @@ def compose(motif, top, bottom, accent, seed, w, h):
             d.arc([bx - r, by - 0.5 * h - r, bx + r, by - 0.5 * h + r], 200, 340, fill=acc + (230 - i * 35,), width=int(0.008 * h))
         d.polygon([(bx - 0.06 * w, by), (bx + 0.06 * w, by), (bx, by - 0.5 * h)], outline=dark + (255,), fill=None, width=int(0.008 * h))
         d.rectangle([0, by, w, h], fill=dark + (255,))
+    elif motif == "castle":
+        # Colina com torres e uma lua grande ao fundo.
+        mx, my, mr = 0.72 * w, 0.3 * h, 0.12 * h
+        d.ellipse([mx - mr, my - mr, mx + mr, my + mr], fill=acc + (235,))
+        d.polygon(ridge(w, h, rnd, 0.8, 0.04, 2), fill=dark + (255,))
+        bx = 0.6 * w
+        for ox, bw, bh in ((-0.1, 0.05, 0.22), (0.0, 0.07, 0.34), (0.1, 0.045, 0.18), (0.17, 0.05, 0.26)):
+            x0 = bx + ox * w
+            top_y = 0.82 * h - bh * h
+            d.rectangle([x0, top_y, x0 + bw * w, 0.9 * h], fill=dark + (255,))
+            d.polygon([(x0 - 0.006 * w, top_y), (x0 + bw * w / 2, top_y - 0.09 * h), (x0 + bw * w + 0.006 * w, top_y)], fill=dark + (255,))
+            d.rectangle([x0 + bw * w * 0.4, top_y + 0.05 * h, x0 + bw * w * 0.6, top_y + 0.09 * h], fill=acc + (255,))
+        d.rectangle([0, 0.88 * h, w, h], fill=dark + (255,))
+    elif motif == "forest":
+        for li, (base, shade) in enumerate(((0.78, 0.55), (0.86, 0.4), (0.95, 0.25))):
+            col = lerp(bottom, (0, 0, 0), shade)
+            x = -0.02 * w
+            while x < w * 1.02:
+                tw = rnd.uniform(0.05, 0.09) * w * (1 + li * 0.35)
+                th = rnd.uniform(0.2, 0.34) * h * (1 + li * 0.3)
+                by = base * h
+                d.polygon([(x, by), (x + tw / 2, by - th), (x + tw, by)], fill=col + (255,))
+                d.polygon([(x + tw * 0.1, by - th * 0.35), (x + tw / 2, by - th * 1.15), (x + tw * 0.9, by - th * 0.35)], fill=col + (255,))
+                x += tw * rnd.uniform(0.55, 0.85)
+            d.rectangle([0, base * h, w, h], fill=col + (255,))
+        for i in range(30):
+            fx, fy = rnd.uniform(0.35, 0.95) * w, rnd.uniform(0.5, 0.85) * h
+            d.ellipse([fx - 3, fy - 3, fx + 3, fy + 3], fill=acc + (rnd.randint(120, 230),))
+    elif motif == "dunes":
+        sx, sy, sr = 0.72 * w, 0.4 * h, 0.1 * h
+        d.ellipse([sx - sr, sy - sr, sx + sr, sy + sr], fill=acc + (240,))
+        for li, (base, mix) in enumerate(((0.62, 0.35), (0.74, 0.55), (0.88, 0.8))):
+            col = lerp(bottom, (0, 0, 0), mix * 0.8)
+            pts = [(0, h)]
+            ph = rnd.random() * 6
+            for k in range(0, 101):
+                px = w * k / 100
+                py = h * base + math.sin(k / 100 * (2.2 + li) * math.pi + ph) * 0.05 * h
+                pts.append((px, py))
+            pts.append((w, h))
+            d.polygon(pts, fill=col + (255,))
+    elif motif == "mountains":
+        mx, my, mr = 0.78 * w, 0.26 * h, 0.07 * h
+        d.ellipse([mx - mr, my - mr, mx + mr, my + mr], fill=acc + (240,))
+        for li, (base, amp, mix) in enumerate(((0.62, 0.12, 0.25), (0.74, 0.1, 0.5), (0.9, 0.07, 0.75))):
+            col = lerp(bottom, (0, 0, 0), mix)
+            pts = [(0, h)]
+            ph = rnd.random() * 6
+            for k in range(0, 121):
+                px = w * k / 120
+                # Picos largos e suaves: soma de duas senoides de baixa frequência.
+                ridge_v = 0.55 * math.sin(k / 120 * (3.2 + li) * math.pi + ph) + 0.45 * math.sin(k / 120 * (7.1 + li * 2) * math.pi + ph * 1.7)
+                py = h * base - (0.5 + 0.5 * ridge_v) ** 1.6 * amp * h * 2.2
+                pts.append((px, py))
+            pts.append((w, h))
+            d.polygon(pts, fill=col + (255,))
     elif motif == "abstract":
         for i in range(5):
             cx, cy = rnd.uniform(0.4, 0.95) * w, rnd.uniform(0.1, 0.9) * h
@@ -322,10 +389,81 @@ def rounded(img, radius):
     return out
 
 
-def render(spec, size):
+def glyph(d, kind, cx, cy, u, col):
+    """Glifos simples e originais (formas geométricas) para os aplicativos.
+    u é a unidade de escala (metade do tamanho do glifo)."""
+    c = col + (240,)
+    lw = max(2, int(u * 0.12))
+    if kind == "play":
+        d.ellipse([cx - u, cy - u, cx + u, cy + u], outline=c, width=lw)
+        d.polygon([(cx - u * 0.3, cy - u * 0.5), (cx - u * 0.3, cy + u * 0.5), (cx + u * 0.55, cy)], fill=c)
+    elif kind == "note":
+        d.ellipse([cx - u * 0.8, cy + u * 0.3, cx - u * 0.1, cy + u * 0.9], fill=c)
+        d.ellipse([cx + u * 0.3, cy + u * 0.1, cx + u * 1.0, cy + u * 0.7], fill=c)
+        d.rectangle([cx - u * 0.18, cy - u * 0.9, cx - u * 0.02, cy + u * 0.6], fill=c)
+        d.rectangle([cx + u * 0.82, cy - u * 0.7, cx + u * 0.98, cy + u * 0.4], fill=c)
+        d.polygon([(cx - u * 0.18, cy - u * 0.9), (cx + u * 0.98, cy - u * 0.7), (cx + u * 0.98, cy - u * 0.4), (cx - u * 0.18, cy - u * 0.6)], fill=c)
+    elif kind == "photo":
+        d.rounded_rectangle([cx - u, cy - u * 0.75, cx + u, cy + u * 0.75], u * 0.15, outline=c, width=lw)
+        d.ellipse([cx + u * 0.3, cy - u * 0.5, cx + u * 0.6, cy - u * 0.2], fill=c)
+        d.polygon([(cx - u * 0.85, cy + u * 0.6), (cx - u * 0.25, cy - u * 0.1), (cx + u * 0.1, cy + u * 0.35), (cx + u * 0.4, cy + u * 0.05), (cx + u * 0.85, cy + u * 0.6)], fill=c)
+    elif kind == "news":
+        d.rounded_rectangle([cx - u * 0.9, cy - u * 0.9, cx + u * 0.9, cy + u * 0.9], u * 0.12, outline=c, width=lw)
+        d.rectangle([cx - u * 0.6, cy - u * 0.6, cx + u * 0.6, cy - u * 0.25], fill=c)
+        for k in range(3):
+            y = cy + u * (0.05 + k * 0.28)
+            d.rectangle([cx - u * 0.6, y, cx + u * 0.6, y + u * 0.1], fill=c)
+    elif kind == "cloud":
+        d.ellipse([cx - u * 0.95, cy - u * 0.1, cx - u * 0.15, cy + u * 0.7], fill=c)
+        d.ellipse([cx - u * 0.5, cy - u * 0.7, cx + u * 0.4, cy + u * 0.2], fill=c)
+        d.ellipse([cx + u * 0.0, cy - u * 0.25, cx + u * 0.95, cy + u * 0.7], fill=c)
+        d.rectangle([cx - u * 0.55, cy + u * 0.1, cx + u * 0.55, cy + u * 0.7], fill=c)
+    elif kind == "game":
+        d.rounded_rectangle([cx - u, cy - u * 0.55, cx + u, cy + u * 0.55], u * 0.4, outline=c, width=lw)
+        d.rectangle([cx - u * 0.65, cy - u * 0.08, cx - u * 0.15, cy + u * 0.08], fill=c)
+        d.rectangle([cx - u * 0.48, cy - u * 0.25, cx - u * 0.32, cy + u * 0.25], fill=c)
+        d.ellipse([cx + u * 0.2, cy - u * 0.05, cx + u * 0.38, cy + u * 0.13], fill=c)
+        d.ellipse([cx + u * 0.5, cy - u * 0.25, cx + u * 0.68, cy - u * 0.07], fill=c)
+    elif kind == "chef":
+        d.ellipse([cx - u * 0.9, cy - u * 0.85, cx - u * 0.1, cy - u * 0.05], fill=c)
+        d.ellipse([cx - u * 0.4, cy - u * 1.0, cx + u * 0.4, cy - u * 0.2], fill=c)
+        d.ellipse([cx + u * 0.1, cy - u * 0.85, cx + u * 0.9, cy - u * 0.05], fill=c)
+        d.rectangle([cx - u * 0.6, cy - u * 0.3, cx + u * 0.6, cy + u * 0.35], fill=c)
+        d.rectangle([cx - u * 0.6, cy + u * 0.5, cx + u * 0.6, cy + u * 0.8], fill=c)
+    elif kind == "fit":
+        d.rectangle([cx - u * 0.6, cy - u * 0.07, cx + u * 0.6, cy + u * 0.07], fill=c)
+        for sx in (-1, 1):
+            d.rounded_rectangle([cx + sx * u * 0.62 - u * 0.12, cy - u * 0.5, cx + sx * u * 0.62 + u * 0.12, cy + u * 0.5], u * 0.06, fill=c)
+            d.rounded_rectangle([cx + sx * u * 0.9 - u * 0.1, cy - u * 0.3, cx + sx * u * 0.9 + u * 0.1, cy + u * 0.3], u * 0.05, fill=c)
+
+
+def compose_app(kind, c1, c2, gcol, seed, w, h, cx_frac):
+    """Ícone de aplicativo fictício: gradiente diagonal + brilho + glifo."""
+    a, b = hex_rgb(c1), hex_rgb(c2)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    t = np.clip((xx / w * 0.55 + yy / h * 0.45), 0, 1)[:, :, None]
+    arr = np.array(a, np.float32) * (1 - t) + np.array(b, np.float32) * t
+    img = Image.fromarray(arr.astype(np.uint8), "RGB")
+    img = glow(img, cx_frac, 0.3, 0.55, (255, 255, 255), 0.18)
+    layer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    u = 0.2 * h
+    # Disco translúcido atrás do glifo e anéis sutis.
+    cx, cy = cx_frac * w, 0.5 * h
+    d.ellipse([cx - u * 1.9, cy - u * 1.9, cx + u * 1.9, cy + u * 1.9], fill=(255, 255, 255, 28))
+    d.ellipse([cx - u * 1.5, cy - u * 1.5, cx + u * 1.5, cy + u * 1.5], fill=(255, 255, 255, 34))
+    glyph(d, kind, cx, cy, u, hex_rgb(gcol))
+    img = Image.alpha_composite(img.convert("RGBA"), layer.filter(ImageFilter.GaussianBlur(0.4 * SS)))
+    return img.convert("RGB")
+
+
+def render(spec, size, cx_frac=0.5):
     motif, top, bottom, accent, seed = spec
     w, h = size
-    big = compose(motif, top, bottom, accent, seed, w * SS, h * SS)
+    if motif.startswith("app:"):
+        big = compose_app(motif[4:], top, bottom, accent, seed, w * SS, h * SS, cx_frac)
+    else:
+        big = compose(motif, top, bottom, accent, seed, w * SS, h * SS)
     return add_grain(big.resize((w, h), Image.LANCZOS), 5, seed)
 
 
@@ -375,6 +513,13 @@ def ui_assets():
         nine_patch(os.path.join(folder, "panel.9.png"), (48, 48),
                    lambda d, w, h: d.rounded_rectangle([0, 0, w - 1, h - 1], 12 * SS, fill=surf + (232,)),
                    ((16, 32), (16, 32)))
+        # Indicador do carrossel: pílula ativa (36x12) e ponto inativo (12x12).
+        dot_on = Image.new("RGBA", (36 * SS, 12 * SS), (0, 0, 0, 0))
+        ImageDraw.Draw(dot_on).rounded_rectangle([0, 0, 36 * SS - 1, 12 * SS - 1], 6 * SS, fill=acc + (255,))
+        dot_on.resize((36, 12), Image.LANCZOS).save(os.path.join(folder, "dot_on.png"), optimize=True)
+        dot_off = Image.new("RGBA", (12 * SS, 12 * SS), (0, 0, 0, 0))
+        ImageDraw.Draw(dot_off).ellipse([0, 0, 12 * SS - 1, 12 * SS - 1], fill=(255, 255, 255, 110))
+        dot_off.resize((12, 12), Image.LANCZOS).save(os.path.join(folder, "dot_off.png"), optimize=True)
         # Fundo das telas internas: gradiente discreto com um brilho.
         bg = vertical_gradient(BACKDROP[0], BACKDROP[1], hex_rgb(t["bg"]), lerp(hex_rgb(t["bg"]), surf, 0.8))
         bg = glow(bg, 0.82, 0.0, 0.7, lerp(surf, acc, 0.22), 0.5)
@@ -428,8 +573,8 @@ def content_assets():
     os.makedirs(os.path.join(IMG, "backgrounds"), exist_ok=True)
     for cid, spec in ART.items():
         rounded(render(spec, CARD), CARD_RADIUS).save(os.path.join(IMG, "posters", cid + ".png"), optimize=True)
-        if not cid.startswith("col_"):
-            bake_scrim(render(spec, BACKDROP)).save(os.path.join(IMG, "backgrounds", cid + ".jpg"), quality=84, optimize=True)
+        # Nos detalhes/banner, o glifo do aplicativo fica à direita (o texto, à esquerda).
+        bake_scrim(render(spec, BACKDROP, 0.74)).save(os.path.join(IMG, "backgrounds", cid + ".jpg"), quality=84, optimize=True)
 
 
 if __name__ == "__main__":

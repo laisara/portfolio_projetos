@@ -16,7 +16,7 @@ sub init()
         button.variant = "tab"
         button.text = tabInfo.label
         button.translation = [x, 0]
-        x = x + button.width + 9
+        x = x + button.width + 6
         m.buttons.Push(button)
     end for
 

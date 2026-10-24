@@ -40,56 +40,52 @@ sub applyTheme()
 end sub
 
 sub build()
+    setRows(buildRowData())
+    if m.top.kind = "library" then
+        ' Atualiza na hora quando um favorito muda (inclusive pelos detalhes).
+        m.global.observeFieldScoped("favorites", "onFavoritesChanged")
+    end if
+end sub
+
+' Linhas da aba atual. Na Biblioteca, a fileira Favoritos só existe
+' quando há favoritos.
+function buildRowData() as object
     layoutData = DemoContent_layout()
     kind = m.top.kind
     m.notice.text = ""
     if kind = "series" then
-        rows = layoutData.seriesRows
+        return layoutData.seriesRows
+    else if kind = "apps" then
+        m.notice.text = "Aplicativos fictícios: não podem ser abertos nesta versão."
+        return layoutData.appRows
     else if kind = "library" then
-        rows = layoutData.library
         m.notice.text = "Biblioteca de demonstração: itens e progresso fictícios, sem conta ou sincronização."
-    else if kind = "favorites" then
-        rows = favoriteRows()
-        ' Atualiza na hora quando um favorito muda (inclusive pelos detalhes).
-        m.global.observeFieldScoped("favorites", "onFavoritesChanged")
-    else
-        rows = layoutData.movieRows
+        rows = [{ title: "Continue assistindo", items: layoutData.libraryContinue }]
+        if m.global.favorites.Count() > 0 then rows.Push({ title: "Favoritos", ids: m.global.favorites })
+        rows.Push({ title: "Salvos para depois", ids: layoutData.librarySaved })
+        return rows
     end if
-    setRows(rows)
-end sub
-
-function favoriteRows() as object
-    items = DemoContent_items()
-    movies = []
-    series = []
-    for each id in m.global.favorites
-        if items.DoesExist(id) then
-            if items[id].kind = "series" then series.Push(id) else movies.Push(id)
-        end if
-    end for
-    rows = []
-    if movies.Count() > 0 then rows.Push({ title: "Filmes favoritos", ids: movies })
-    if series.Count() > 0 then rows.Push({ title: "Séries favoritas", ids: series })
-    return rows
+    return layoutData.movieRows
 end function
 
 sub setRows(rows as object)
-    hasItems = rows.Count() > 0
     m.rows.content = CB_rowsNode(rows)
+    ' Dados vazios ou incompletos: sem fileiras válidas, mostra o estado vazio.
+    hasItems = m.rows.content.getChildCount() > 0
     m.rows.visible = hasItems
     m.info.visible = hasItems
     m.empty.visible = not hasItems
     if hasItems then
         showInfo(CB_selectedNode(m.rows, [0, 0]))
     else
-        m.emptyTitle.text = "Nenhum favorito ainda"
-        m.emptyText.text = "Abra um título e escolha Adicionar aos favoritos. Ele aparece aqui na hora."
+        m.emptyTitle.text = "Nada por aqui ainda"
+        m.emptyText.text = "Não há itens para mostrar nesta seção."
     end if
 end sub
 
 sub onFavoritesChanged()
     previous = m.rows.rowItemFocused
-    setRows(favoriteRows())
+    setRows(buildRowData())
     ' Mantém o foco perto de onde estava, dentro dos limites novos.
     content = m.rows.content
     validPrevious = type(previous) = "roArray" and previous.Count() = 2 and previous[0] <> invalid and previous[0] >= 0
@@ -104,7 +100,7 @@ sub showInfo(node as dynamic)
     if node = invalid then return
     m.kicker.text = CB_kicker(node)
     m.title.text = node.title
-    m.meta.text = node.year + " · " + node.genre + " · " + node.duration
+    m.meta.text = node.metaFull
     m.synopsis.text = node.description
 end sub
 
@@ -117,14 +113,14 @@ sub onItemSelected()
     if node <> invalid then m.top.itemSelected = node
 end sub
 
-' Retorna false quando não há o que focar (favoritos vazios): o
-' MainScene mantém o foco na barra de abas.
 function dispose(_params = invalid as dynamic) as boolean
     m.global.unobserveFieldScoped("themeId")
     m.global.unobserveFieldScoped("favorites")
     return true
 end function
 
+' Retorna false quando não há o que focar (estado vazio): o MainScene
+' mantém o foco na barra de abas.
 function focusContent(_params = invalid as dynamic) as boolean
     if not m.rows.visible then return false
     m.rows.setFocus(true)
@@ -133,13 +129,5 @@ end function
 
 function restoreFocus(_params = invalid as dynamic) as boolean
     Ui_traceFocus(m.rows)
-    return focusContent()
-end function
-
-' Usado pelas coleções da tela inicial: abre a aba já na fileira certa.
-function focusRow(row as dynamic) as boolean
-    if row <> invalid and m.rows.content <> invalid and row < m.rows.content.getChildCount() then
-        m.rows.jumpToRowItem = [row, 0]
-    end if
     return focusContent()
 end function

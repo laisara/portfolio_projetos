@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
-  SettingsScreen — opções que funcionam de verdade (tema e limpar
-  favoritos) e um painel de informações/diagnóstico lidas do aparelho.
+  SettingsScreen — opções que funcionam de verdade (tema, animações e
+  limpar favoritos) e um painel de informações/diagnóstico lidas do aparelho.
 -->
 <component name="SettingsScreen" extends="Group">
     <interface>
@@ -24,9 +24,10 @@
             <Label id="subheading" translation="[0, 84]" width="840" height="39" />
             <Group id="options" translation="[0, 174]">
                 <PillButton id="themeOption" minWidth="744" />
-                <PillButton id="clearOption" translation="[0, 96]" minWidth="744" />
+                <PillButton id="animationsOption" translation="[0, 96]" minWidth="744" />
+                <PillButton id="clearOption" translation="[0, 192]" minWidth="744" />
             </Group>
-            <Label id="hint" translation="[0, 384]" width="780" height="102" wrap="true" maxLines="3" lineSpacing="6" />
+            <Label id="hint" translation="[0, 480]" width="780" height="102" wrap="true" maxLines="3" lineSpacing="6" />
         </Group>
         <Poster id="panel" translation="[1008, 192]" width="816" height="732" />
         <Group id="infoList" translation="[1056, 228]" />

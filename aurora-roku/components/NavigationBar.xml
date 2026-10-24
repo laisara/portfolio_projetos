@@ -23,7 +23,7 @@
     <children>
         <Poster id="mark" translation="[96, 48]" width="72" height="72" uri="pkg:/images/brand/brand_mark.png" />
         <Label id="brand" translation="[180, 39]" height="51" vertAlign="center" />
-        <Group id="tabs" translation="[504, 54]" />
+        <Group id="tabs" translation="[432, 54]" />
         <Label id="demoBadge" translation="[180, 87]" width="300" height="33" vertAlign="center" />
     </children>
 </component>

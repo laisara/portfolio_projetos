@@ -4,7 +4,7 @@ sub init()
     m.hint = m.top.findNode("hint")
     m.panel = m.top.findNode("panel")
     m.infoList = m.top.findNode("infoList")
-    m.options = [m.top.findNode("themeOption"), m.top.findNode("clearOption")]
+    m.options = [m.top.findNode("themeOption"), m.top.findNode("animationsOption"), m.top.findNode("clearOption")]
 
     ts = Theme_typeScale()
     Ui_setFont(m.heading, true, ts.title)
@@ -19,6 +19,7 @@ sub init()
     m.top.observeField("focusedChild", "onFocusChanged")
     m.global.observeFieldScoped("themeId", "refresh")
     m.global.observeFieldScoped("favorites", "refresh")
+    m.global.observeFieldScoped("animations", "refresh")
     refresh()
 end sub
 
@@ -32,7 +33,8 @@ sub refresh()
         option.themeId = theme.id
     end for
     m.options[0].text = "Tema visual: " + theme.name
-    m.options[1].text = "Limpar favoritos (" + m.global.favorites.Count().ToStr() + ")"
+    m.options[1].text = "Animações: " + onOff(m.global.animations)
+    m.options[2].text = "Limpar favoritos (" + m.global.favorites.Count().ToStr() + ")"
     buildInfo(theme)
 end sub
 
@@ -63,6 +65,7 @@ sub buildInfo(theme as object)
         { label: "Roku OS", value: Util_str(os.major) + "." + Util_str(os.minor) + "." + Util_str(os.revision) + " (build " + Util_str(os.build) + ")" }
         { label: "Interface do sistema", value: Util_str(ui.name) + " · " + Util_str(ui.width) + "x" + Util_str(ui.height) }
         { label: "Resolução de design", value: Util_str(design.resolution) + " · " + Util_str(design.width) + "x" + Util_str(design.height) }
+        { label: "Animações", value: onOff(m.global.animations) }
         { label: "Favoritos salvos", value: m.global.favorites.Count().ToStr() }
         { label: "Persistência", value: Util_str(m.global.persistenceStatus) }
     ]
@@ -99,6 +102,7 @@ end sub
 function dispose(_params = invalid as dynamic) as boolean
     m.global.unobserveFieldScoped("themeId")
     m.global.unobserveFieldScoped("favorites")
+    m.global.unobserveFieldScoped("animations")
     return true
 end function
 
@@ -118,11 +122,19 @@ sub onFocusChanged()
     end for
 end sub
 
+function onOff(value as dynamic) as string
+    if value = true then return "ligadas"
+    return "desligadas"
+end function
+
 sub activate()
     if m.highlight = 0 then
         nextId = Theme_next(m.global.themeId)
         m.global.themeId = nextId
         m.top.message = "Tema alterado para " + Theme_get(nextId).name + "."
+    else if m.highlight = 1 then
+        m.global.animations = not m.global.animations
+        m.top.message = "Animações " + onOff(m.global.animations) + "."
     else if m.global.favorites.Count() = 0 then
         m.top.message = "Não há favoritos para limpar."
     else

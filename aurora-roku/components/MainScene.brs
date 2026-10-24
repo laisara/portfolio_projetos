@@ -29,9 +29,10 @@ end sub
 function createScreen(tabId as string) as object
     if tabId = "home" then
         screen = m.screenLayer.createChild("HomeScreen")
-        screen.observeField("navigateTo", "onNavigateTo")
     else if tabId = "settings" then
         screen = m.screenLayer.createChild("SettingsScreen")
+    else if tabId = "search" then
+        screen = m.screenLayer.createChild("SearchScreen")
     else
         screen = m.screenLayer.createChild("CatalogScreen")
         screen.kind = tabId
@@ -90,20 +91,10 @@ sub onTabSelected()
     setState(Nav_apply(m.state, "selectTab", tabId))
 end sub
 
-' Coleções da tela inicial: abre a aba alvo já na fileira da coleção.
-sub onNavigateTo(event as object)
-    target = event.getData()
-    showTab(target.tab)
-    if m.current.callFunc("focusRow", target.row) then
-        setState(Nav_apply(m.state, "focusContent"))
-    else
-        focusNav()
-    end if
-end sub
-
 sub onItemSelected(event as object)
     node = event.getData()
     if node = invalid then return
+    print "AURORA_DETAILS " + node.itemId
     m.details = m.overlayLayer.createChild("DetailsScreen")
     m.details.observeField("message", "onMessage")
     m.details.content = node

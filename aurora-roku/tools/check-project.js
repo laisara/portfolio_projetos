@@ -161,16 +161,35 @@ for (const file of appFiles) {
 }
 // Caminhos montados em tempo de execução: catálogo e temas.
 const demo = read(path.join(ROOT, 'source/shared/DemoContent.brs'));
-const itemIds = [...demo.matchAll(/^\s+([ms]\d\d): \{ title:/gm)].map((m) => m[1]);
-const collectionIds = [...demo.matchAll(/id: "(col_[a-z]+)"/g)].map((m) => m[1]);
-if (itemIds.length < 10) errors.push('DemoContent: catálogo demonstrativo não encontrado ou incompleto');
+const itemIds = [...demo.matchAll(/^\s+([msa]\d\d): \{ title:/gm)].map((m) => m[1]);
+if (itemIds.length < 20) errors.push('DemoContent: catálogo demonstrativo não encontrado ou incompleto');
+// Proporção e tamanho das imagens de conteúdo (cartões 16:9 e fundos HD).
+for (const id of itemIds) {
+  const poster = path.join(ROOT, `images/posters/${id}.png`);
+  const backdrop = path.join(ROOT, `images/backgrounds/${id}.jpg`);
+  const ps = fs.existsSync(poster) && imageSize(poster);
+  const bs = fs.existsSync(backdrop) && imageSize(backdrop);
+  if (ps && (ps.w !== 256 || ps.h !== 144)) errors.push(`images/posters/${id}.png deveria ter 256x144 (cartão 384x216 em FHD), tem ${ps.w}x${ps.h}`);
+  if (bs && (bs.w !== 1280 || bs.h !== 720)) errors.push(`images/backgrounds/${id}.jpg deveria ter 1280x720, tem ${bs.w}x${bs.h}`);
+}
+// Briefing: 7 abas e as 7 fileiras da tela inicial, na ordem pedida.
+const nav = read(path.join(ROOT, 'source/shared/NavigationLogic.brs'));
+const tabLabels = [...nav.matchAll(/\{ id: "[a-z]+", label: "([^"]+)" \}/g)].map((m) => m[1]);
+const wantedTabs = ['Início', 'Filmes', 'Séries', 'Aplicativos', 'Biblioteca', 'Busca', 'Configurações'];
+if (tabLabels.join('|') !== wantedTabs.join('|')) errors.push(`Abas esperadas: ${wantedTabs.join(', ')}; encontradas: ${tabLabels.join(', ')}`);
+const homeBlock = demo.slice(demo.indexOf('homeRows:'), demo.indexOf('movieRows:'));
+const homeTitles = [...homeBlock.matchAll(/title: "([^"]+)"/g)].map((m) => m[1]);
+const wantedRows = ['Continue assistindo', 'Em alta', 'Filmes para você', 'Séries para você', 'Ficção científica e fantasia', 'Recomendados', 'Seus aplicativos'];
+if (homeTitles.join('|') !== wantedRows.join('|')) errors.push(`Fileiras da Início esperadas: ${wantedRows.join(', ')}; encontradas: ${homeTitles.join(', ')}`);
+// Toda aba precisa ter tela criada pelo MainScene.
+const mainScene = read(path.join(ROOT, 'components/MainScene.brs'));
+for (const t of ['home', 'search', 'settings']) {
+  if (!mainScene.includes(`tabId = "${t}"`)) errors.push(`MainScene.createScreen não trata a aba "${t}"`);
+}
 for (const id of itemIds) {
   for (const p of [`images/posters/${id}.png`, `images/backgrounds/${id}.jpg`]) {
     if (!fs.existsSync(path.join(ROOT, p))) errors.push(`Imagem ausente para ${id}: ${p}`);
   }
-}
-for (const id of collectionIds) {
-  if (!fs.existsSync(path.join(ROOT, `images/posters/${id}.png`))) errors.push(`Imagem ausente para coleção ${id}`);
 }
 const theme = read(path.join(ROOT, 'source/shared/Theme.brs'));
 const themeIds = JSON.parse((theme.match(/return (\["[^\]]+\])/) || [, '[]'])[1]);
@@ -194,7 +213,7 @@ for (const f of walk(path.join(ROOT, 'images/ui'), (x) => x.endsWith('.9.png')))
 // ---------------------------------------------------------------- rótulos demonstrativos
 if (!/fictícios|INVENTADOS/i.test(demo)) errors.push('DemoContent.brs deve declarar que os dados são fictícios');
 const uiCode = walk(path.join(ROOT, 'components'), (f) => f.endsWith('.brs')).map(read).join('\n') + theme;
-for (const phrase of ['demonstrativ', 'Versão demonstrativa', 'Nenhum vídeo é reproduzido', 'reprodução não está disponível']) {
+for (const phrase of ['demonstrativ', 'Versão demonstrativa', 'Nenhum vídeo é reproduzido', 'reprodução não está disponível', 'Nenhum aplicativo é aberto', 'não pode ser aberto']) {
   if (!uiCode.includes(phrase)) errors.push(`Interface sem a mensagem obrigatória contendo "${phrase}"`);
 }
 
@@ -215,7 +234,8 @@ for (const f of walk(path.join(ROOT, 'images'))) {
 for (const d of ['source', 'components']) walk(path.join(ROOT, d)).forEach((f) => { bytes += fs.statSync(f).size; });
 notes.push(`Tamanho estimado do pacote (sem compressão do zip): ${(bytes / 1024).toFixed(0)} KB`);
 notes.push(`Maior textura carregada pela UI: ${maxTexture.file} ≈ ${maxTexture.mb.toFixed(1)} MB (4 bytes/pixel, regra da Roku)`);
-notes.push(`Componentes: ${Object.keys(components).length} · títulos demonstrativos: ${itemIds.length} · temas: ${themeIds.length}`);
+const appCount = itemIds.filter((id) => id.startsWith('a')).length;
+notes.push(`Componentes: ${Object.keys(components).length} · itens demonstrativos: ${itemIds.length - appCount} títulos + ${appCount} aplicativos · temas: ${themeIds.length}`);
 
 // ---------------------------------------------------------------- saída
 for (const n of notes) console.log('info  ' + n);

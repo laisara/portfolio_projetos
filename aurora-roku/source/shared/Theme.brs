@@ -65,6 +65,8 @@ function Theme_get(themeId as dynamic) as object
         pillSurfaceSmall: base + "pill_surface_sm.9.png"
         cardFocus: base + "card_focus.9.png"
         panel: base + "panel.9.png"
+        dotOn: base + "dot_on.png"
+        dotOff: base + "dot_off.png"
     }
     return theme
 end function

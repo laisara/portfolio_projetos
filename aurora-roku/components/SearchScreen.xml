@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  SearchScreen — aba Busca: teclado na tela (próprio, 100% pelo controle
+  remoto) + painel do texto digitado + fileira de resultados/sugestões.
+  A busca é feita só no catálogo demonstrativo local (SearchLogic.brs).
+
+  Regiões de foco (um dono por região):
+    keys     teclado: setas movem, OK digita; cima na 1ª linha sobe para a
+             barra (tratado no MainScene); baixo na última linha vai aos
+             resultados
+    results  RowList: esquerda/direita/OK nativos; cima volta ao teclado
+-->
+<component name="SearchScreen" extends="Group">
+    <interface>
+        <field id="itemSelected" type="node" alwaysNotify="true" />
+        <function name="focusContent" />
+        <function name="restoreFocus" />
+        <function name="dispose" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/source/shared/Util.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/AppStateLogic.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/DemoContent.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/Theme.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/NavigationLogic.brs" />
+    <script type="text/brightscript" uri="pkg:/source/shared/SearchLogic.brs" />
+    <script type="text/brightscript" uri="pkg:/components/shared/Ui.brs" />
+    <script type="text/brightscript" uri="pkg:/components/shared/ContentBuilder.brs" />
+    <script type="text/brightscript" uri="pkg:/components/SearchScreen.brs" />
+
+    <children>
+        <!-- Nó de foco do teclado: irmão do RowList, nunca ancestral dele. Dar
+             foco a um ancestral do nó já focado é frágil; assim a troca entre
+             teclado e resultados é sempre um setFocus entre irmãos. -->
+        <Group id="keyFocus" />
+        <Group id="keyboard" translation="[96, 189]" />
+        <Label id="heading" translation="[924, 189]" width="900" height="81" />
+        <Poster id="queryPanel" translation="[924, 282]" width="900" height="108" />
+        <Label id="queryText" translation="[972, 282]" width="804" height="108" vertAlign="center" />
+        <Label id="status" translation="[924, 411]" width="900" height="81" wrap="true" maxLines="2" lineSpacing="6" />
+        <Label id="hint" translation="[924, 513]" width="900" height="36" />
+        <Group id="emptyGroup" translation="[96, 639]" visible="false">
+            <Poster id="emptyPanel" width="1056" height="168" />
+            <Label id="emptyTitle" translation="[48, 30]" width="960" height="54" />
+            <Label id="emptyText" translation="[48, 90]" width="960" height="60" />
+        </Group>
+        <RowList
+            id="results"
+            translation="[96, 615]"
+            itemComponentName="ContentCard"
+            numRows="1"
+            itemSize="[1824, 357]"
+            rowItemSize="[[384, 303]]"
+            rowItemSpacing="[[30, 0]]"
+            itemSpacing="[0, 30]"
+            showRowLabel="[true]"
+            rowLabelOffset="[[0, 15]]"
+            drawFocusFeedback="false"
+            rowFocusAnimationStyle="floatingFocus" />
+    </children>
+</component>
