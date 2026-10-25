@@ -13,15 +13,17 @@ function Persistence_load() as object
     raw = invalid
     if section.Exists("state") then raw = ParseJson(section.Read("state"))
     state = AppState_sanitize(raw)
-    state.status = "Registro local do aparelho"
+    state.status = AppState_statusOk()
     return state
 end function
 
-sub Persistence_save(themeId as dynamic, favorites as dynamic, animations as dynamic)
+' Devolve true só se a gravação e o Flush tiveram sucesso.
+function Persistence_save(themeId as dynamic, favorites as dynamic, animations as dynamic) as boolean
     state = AppState_sanitize({ themeId: themeId, favorites: favorites, animations: animations })
     section = Persistence_section()
-    section.Write("state", FormatJson(state))
+    written = section.Write("state", FormatJson(state))
     ' A Roku recomenda Flush explícito e pouco frequente: só ocorre
     ' quando o usuário muda tema, favoritos ou animações.
-    section.Flush()
-end sub
+    flushed = section.Flush()
+    return written and flushed
+end function

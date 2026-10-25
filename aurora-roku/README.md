@@ -94,7 +94,7 @@ aurora-roku/
 │   └── shared/                   # Ui.brs (fontes, tema, favoritos), ContentBuilder.brs
 ├── images/                       # arte original gerada: posters/, backgrounds/, ui/<tema>/, brand/
 ├── tests/
-│   ├── unit/LogicTests.brs       # 81 testes de lógica pura
+│   ├── unit/LogicTests.brs       # 88 testes de lógica pura
 │   └── manual-test-checklist.md  # checklist para o Roku físico (não executado)
 ├── tools/                        # gerador de arte, verificadores, empacotadores, simulador
 │   └── simulator/                # harness do brs-engine + scenario.js (roteiro)

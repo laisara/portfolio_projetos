@@ -31,7 +31,7 @@ Procedimento no aparelho (**somente com autorização explícita**): seguir
 
 ## 2. Testes de lógica (`tests/unit/LogicTests.brs`, `brs-cli`)
 
-Esperado: todos aprovados. **Observado: 81 aprovados, 0 reprovados.** Cobrem: hierarquia do
+Esperado: todos aprovados. **Observado: 88 aprovados (versão 0.2.4; eram 81 até a 0.2.3), 0 reprovados.** Cobrem: hierarquia do
 Voltar e ausência de ciclos de estado; movimento em grade (pontas sem laço, linhas de tamanhos
 diferentes); teclado e busca (acentos, múltiplas palavras, limite de 24, espaços);
 favoritos e estado salvo corrompido; temas; consistência e **dados vazios/incompletos**
@@ -138,7 +138,7 @@ Origem: auditoria técnica (achados C-1, C-2 e I-5). Alterações em `components
 | I-5: validação de slides e de `CB_itemNode` no banner; OK ignorado sem slides | Leitura do diff; roteiro dos 5 banners no simulador | Banners 1–5 navegam como antes. Os caminhos de dados inválidos **não têm teste automático** |
 
 Execução de 24/10/2026 sobre o código corrigido: `npm test` (bsc + bslint + check-project +
-check-docs + 81 testes de lógica) **sem erros**; roteiro do simulador **48/48**, 0 erros de console.
+check-docs + lógica, 81 aprovados na época) **sem erros**; roteiro do simulador **48/48**, 0 erros de console.
 
 Continuam **dependendo do Roku físico**: abrir Configurações e ler o diagnóstico (C-1), títulos das
 fileiras com a fonte correta (C-2) e a navegação dos banners (I-5).
@@ -156,6 +156,27 @@ regeneradas do simulador.
 | I-3: barra superior em y 54–135 (margem vertical de 54 px) | Valores no XML; captura | Marca e abas dentro da margem; **efeito na TV real não verificável** |
 | I-7: item do cartão com 24 px de margem à esquerda, `RowList` deslocado para compensar | Captura do 1º cartão focado (Início e Aplicativos) | Anel completo, sem corte na borda esquerda, no simulador. Causa original não confirmada no firmware |
 
-Execução: `npm test` sem erros (81 testes de lógica aprovados; `check-project` 0 avisos) e roteiro do
+Execução: `npm test` sem erros (lógica: 81 aprovados na época; `check-project` 0 avisos) e roteiro do
 simulador **48/48**, 0 erros de console. Continuam dependendo do Roku físico: a aparência final,
 as margens na TV e se o recorte do anel acontece no firmware.
+
+## 10. Correções da versão 0.2.4 (cache de dados e aviso de falha na gravação)
+
+Origem: revisão de erros/segurança, autorizada por você. Arquivos: `source/shared/DemoContent.brs`
+(cache de `DemoContent_items()` e `DemoContent_layout()` por escopo), `source/shared/AppStateLogic.brs`
+(textos de status), `source/Persistence.brs` (`Persistence_save` devolve se `Write` e `Flush` tiveram
+sucesso), `source/main.brs` (atualiza `persistenceStatus`), `components/MainScene.brs` (aviso quando a
+gravação falha), `components/SettingsScreen.brs` (diagnóstico acompanha o status), 7 testes novos em
+`tests/unit/LogicTests.brs`, `manifest` (`build_version=00004`), `package.json` (0.2.4) e contagens nos
+documentos. Layout, cores e fontes não foram alterados.
+
+| Verificação | Resultado observado (24–25/10/2026) |
+|---|---|
+| `npm test` (bsc, bslint, check-project, check-docs) | 0 erros, 0 avisos |
+| Testes de lógica | **88 aprovados**, 0 reprovados (inclui cache, marcador de reutilização, cópia de `safeItem` que não altera o cache e textos de status) |
+| Simulador (brs-engine) | **48/48**, 0 erros de console |
+| Micro-teste de desempenho (40 buscas no `brs-cli`) | 1043 ms com cache × 1103 ms sem (≈ 5%). **O ganho não ficou demonstrado**; o interpretador de terceiros não representa a CPU do Roku Express |
+
+Não verificado: o caminho de **falha real** de gravação (não há como simular `roRegistrySection` no
+simulador nem no `brs-cli`); o aviso (Toast) e o texto "Falha ao gravar no registro" só têm verificação
+por leitura de código e pelos testes dos textos. Continua dependendo do Roku físico.

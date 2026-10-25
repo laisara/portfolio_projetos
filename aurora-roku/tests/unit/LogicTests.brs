@@ -20,6 +20,7 @@ sub Main()
     testGridNavigation()
     testSearch()
     testKeyboardInput()
+    testCacheAndPersistStatus()
 
     print "RESULTADO: " + m.passed.ToStr() + " aprovados, " + m.failed.ToStr() + " reprovados"
     if m.failed > 0 then print "FALHA_NOS_TESTES"
@@ -292,4 +293,22 @@ sub testKeyboardInput()
     check(q = "A ", "Espaços seguidos são ignorados")
     long = "ABCDEFGHIJKLMNOPQRSTUVWX"
     check(Len(long) = Search_maxQueryLength() and Search_applyKey(long, letterA) = long, "Texto não passa do limite")
+end sub
+
+sub testCacheAndPersistStatus()
+    first = DemoContent_items()
+    check(first.Count() = 28 and first.m01.title = "Horizonte de Vidro", "Catálogo em cache tem os 28 itens")
+    first.marcador = true ' AAs não têm comparação de identidade: um marcador prova a reutilização
+    check(DemoContent_items().DoesExist("marcador"), "O catálogo é reaproveitado entre consultas")
+    first.Delete("marcador")
+    copy = DemoContent_safeItem("m01")
+    copy.title = "ALTERADO"
+    check(DemoContent_items().m01.title = "Horizonte de Vidro", "Alterar a cópia de safeItem não muda o cache")
+    layoutData = DemoContent_layout()
+    check(layoutData.featured.Count() = 5 and layoutData.homeRows.Count() = 7, "Layout em cache mantém 5 banners e 7 fileiras")
+    layoutData.marcador = true
+    check(DemoContent_layout().DoesExist("marcador"), "O layout é reaproveitado entre consultas")
+    layoutData.Delete("marcador")
+    check(AppState_statusFor(true) = "Registro local do aparelho", "Status de gravação bem-sucedida")
+    check(AppState_statusFor(false) = AppState_statusFail() and AppState_statusFail() <> AppState_statusOk(), "Status de falha na gravação é distinto")
 end sub

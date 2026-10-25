@@ -61,3 +61,18 @@ function AppState_toggleFavorite(favorites as object, id as string) as object
     if not removed and result.Count() < AppState_maxFavorites() then result.Push(id)
     return result
 end function
+
+' Texto do diagnóstico de persistência (Configurações) e do aviso exibido
+' quando a gravação no registro falha.
+function AppState_statusOk() as string
+    return "Registro local do aparelho"
+end function
+
+function AppState_statusFail() as string
+    return "Falha ao gravar no registro"
+end function
+
+function AppState_statusFor(saved as boolean) as string
+    if saved then return AppState_statusOk()
+    return AppState_statusFail()
+end function

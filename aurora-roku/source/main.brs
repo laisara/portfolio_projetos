@@ -33,7 +33,10 @@ sub Main(_args as dynamic)
         if msgType = "roSGScreenEvent" then
             if msg.isScreenClosed() then return
         else if msgType = "roSGNodeEvent" then
-            Persistence_save(globalNode.themeId, globalNode.favorites, globalNode.animations)
+            saved = Persistence_save(globalNode.themeId, globalNode.favorites, globalNode.animations)
+            ' O campo é só informativo: não é observado aqui (evita laço).
+            status = AppState_statusFor(saved)
+            if globalNode.persistenceStatus <> status then globalNode.persistenceStatus = status
         end if
     end while
 end sub

@@ -12,6 +12,7 @@ sub init()
 
     m.nav.observeField("tabSelected", "onTabSelected")
     m.global.observeFieldScoped("themeId", "applyTheme")
+    m.global.observeFieldScoped("persistenceStatus", "onPersistenceChanged")
     applyTheme()
 
     ' Foco explícito num filho da cena: requisito da Roku para que o
@@ -111,6 +112,14 @@ sub closeDetails()
     setState(Nav_apply(m.state, "closeOverlay"))
     ' Devolve o foco ao cartão de origem (o RowList preserva a posição).
     if not m.current.callFunc("restoreFocus", invalid) then focusNav()
+end sub
+
+' Avisa o usuário quando o aparelho não conseguiu gravar as alterações.
+sub onPersistenceChanged()
+    if m.global.persistenceStatus = AppState_statusFail() then
+        m.toast.message = "Não foi possível salvar as alterações neste aparelho."
+        print "AURORA_PERSIST falha"
+    end if
 end sub
 
 sub onMessage(event as object)

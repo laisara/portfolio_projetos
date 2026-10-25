@@ -90,7 +90,7 @@ não foi verificada nesta etapa.
 |---|---|
 | Estático: `bsc` + `bslint` | 0 erros, 0 diagnósticos |
 | Estático: `check-project` / `check-docs` | 0 erros, 0 avisos |
-| Lógica (`brs-cli`) | **81 aprovados, 0 reprovados** |
+| Lógica (`brs-cli`) | **88 aprovados (81 até a 0.2.3), 0 reprovados** |
 | Simulador (brs-engine, 3960X, 720p) | **48/48 verificações**, 0 erros de console |
 | Imagens | maior textura 3,5 MB; pacote ≈ 3,8 MB; nenhuma imagem remota |
 | **Dispositivo físico** | **Não executado** |
@@ -140,7 +140,7 @@ seguindo [tests/manual-test-checklist.md](tests/manual-test-checklist.md).
 
 - [x] Estrutura e manifest válidos (estático)
 - [x] Compila e passa no lint
-- [x] 81 testes de lógica aprovados
+- [x] 88 testes de lógica aprovados (versão 0.2.4)
 - [x] 48 verificações no simulador aprovadas
 - [x] Sem credenciais, sem rede, sem imagens remotas
 - [x] Navegação e restauração de foco verificadas **no simulador**

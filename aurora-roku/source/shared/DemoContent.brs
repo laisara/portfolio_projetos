@@ -12,7 +12,16 @@
 ' Arquivo puro (sem nós SceneGraph): usado pelos componentes e pelos testes.
 ' ==========================================================================
 
+' O catálogo é construído uma vez por escopo (cada componente tem o seu "m")
+' e reutilizado: montar o dicionário a cada consulta pesava na abertura do
+' Início e a cada tecla da Busca. Quem recebe o resultado só lê; para
+' alterar um item, use DemoContent_safeItem (devolve uma cópia).
 function DemoContent_items() as object
+    if m.auroraItems = invalid then m.auroraItems = DemoContent_buildItems()
+    return m.auroraItems
+end function
+
+function DemoContent_buildItems() as object
     return {
         m01: { title: "Horizonte de Vidro", kind: "movie", year: 2024, genre: "Ficção científica", duration: "1h 54min", synopsis: "Uma engenheira descobre que a cidade flutuante onde vive está perdendo altitude — e que alguém sabe disso há anos." }
         m02: { title: "A Última Estação", kind: "movie", year: 2023, genre: "Drama", duration: "1h 47min", synopsis: "Na véspera do fim de uma ferrovia centenária, três desconhecidos dividem a viagem final e um segredo em comum." }
@@ -61,6 +70,11 @@ end function
 
 ' Ordem de exibição de cada seção (ids de DemoContent_items).
 function DemoContent_layout() as object
+    if m.auroraLayout = invalid then m.auroraLayout = DemoContent_buildLayout()
+    return m.auroraLayout
+end function
+
+function DemoContent_buildLayout() as object
     return {
         ' Carrossel do banner: id, selo e ordem. Navegação manual (sem
         ' avanço automático).

@@ -21,6 +21,7 @@ sub init()
     m.global.observeFieldScoped("themeId", "refresh")
     m.global.observeFieldScoped("favorites", "refresh")
     m.global.observeFieldScoped("animations", "refresh")
+    m.global.observeFieldScoped("persistenceStatus", "refresh")
     refresh()
 end sub
 
@@ -109,6 +110,7 @@ function dispose(_params = invalid as dynamic) as boolean
     m.global.unobserveFieldScoped("themeId")
     m.global.unobserveFieldScoped("favorites")
     m.global.unobserveFieldScoped("animations")
+    m.global.unobserveFieldScoped("persistenceStatus")
     return true
 end function
 
