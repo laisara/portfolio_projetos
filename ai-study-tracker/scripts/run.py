@@ -49,10 +49,15 @@ def main() -> None:
         ssl = {"ssl_certfile": str(cert), "ssl_keyfile": str(key)}
 
     url = f"{scheme}://localhost:{args.port}"
+    if args.lan:
+        import os
+        os.environ["AST_LAN"] = "1"
     print("\n  AI Engineer Study Tracker")
     print(f"  Neste PC:   {url}")
     if args.lan:
         print(f"  No celular: {scheme}://{lan_ip()}:{args.port}  (mesma rede Wi-Fi)")
+        print("\n  ATENCAO: modo LAN. QUALQUER dispositivo com acesso a esta rede pode abrir o app,")
+        print("  ler e alterar seus dados (nao ha senha). Use apenas em rede confiavel.")
     print("  Para encerrar: Ctrl+C\n")
     if not args.no_browser:
         threading.Thread(target=lambda: (time.sleep(1.5), webbrowser.open(url)), daemon=True).start()

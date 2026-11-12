@@ -43,6 +43,13 @@ def get_conn() -> Iterator[sqlite3.Connection]:
 
 
 def init_schema(conn: sqlite3.Connection) -> None:
+    # v1 → v2: o catálogo mudou de formato (sem reserva/blocos sintéticos). Tabelas de catálogo são
+    # recriadas; progresso/sessões (tabelas de usuário) são preservados.
+    cols = {r[1] for r in conn.execute("PRAGMA table_info(tracks)")}
+    if cols and "confirmed" not in cols:
+        for t in ("appearances", "track_slots", "lessons", "modules", "track_slots", "contents", "tracks"):
+            conn.execute(f"DROP TABLE IF EXISTS {t}")
+        conn.execute("DELETE FROM meta WHERE key='catalog_meta'")
     conn.executescript(SCHEMA)
     conn.execute("INSERT OR IGNORE INTO meta(key, value) VALUES ('schema_version', ?)", (SCHEMA_VERSION,))
 

@@ -1,5 +1,7 @@
 # Relatório de auditoria — AI Engineer Study Tracker
 
+> **Histórico (v1, 12/11).** Este relatório descreve a primeira versão, que usava uma reserva de 32h18 e blocos sintéticos — já removidos. Estado atual: `docs/ANALISE.md`.
+
 Data: 12/11/2026 · Commit: `2e43cc8` · Branch: `ccr-97dc7c3e-vbe1hb` (repositório `laisara/portfolio_projetos`, pasta `ai-study-tracker/`)
 
 ## 1. Resumo

@@ -1,85 +1,556 @@
 {
-  "meta": {
-    "name": "Formação Engenheiro de Agentes de IA",
-    "provider": "Asimov Academy",
-    "status": "partial",
-    "declared_video": "62:34:00",
-    "declared_tracks": 8,
-    "source": "Prints enviados pela usuária em 12/11/2026 (20 imagens).",
-    "note": "Nomes das trilhas, cursos nas posições #1/#2 de várias trilhas, as trilhas 7 e 8 e a lista de aulas NÃO aparecem nos prints e estão marcados [VERIFICAR]. A carga não visível entra como reserva = 62h34 − cursos visíveis.",
-    "study_sequence": [
-      "GENAI-001", "CLAUDE-001", "PY-001", "PY-002", "CODE-001", "CODE-002", "CLAUDE-002",
-      "IDE-002", "IDE-003", "GPT-001", "LANG-001", "LANG-002", "HERMES-001",
-      "OPENCLAW-001", "OPENCLAW-002", "IDE-001", "UI-001", "RESERVA-T7", "RESERVA-T8"
-    ]
-  },
-  "tracks": [
-    {"id": "T1", "order": 1, "title": "Trilha 1", "theme": "Fundamentos + Claude", "verify": true, "slots": [
-      {"position": 1, "placeholder": true},
-      {"position": 2, "content": "GENAI-001"},
-      {"position": 3, "content": "CLAUDE-001"},
-      {"position": 4, "content": "CODE-001"},
-      {"position": 5, "content": "CLAUDE-002"}
-    ]},
-    {"id": "T2", "order": 2, "title": "Trilha 2", "theme": "OpenClaw", "verify": true, "slots": [
-      {"position": 1, "placeholder": true},
-      {"position": 2, "placeholder": true},
-      {"position": 3, "content": "OPENCLAW-001"},
-      {"position": 4, "content": "OPENCLAW-002"}
-    ]},
-    {"id": "T3", "order": 3, "title": "Trilha 3", "theme": "Hermes Agent", "verify": true, "slots": [
-      {"position": 1, "placeholder": true},
-      {"position": 2, "placeholder": true},
-      {"position": 3, "content": "HERMES-001"}
-    ]},
-    {"id": "T4", "order": 4, "title": "Trilha 4", "theme": "Agentes com GPT", "verify": true, "slots": [
-      {"position": 1, "placeholder": true},
-      {"position": 2, "placeholder": true},
-      {"position": 3, "content": "GPT-001"}
-    ]},
-    {"id": "T5", "order": 5, "title": "Trilha 5", "theme": "Programação com IA + LangChain", "verify": true, "slots": [
-      {"position": 1, "placeholder": true},
-      {"position": 2, "placeholder": true},
-      {"position": 3, "content": "PY-001"},
-      {"position": 4, "content": "PY-002"},
-      {"position": 5, "content": "UI-001"},
-      {"position": 6, "content": "LANG-001"},
-      {"position": 7, "content": "LANG-002"}
-    ]},
-    {"id": "T6", "order": 6, "title": "Trilha 6", "theme": "Desenvolvimento assistido por IA", "verify": true, "slots": [
-      {"position": 1, "placeholder": true},
-      {"position": 2, "content": "IDE-001"},
-      {"position": 3, "content": "IDE-002"},
-      {"position": 4, "content": "IDE-003"},
-      {"position": 5, "content": "CODE-001"},
-      {"position": 6, "content": "CODE-002"}
-    ]},
-    {"id": "T7", "order": 7, "title": "Trilha 7", "theme": "Não visível nos prints", "verify": true, "slots": [
-      {"position": 1, "content": "RESERVA-T7"}
-    ]},
-    {"id": "T8", "order": 8, "title": "Trilha 8", "theme": "Não visível nos prints", "verify": true, "slots": [
-      {"position": 1, "content": "RESERVA-T8"}
-    ]}
+ "meta": {
+  "catalog_version": 2,
+  "name": "Formação Engenheiro de Agentes de IA",
+  "provider": "Asimov Academy",
+  "declared_video": "62:34:00",
+  "declared_tracks": 8,
+  "source": "20 prints enviados em 12/11/2026",
+  "note": "Somente o que aparece nos prints. Trilha de cada curso, nomes das trilhas, módulos e aulas: NÃO IDENTIFICADOS. O conteúdo que falta para completar 62h34 NÃO é cadastrado nem agendado.",
+  "study_sequence": [
+   "GENAI-001",
+   "CLAUDE-001",
+   "PY-001",
+   "PY-002",
+   "CODE-001",
+   "CODE-002",
+   "CLAUDE-002",
+   "IDE-002",
+   "IDE-003",
+   "GPT-001",
+   "LANG-001",
+   "LANG-002",
+   "HERMES-001",
+   "OPENCLAW-001",
+   "OPENCLAW-002",
+   "IDE-001",
+   "UI-001"
   ],
-  "contents": {
-    "GENAI-001": {"title": "Fundamentos da IA Generativa", "instructor": "Rodri… [VERIFICAR]", "duration": "1:32:00", "nature": "conceitual", "practice_ratio": 0.30, "intro": true, "competencies": ["fundamentals", "prompt"]},
-    "CLAUDE-001": {"title": "Claude Desktop", "instructor": "Marc… [VERIFICAR]", "duration": "2:56:00", "nature": "ferramenta", "practice_ratio": 0.40, "competencies": ["prompt", "fundamentals"]},
-    "CODE-001": {"title": "Masterclass Claude Code", "instructor": "Rodrigo… [VERIFICAR]", "duration": "0:26:00", "nature": "ferramenta", "practice_ratio": 0.60, "competencies": ["aicoding"]},
-    "CLAUDE-002": {"title": "Claude Avançado: Skills, Conectores, Artefatos e SubAgents", "instructor": "Marcel… [VERIFICAR]", "duration": "1:56:00", "nature": "agentes", "practice_ratio": 0.65, "competencies": ["tools", "multiagent", "apis"]},
-    "OPENCLAW-001": {"title": "Dominando o OpenClaw", "instructor": "Samu… [VERIFICAR]", "duration": "2:14:00", "nature": "agentes", "practice_ratio": 0.50, "competencies": ["agents", "multiagent"]},
-    "OPENCLAW-002": {"title": "Criando um assistente pessoal com OpenClaw", "instructor": "Rodri… [VERIFICAR]", "duration": "1:32:00", "nature": "projeto", "practice_ratio": 0.70, "competencies": ["agents", "systems"]},
-    "HERMES-001": {"title": "Hermes Agent", "instructor": "Samu… [VERIFICAR]", "duration": "1:59:00", "nature": "agentes", "practice_ratio": 0.60, "competencies": ["agents", "tools"]},
-    "GPT-001": {"title": "Criando agentes com GPT", "instructor": "Rodrigo… [VERIFICAR]", "duration": "0:47:00", "nature": "agentes", "practice_ratio": 0.60, "competencies": ["agents", "prompt"]},
-    "PY-001": {"title": "Pensando como um Programador (usando Python e IA)", "instructor": "Rodrig… [VERIFICAR]", "duration": "2:16:00", "nature": "tecnico", "practice_ratio": 0.15, "competencies": ["python"]},
-    "PY-002": {"title": "Coder Toolbox - Conceitos essenciais para programar com IA", "instructor": "Rodri… [VERIFICAR]", "duration": "2:37:00", "nature": "tecnico", "practice_ratio": 0.25, "competencies": ["python", "apis"]},
-    "UI-001": {"title": "Masterclass - Criando Interfaces Absurdas com IA", "instructor": "Lucas Pe… [VERIFICAR]", "duration": "0:25:00", "nature": "ferramenta", "practice_ratio": 0.60, "competencies": ["systems", "aicoding"]},
-    "LANG-001": {"title": "Criando Sistemas Agenticos com Langchain", "instructor": "Rodrig… [VERIFICAR]", "duration": "1:51:00", "nature": "agentes", "practice_ratio": 0.80, "competencies": ["agents", "tools", "python"]},
-    "LANG-002": {"title": "Langclean - Um agente de limpeza do computador", "instructor": "Rodrigo Ta… [VERIFICAR]", "duration": "0:57:00", "nature": "projeto", "practice_ratio": 0.70, "competencies": ["agents", "systems"]},
-    "IDE-001": {"title": "Dominando o Antigravity", "instructor": "Myka… [VERIFICAR]", "duration": "2:16:00", "lesson_count": 17, "nature": "ferramenta", "practice_ratio": 0.40, "competencies": ["aicoding", "systems"]},
-    "IDE-002": {"title": "Cursor 3 - Desenvolvimento Assistido por IA", "instructor": "Daniel… [VERIFICAR]", "duration": "1:51:00", "nature": "ferramenta", "practice_ratio": 0.40, "competencies": ["aicoding"]},
-    "IDE-003": {"title": "CursorAI - ganhe 10x mais produtividade com a IDE de IA", "instructor": "Vivian… [VERIFICAR]", "duration": "1:33:00", "nature": "ferramenta", "practice_ratio": 0.25, "overlap_note": "Tema sobreposto ao Cursor 3 — assista focando no que é diferente (1.25x).", "competencies": ["aicoding"]},
-    "CODE-002": {"title": "Claude Code na prática: evoluindo um projeto com IA", "instructor": "Danie… [VERIFICAR]", "duration": "2:42:00", "nature": "ferramenta", "practice_ratio": 0.55, "competencies": ["aicoding", "systems"]},
-    "RESERVA-T7": {"title": "Cursos da Trilha 7", "reserve": true, "verify": true, "duration": "16:09:00", "nature": "reserva", "practice_ratio": 0.45, "competencies": []},
-    "RESERVA-T8": {"title": "Cursos da Trilha 8", "reserve": true, "verify": true, "duration": "16:09:00", "nature": "reserva", "practice_ratio": 0.45, "competencies": []}
+  "study_sequence_confidence": "SUGESTÃO DO SISTEMA (não vem dos prints)"
+ },
+ "tracks": [
+  {
+   "id": "T1",
+   "order": 1,
+   "title": "Trilha 1",
+   "name": null,
+   "confirmed": false
+  },
+  {
+   "id": "T2",
+   "order": 2,
+   "title": "Trilha 2",
+   "name": null,
+   "confirmed": false
+  },
+  {
+   "id": "T3",
+   "order": 3,
+   "title": "Trilha 3",
+   "name": null,
+   "confirmed": false
+  },
+  {
+   "id": "T4",
+   "order": 4,
+   "title": "Trilha 4",
+   "name": null,
+   "confirmed": false
+  },
+  {
+   "id": "T5",
+   "order": 5,
+   "title": "Trilha 5",
+   "name": null,
+   "confirmed": false
+  },
+  {
+   "id": "T6",
+   "order": 6,
+   "title": "Trilha 6",
+   "name": null,
+   "confirmed": false
+  },
+  {
+   "id": "T7",
+   "order": 7,
+   "title": "Trilha 7",
+   "name": null,
+   "confirmed": false
+  },
+  {
+   "id": "T8",
+   "order": 8,
+   "title": "Trilha 8",
+   "name": null,
+   "confirmed": false
   }
+ ],
+ "contents": {
+  "GENAI-001": {
+   "title": "Fundamentos da IA Generativa",
+   "instructor": "Rodri…",
+   "duration": "1:32:00",
+   "nature": "conceitual",
+   "practice_ratio": 0.3,
+   "competencies": [
+    "fundamentals",
+    "prompt"
+   ],
+   "appearances": [
+    {
+     "track": null,
+     "position": 2,
+     "inferred_group": "A"
+    }
+   ],
+   "confidence": {
+    "title": "CONFIRMADO",
+    "duration": "CONFIRMADO",
+    "instructor": "CONFIRMADO (truncado no print)",
+    "position": "CONFIRMADO",
+    "track": "A VERIFICAR",
+    "lessons": "NÃO IDENTIFICADO",
+    "practice_ratio": "ESTIMATIVA DO SISTEMA"
+   },
+   "intro": true
+  },
+  "CLAUDE-001": {
+   "title": "Claude Desktop",
+   "instructor": "Marc…",
+   "duration": "2:56:00",
+   "nature": "ferramenta",
+   "practice_ratio": 0.4,
+   "competencies": [
+    "prompt",
+    "fundamentals"
+   ],
+   "appearances": [
+    {
+     "track": null,
+     "position": 3,
+     "inferred_group": "A"
+    }
+   ],
+   "confidence": {
+    "title": "CONFIRMADO",
+    "duration": "CONFIRMADO",
+    "instructor": "CONFIRMADO (truncado no print)",
+    "position": "CONFIRMADO",
+    "track": "A VERIFICAR",
+    "lessons": "NÃO IDENTIFICADO",
+    "practice_ratio": "ESTIMATIVA DO SISTEMA"
+   }
+  },
+  "CODE-001": {
+   "title": "Masterclass Claude Code",
+   "instructor": "Rodrigo…",
+   "duration": "0:26:00",
+   "nature": "ferramenta",
+   "practice_ratio": 0.6,
+   "competencies": [
+    "aicoding"
+   ],
+   "appearances": [
+    {
+     "track": null,
+     "position": 4,
+     "inferred_group": "A"
+    },
+    {
+     "track": null,
+     "position": 5,
+     "inferred_group": "F"
+    }
+   ],
+   "confidence": {
+    "title": "CONFIRMADO",
+    "duration": "CONFIRMADO",
+    "instructor": "CONFIRMADO (truncado no print)",
+    "position": "CONFIRMADO",
+    "track": "A VERIFICAR",
+    "lessons": "NÃO IDENTIFICADO",
+    "practice_ratio": "ESTIMATIVA DO SISTEMA"
+   }
+  },
+  "CLAUDE-002": {
+   "title": "Claude Avançado: Skills, Conectores, Artefatos e SubAgents",
+   "instructor": "Marcel…",
+   "duration": "1:56:00",
+   "nature": "agentes",
+   "practice_ratio": 0.65,
+   "competencies": [
+    "tools",
+    "multiagent",
+    "apis"
+   ],
+   "appearances": [
+    {
+     "track": null,
+     "position": 5,
+     "inferred_group": "A"
+    }
+   ],
+   "confidence": {
+    "title": "CONFIRMADO",
+    "duration": "CONFIRMADO",
+    "instructor": "CONFIRMADO (truncado no print)",
+    "position": "CONFIRMADO",
+    "track": "A VERIFICAR",
+    "lessons": "NÃO IDENTIFICADO",
+    "practice_ratio": "ESTIMATIVA DO SISTEMA"
+   }
+  },
+  "OPENCLAW-001": {
+   "title": "Dominando o OpenClaw",
+   "instructor": "Samu…",
+   "duration": "2:14:00",
+   "nature": "agentes",
+   "practice_ratio": 0.5,
+   "competencies": [
+    "agents",
+    "multiagent"
+   ],
+   "appearances": [
+    {
+     "track": null,
+     "position": 3,
+     "inferred_group": "B"
+    }
+   ],
+   "confidence": {
+    "title": "CONFIRMADO",
+    "duration": "CONFIRMADO",
+    "instructor": "CONFIRMADO (truncado no print)",
+    "position": "CONFIRMADO",
+    "track": "A VERIFICAR",
+    "lessons": "NÃO IDENTIFICADO",
+    "practice_ratio": "ESTIMATIVA DO SISTEMA"
+   }
+  },
+  "OPENCLAW-002": {
+   "title": "Criando um assistente pessoal com OpenClaw",
+   "instructor": "Rodri…",
+   "duration": "1:32:00",
+   "nature": "projeto",
+   "practice_ratio": 0.7,
+   "competencies": [
+    "agents",
+    "systems"
+   ],
+   "appearances": [
+    {
+     "track": null,
+     "position": 4,
+     "inferred_group": "B"
+    }
+   ],
+   "confidence": {
+    "title": "CONFIRMADO",
+    "duration": "CONFIRMADO",
+    "instructor": "CONFIRMADO (truncado no print)",
+    "position": "CONFIRMADO",
+    "track": "A VERIFICAR",
+    "lessons": "NÃO IDENTIFICADO",
+    "practice_ratio": "ESTIMATIVA DO SISTEMA"
+   }
+  },
+  "HERMES-001": {
+   "title": "Hermes Agent",
+   "instructor": "Samu…",
+   "duration": "1:59:00",
+   "nature": "agentes",
+   "practice_ratio": 0.6,
+   "competencies": [
+    "agents",
+    "tools"
+   ],
+   "appearances": [
+    {
+     "track": null,
+     "position": 3,
+     "inferred_group": "C"
+    }
+   ],
+   "confidence": {
+    "title": "CONFIRMADO",
+    "duration": "CONFIRMADO",
+    "instructor": "CONFIRMADO (truncado no print)",
+    "position": "CONFIRMADO",
+    "track": "A VERIFICAR",
+    "lessons": "NÃO IDENTIFICADO",
+    "practice_ratio": "ESTIMATIVA DO SISTEMA"
+   }
+  },
+  "GPT-001": {
+   "title": "Criando agentes com GPT",
+   "instructor": "Rodrigo…",
+   "duration": "0:47:00",
+   "nature": "agentes",
+   "practice_ratio": 0.6,
+   "competencies": [
+    "agents",
+    "prompt"
+   ],
+   "appearances": [
+    {
+     "track": null,
+     "position": 3,
+     "inferred_group": "D"
+    }
+   ],
+   "confidence": {
+    "title": "CONFIRMADO",
+    "duration": "CONFIRMADO",
+    "instructor": "CONFIRMADO (truncado no print)",
+    "position": "CONFIRMADO",
+    "track": "A VERIFICAR",
+    "lessons": "NÃO IDENTIFICADO",
+    "practice_ratio": "ESTIMATIVA DO SISTEMA"
+   }
+  },
+  "PY-001": {
+   "title": "Pensando como um Programador (usando Python e IA)",
+   "instructor": "Rodrig…",
+   "duration": "2:16:00",
+   "nature": "tecnico",
+   "practice_ratio": 0.15,
+   "competencies": [
+    "python"
+   ],
+   "appearances": [
+    {
+     "track": null,
+     "position": 3,
+     "inferred_group": "E"
+    }
+   ],
+   "confidence": {
+    "title": "CONFIRMADO",
+    "duration": "CONFIRMADO",
+    "instructor": "CONFIRMADO (truncado no print)",
+    "position": "CONFIRMADO",
+    "track": "A VERIFICAR",
+    "lessons": "NÃO IDENTIFICADO",
+    "practice_ratio": "ESTIMATIVA DO SISTEMA"
+   }
+  },
+  "PY-002": {
+   "title": "Coder Toolbox - Conceitos essenciais para programar com IA",
+   "instructor": "Rodri…",
+   "duration": "2:37:00",
+   "nature": "tecnico",
+   "practice_ratio": 0.25,
+   "competencies": [
+    "python",
+    "apis"
+   ],
+   "appearances": [
+    {
+     "track": null,
+     "position": 4,
+     "inferred_group": "E"
+    }
+   ],
+   "confidence": {
+    "title": "CONFIRMADO",
+    "duration": "CONFIRMADO",
+    "instructor": "CONFIRMADO (truncado no print)",
+    "position": "CONFIRMADO",
+    "track": "A VERIFICAR",
+    "lessons": "NÃO IDENTIFICADO",
+    "practice_ratio": "ESTIMATIVA DO SISTEMA"
+   }
+  },
+  "UI-001": {
+   "title": "Masterclass - Criando Interfaces Absurdas com IA",
+   "instructor": "Lucas Pe…",
+   "duration": "0:25:00",
+   "nature": "ferramenta",
+   "practice_ratio": 0.6,
+   "competencies": [
+    "systems",
+    "aicoding"
+   ],
+   "appearances": [
+    {
+     "track": null,
+     "position": 5,
+     "inferred_group": "E"
+    }
+   ],
+   "confidence": {
+    "title": "CONFIRMADO",
+    "duration": "CONFIRMADO",
+    "instructor": "CONFIRMADO (truncado no print)",
+    "position": "CONFIRMADO",
+    "track": "A VERIFICAR",
+    "lessons": "NÃO IDENTIFICADO",
+    "practice_ratio": "ESTIMATIVA DO SISTEMA"
+   }
+  },
+  "LANG-001": {
+   "title": "Criando Sistemas Agenticos com Langchain",
+   "instructor": "Rodrig…",
+   "duration": "1:51:00",
+   "nature": "agentes",
+   "practice_ratio": 0.8,
+   "competencies": [
+    "agents",
+    "tools",
+    "python"
+   ],
+   "appearances": [
+    {
+     "track": null,
+     "position": 6,
+     "inferred_group": "E"
+    }
+   ],
+   "confidence": {
+    "title": "CONFIRMADO",
+    "duration": "CONFIRMADO",
+    "instructor": "CONFIRMADO (truncado no print)",
+    "position": "CONFIRMADO",
+    "track": "A VERIFICAR",
+    "lessons": "NÃO IDENTIFICADO",
+    "practice_ratio": "ESTIMATIVA DO SISTEMA"
+   }
+  },
+  "LANG-002": {
+   "title": "Langclean - Um agente de limpeza do computador",
+   "instructor": "Rodrigo Ta…",
+   "duration": "0:57:00",
+   "nature": "projeto",
+   "practice_ratio": 0.7,
+   "competencies": [
+    "agents",
+    "systems"
+   ],
+   "appearances": [
+    {
+     "track": null,
+     "position": 7,
+     "inferred_group": "E"
+    }
+   ],
+   "confidence": {
+    "title": "CONFIRMADO",
+    "duration": "CONFIRMADO",
+    "instructor": "CONFIRMADO (truncado no print)",
+    "position": "CONFIRMADO",
+    "track": "A VERIFICAR",
+    "lessons": "NÃO IDENTIFICADO",
+    "practice_ratio": "ESTIMATIVA DO SISTEMA"
+   }
+  },
+  "IDE-001": {
+   "title": "Dominando o Antigravity",
+   "instructor": "Myka…",
+   "duration": "2:16:00",
+   "nature": "ferramenta",
+   "practice_ratio": 0.4,
+   "competencies": [
+    "aicoding",
+    "systems"
+   ],
+   "appearances": [
+    {
+     "track": null,
+     "position": 2,
+     "inferred_group": "F"
+    }
+   ],
+   "confidence": {
+    "title": "CONFIRMADO",
+    "duration": "CONFIRMADO",
+    "instructor": "CONFIRMADO (truncado no print)",
+    "position": "CONFIRMADO",
+    "track": "A VERIFICAR",
+    "lessons": "NÃO IDENTIFICADO",
+    "practice_ratio": "ESTIMATIVA DO SISTEMA"
+   },
+   "lesson_count": 17
+  },
+  "IDE-002": {
+   "title": "Cursor 3 - Desenvolvimento Assistido por IA",
+   "instructor": "Daniel…",
+   "duration": "1:51:00",
+   "nature": "ferramenta",
+   "practice_ratio": 0.4,
+   "competencies": [
+    "aicoding"
+   ],
+   "appearances": [
+    {
+     "track": null,
+     "position": 3,
+     "inferred_group": "F"
+    }
+   ],
+   "confidence": {
+    "title": "CONFIRMADO",
+    "duration": "CONFIRMADO",
+    "instructor": "CONFIRMADO (truncado no print)",
+    "position": "CONFIRMADO",
+    "track": "A VERIFICAR",
+    "lessons": "NÃO IDENTIFICADO",
+    "practice_ratio": "ESTIMATIVA DO SISTEMA"
+   }
+  },
+  "IDE-003": {
+   "title": "CursorAI - ganhe 10x mais produtividade com a IDE de IA",
+   "instructor": "Vivian…",
+   "duration": "1:33:00",
+   "nature": "ferramenta",
+   "practice_ratio": 0.25,
+   "competencies": [
+    "aicoding"
+   ],
+   "appearances": [
+    {
+     "track": null,
+     "position": 4,
+     "inferred_group": "F"
+    }
+   ],
+   "confidence": {
+    "title": "CONFIRMADO",
+    "duration": "CONFIRMADO",
+    "instructor": "CONFIRMADO (truncado no print)",
+    "position": "CONFIRMADO",
+    "track": "A VERIFICAR",
+    "lessons": "NÃO IDENTIFICADO",
+    "practice_ratio": "ESTIMATIVA DO SISTEMA"
+   },
+   "overlap_note": "Tema sobreposto ao Cursor 3 (observação do sistema): foque no que for diferente."
+  },
+  "CODE-002": {
+   "title": "Claude Code na prática: evoluindo um projeto com IA",
+   "instructor": "Danie…",
+   "duration": "2:42:00",
+   "nature": "ferramenta",
+   "practice_ratio": 0.55,
+   "competencies": [
+    "aicoding",
+    "systems"
+   ],
+   "appearances": [
+    {
+     "track": null,
+     "position": 6,
+     "inferred_group": "F"
+    }
+   ],
+   "confidence": {
+    "title": "CONFIRMADO",
+    "duration": "CONFIRMADO",
+    "instructor": "CONFIRMADO (truncado no print)",
+    "position": "CONFIRMADO",
+    "track": "A VERIFICAR",
+    "lessons": "NÃO IDENTIFICADO",
+    "practice_ratio": "ESTIMATIVA DO SISTEMA"
+   }
+  }
+ }
 }

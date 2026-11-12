@@ -83,10 +83,10 @@ export const TYPE_KIND = { VIDEO: "video", PRACTICE: "practice", PROJECT: "proje
 export const TYPE_LABEL = { VIDEO: "Vídeo", PRACTICE: "Prática", PROJECT: "Projeto", REVIEW: "Revisão", OTHER: "Outro" };
 
 // ---------------------------------------------------------------- componentes
-export const bar = (x, k = "", cls = "") => `<div class="bar ${cls} ${k}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round((x || 0) * 100)}"><i style="width:${Math.min(100, (x || 0) * 100).toFixed(1)}%"></i></div>`;
+export const bar = (x, k = "", cls = "", label = "Progresso") => `<div class="bar ${cls} ${k}" role="progressbar" aria-label="${esc(label)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round((x || 0) * 100)}"><i style="width:${Math.min(100, (x || 0) * 100).toFixed(1)}%"></i></div>`;
 export function segbar(x, n = 20) {
   const filled = (x || 0) * n;
-  return `<div class="segbar" role="progressbar" aria-valuenow="${Math.round(x * 100)}" aria-valuemin="0" aria-valuemax="100">${
+  return `<div class="segbar" role="progressbar" aria-label="Progresso geral" aria-valuenow="${Math.round(x * 100)}" aria-valuemin="0" aria-valuemax="100">${
     Array.from({ length: n }, (_, i) => `<span class="${i + 1 <= filled ? "on" : i < filled ? "half" : ""}"></span>`).join("")}</div>`;
 }
 export const verify = (on = true, txt = "VERIFICAR") => (on ? `<span class="verify" title="Informação não visível/legível nos prints">[${txt}]</span>` : "");

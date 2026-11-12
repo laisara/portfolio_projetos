@@ -13,7 +13,7 @@ const targets = [["icon-192.png", 192, 0], ["icon-512.png", 512, 0], ["apple-tou
   for (const [name, size, pad] of targets) {
     const pg = await b.newPage({ viewport: { width: size, height: size } });
     const inner = Math.round(size * (1 - pad));
-    const bg = pad ? "#0a0c12" : "transparent";
+    const bg = pad ? "#070a09" : "transparent";
     await pg.setContent(`<html><body style="margin:0;background:${bg};display:grid;place-items:center;width:${size}px;height:${size}px">
       <div style="width:${inner}px;height:${inner}px">${svg.replace("<svg ", `<svg width="${inner}" height="${inner}" `)}</div></body></html>`);
     await pg.screenshot({ path: path.join(ICONS, name), omitBackground: !pad });

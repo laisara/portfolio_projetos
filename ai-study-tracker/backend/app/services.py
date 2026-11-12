@@ -28,36 +28,25 @@ def snapshot(conn: sqlite3.Connection) -> dict:
     for r in db.rows(conn, "SELECT lesson_id, completed_on FROM lesson_progress WHERE completed_on IS NOT NULL"):
         if r["lesson_id"] in les_content:
             learned[r["completed_on"]].add(les_content[r["lesson_id"]])
-    comps = gamification.competencies(prog, cat["contents"], stages, reviews, learned)
+    comps = gamification.competencies(prog, cat["contents"], stages, reviews, learned, cfg.get("competency_baselines") or {})
     return {"today": today, "cfg": cfg, "cat": cat, "prog": prog, "reviews": reviews, "stages": stages,
             "streak": stk, "game": game, "competencies": comps}
 
 
 def tracks_progress(conn: sqlite3.Connection, snap: dict) -> list[dict]:
-    prog, contents, stages = snap["prog"], snap["cat"]["contents"], snap["stages"]
+    """8 trilhas declaradas. Sem associação confirmada pelos prints → "A confirmar" (nada é inventado)."""
+    prog, contents = snap["prog"], snap["cat"]["contents"]
     out = []
     for t in db.rows(conn, "SELECT * FROM tracks ORDER BY ord"):
-        slots = db.rows(conn, "SELECT * FROM track_slots WHERE track_id=? ORDER BY position", (t["id"],))
-        cids = [s["content_id"] for s in slots if s["content_id"]]
+        cids = sorted({a["content_id"] for a in db.rows(conn, "SELECT content_id FROM appearances WHERE track_id=?", (t["id"],))})
         pcs = [prog["per_content"][c] for c in cids]
         tot = sum(p["video_total"] + p["practice_total"] for p in pcs)
         done = sum(p["video_done"] + p["practice_done"] for p in pcs)
-        comps = sorted({x for c in cids for x in contents[c]["competencies"]})
-        out.append({
-            **t,
-            "pct": done / tot if tot else 0.0,
-            "video_total": sum(p["video_total"] for p in pcs), "video_done": sum(p["video_done"] for p in pcs),
-            "lessons": sum(p["lessons"] for p in pcs), "lessons_done": sum(p["lessons_done"] for p in pcs),
-            "competencies": comps,
-            "projects": [{"id": s["id"], "title": s["title"], "status": s["effective_status"]} for s in stages if s["unlock_after"] in cids],
-            "slots": [{"position": s["position"], "placeholder": bool(s["placeholder"]), "content_id": s["content_id"],
-                       "title": contents[s["content_id"]]["title"] if s["content_id"] else None,
-                       "duration_min": contents[s["content_id"]]["duration_min"] if s["content_id"] else None,
-                       "reserve": bool(contents[s["content_id"]]["reserve"]) if s["content_id"] else False,
-                       "pct": prog["per_content"][s["content_id"]]["pct"] if s["content_id"] else 0,
-                       "shared_with": [x["track_id"] for x in db.rows(conn, "SELECT track_id FROM track_slots WHERE content_id=? AND track_id!=?", (s["content_id"], t["id"]))] if s["content_id"] else []}
-                      for s in slots],
-        })
+        out.append({**t, "to_confirm": not t["confirmed"] and not cids, "pct": done / tot if tot else 0.0,
+                    "video_total": sum(p["video_total"] for p in pcs), "lessons": sum(p["lessons"] for p in pcs),
+                    "lessons_done": sum(p["lessons_done"] for p in pcs),
+                    "courses": [{"id": c, "title": contents[c]["title"], "duration_min": contents[c]["duration_min"],
+                                 "pct": prog["per_content"][c]["pct"]} for c in cids]})
     return out
 
 
@@ -87,6 +76,7 @@ def today_view(conn: sqlite3.Connection, snap: dict) -> dict:
 def dashboard(conn: sqlite3.Connection) -> dict:
     tracker.ensure_plan_fresh(conn)
     snap = snapshot(conn)
+    snap["_today_items"] = _items_for(conn, snap["today"].isoformat())
     prog, game = snap["prog"], snap["game"]
     end = db.row(conn, "SELECT MAX(date) AS d FROM plan_items")["d"]
     pristine_end = db.get_meta(conn, "pristine_end")
@@ -97,7 +87,17 @@ def dashboard(conn: sqlite3.Connection) -> dict:
             upcoming_planned.append({**r, "planned_for": it["date"]})
     nxt_stage = next((s for s in snap["stages"] if s["effective_status"] in ("in_progress", "available")), None) \
         or next((s for s in snap["stages"] if s["effective_status"] == "locked"), None)
-    meta = catalog_mod.catalog_meta(conn)
+    ana = catalog_mod.analysis(conn)
+    pristine = tracker.pristine_plan(conn).totals
+    mt = prog["minutes_by_type"]
+    planned = {"formation": pristine["video"], "practice": pristine["practice"], "project": pristine["project"], "review": pristine["review"]}
+    load = {"planned": {**planned, "total": sum(planned.values())},
+            "done": {"formation": mt["VIDEO"], "practice": mt["PRACTICE"], "project": mt["PROJECT"], "review": mt["REVIEW"],
+                     "total": sum(mt.values())}}
+    iso = snap["today"].isoformat()
+    todays = [r for it in snap["_today_items"] if it["kind"] == "review" for r in it["detail"].get("reviews", [])]
+    done_today = db.row(conn, "SELECT COUNT(*) AS n FROM review_log WHERE done_on=?", (iso,))["n"]
+    reviews_today = {"pending": len(todays), "done": done_today, "total": len(todays) + done_today}
     return {
         "today": today_view(conn, snap),
         "overall": prog["overall"],
@@ -115,7 +115,10 @@ def dashboard(conn: sqlite3.Connection) -> dict:
         "plan_end": end, "pristine_end": pristine_end,
         "next_stage": {"id": nxt_stage["id"], "title": nxt_stage["title"], "status": nxt_stage["effective_status"],
                        "pct": nxt_stage["pct"], "unlock_title": nxt_stage["unlock_title"]} if nxt_stage else None,
-        "catalog_status": meta.get("status", "final"),
+        "catalog": {k: ana[k] for k in ("declared_min", "identified_gross_min", "duplicate_min", "identified_unique_min",
+                                        "unidentified_min", "identified_pct", "tracks_confirmed", "tracks_total")},
+        "load": load,
+        "reviews_today": reviews_today,
     }
 
 

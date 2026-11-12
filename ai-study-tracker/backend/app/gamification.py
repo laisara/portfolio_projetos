@@ -126,7 +126,7 @@ def compute(conn: sqlite3.Connection, prog: dict, reviews: list[dict], stages: l
                       "milestone": D.XP_MILESTONE, "stage": D.XP_STAGE, "final_stage": D.XP_FINAL_STAGE, "content": D.XP_CONTENT_DONE}}
 
 
-def competencies(prog: dict, contents: dict, stages: list[dict], reviews: list[dict], learned: dict[str, set]) -> list[dict]:
+def competencies(prog: dict, contents: dict, stages: list[dict], reviews: list[dict], learned: dict[str, set], baselines: dict | None = None) -> list[dict]:
     """learned: data → conteúdos estudados naquele dia (base das revisões D+1/D+7/D+30)."""
     out = []
     for comp in D.COMPETENCIES:
@@ -149,7 +149,8 @@ def competencies(prog: dict, contents: dict, stages: list[dict], reviews: list[d
             parts["project"] = sum(s["pct"] for s in sts) / len(sts)
         wsum = sum(D.COMPETENCY_WEIGHTS[k] for k in parts) or 1
         score = sum(D.COMPETENCY_WEIGHTS[k] * v for k, v in parts.items()) / wsum
-        level = comp["baseline"] + (1 - comp["baseline"]) * score
-        out.append({**comp, "level": level, "score": score, "parts": parts,
+        base = float((baselines or {}).get(comp["id"], comp["baseline"]))
+        level = base + (1 - base) * score
+        out.append({**comp, "baseline": base, "baseline_default": comp["baseline"], "level": level, "score": score, "parts": parts,
                     "courses": [contents[c]["title"] for c in cids], "stages": [s["id"] for s in sts]})
     return out

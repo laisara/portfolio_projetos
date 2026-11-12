@@ -3,7 +3,7 @@
 > Fonte: 20 prints enviados em 12/11/2026 (página da formação **Engenheiro de Agentes de IA**, Asimov Academy).
 > Regra seguida: **nada foi inventado**. O que não aparece nos prints está marcado como **[VERIFICAR]**.
 
-## ETAPA 1 — Extração (o que os prints mostram)
+## O que os prints mostram
 
 Cabeçalho: **62h 34min em vídeo · 8 trilhas**.
 
@@ -32,86 +32,58 @@ Os prints **não mostram**: nomes das trilhas, módulos, lista de aulas e duraç
 | F | 5 | Masterclass Claude Code | 0h26 | Rodrigo… |
 | F | 6 | Claude Code na prática: evoluindo um projeto com IA | 2h42 | Danie… |
 
-**Agrupamento em trilhas:** cada grupo tem uma sequência própria de posições (#2→#5, #3→#4, …).
+**Agrupamento (INFERIDO):** cada grupo tem uma sequência própria de posições (#2→#5, #3→#4, …).
 Dois cards com a mesma posição (#3) não podem estar na mesma trilha, logo há **ao menos 6 trilhas
 distintas** visíveis (A–F). As trilhas 7 e 8 não aparecem. Nomes e ordem das trilhas: **[VERIFICAR]**.
 
-## ETAPA 2–3 — Normalização, IDs e duplicidades
+## Correção de 12/11 (fase 1 da auditoria)
 
-| ID | Curso | Trilhas |
-|---|---|---|
-| GENAI-001 | Fundamentos da IA Generativa (introdutório) | T1 |
-| CLAUDE-001 | Claude Desktop | T1 |
-| CLAUDE-002 | Claude Avançado: Skills, Conectores, Artefatos e SubAgents | T1 |
-| **CODE-001** | **Masterclass Claude Code** | **T1 + T6 (repetido)** |
-| CODE-002 | Claude Code na prática | T6 |
-| OPENCLAW-001 / 002 | Dominando o OpenClaw / Assistente pessoal com OpenClaw | T2 |
-| HERMES-001 | Hermes Agent | T3 |
-| GPT-001 | Criando agentes com GPT | T4 |
-| PY-001 / PY-002 | Pensando como um Programador / Coder Toolbox | T5 |
-| UI-001 | Masterclass - Interfaces Absurdas com IA | T5 |
-| LANG-001 / 002 | Sistemas Agenticos com Langchain / Langclean | T5 |
-| IDE-001 / 002 / 003 | Antigravity / Cursor 3 / CursorAI | T6 |
+A primeira versão criou duas coisas que **não vêm dos prints** e foram removidas:
 
-- **Conteúdo repetido (mesmo curso):** `CODE-001` em T1 (#4) e T6 (#5): conta **1x**, aparece nas duas trilhas.
-- **Sobreposição temática (cursos diferentes):** Cursor 3 × CursorAI; Masterclass Claude Code × Claude Code na prática; OpenClaw ×2. Não são duplicados, mas a prática do segundo curso foi reduzida.
-- **[VERIFICAR]:** posições #1 (T1, T6) e #1–#2 (T2–T5) — **10 posições** não visíveis. É provável que algumas sejam cursos introdutórios compartilhados (ex.: o próprio *Fundamentos da IA Generativa*), o que reduziria a carga única.
-
-## ETAPA 4 — Carga horária
-
-| Medida | Valor |
+| Antes (errado) | Agora |
 |---|---|
-| Carga bruta declarada | **62h34** |
-| Visível nos prints (bruto, 18 aparições) | 30h16 |
-| Visível nos prints (único, 17 cursos) | 29h50 |
-| Repetido economizado | 26 min |
-| **Reserva não mapeada** (62h34 − 30h16) **[VERIFICAR]** | **32h18** (modelada como Trilhas 7–8) |
-| **Conteúdo único estimado** | **62h08** |
+| "Reserva" de 32h18 (Trilhas 7–8 fictícias) | **Nada é cadastrado nem agendado.** As 32h18 aparecem só como número de auditoria: **[NÃO IDENTIFICADO]** |
+| 91 blocos sintéticos de ~40 min | Cada curso é **uma unidade com a duração real do print**. As sessões de ≤45 min existem só no cronograma, recalculadas a cada dia |
+| Trilhas T1–T6 com nomes ("Fundamentos + Claude"…) e cursos associados | **8 trilhas "A confirmar"**, sem nome e sem cursos. Cada curso mostra `Trilha: [VERIFICAR]` |
 
-Sem lista de aulas, cada curso foi dividido em **blocos de ~40 min** para o planejamento (91 blocos).
-A duração total de cada curso é real; a divisão é só um recurso de planejamento.
+### Classificação dos dados
 
-## ETAPA 5 — Carga além do vídeo
+| Dado | Status |
+|---|---|
+| Título, duração, posição do card, instrutor (truncado), nº de aulas do Antigravity (17) | **CONFIRMADO** (prints) |
+| 62h34 e "8 trilhas" | **CONFIRMADO** (cabeçalho) |
+| Mesmo curso nos cards #4 e #5 (*Masterclass Claude Code*: mesmo título, duração, instrutor e inscritos) | **CONFIRMADO** como duplicidade; trilhas **A VERIFICAR** |
+| Agrupamento dos cards em sequências (A–F) | **INFERIDO** (posições consecutivas/repetidas); mostrado só como dica, nunca como trilha |
+| Ordem de estudo sugerida | **INFERIDO** (sugestão do sistema) |
+| Nome e conteúdo de cada trilha; módulos e títulos de aulas; cursos das posições #1/#2; trilhas 7–8 | **NÃO IDENTIFICADO** / **A VERIFICAR** |
+| Percentual de prática por curso; pontos de partida das competências; horas do Lab | **ESTIMATIVA DO SISTEMA** (editáveis) |
 
-Prática por natureza do curso (você já domina Python/APIs, então fundamentos de programação têm pouca prática):
-
-| Natureza | Prática / vídeo | Exemplos |
-|---|---|---|
-| conceitual | 30% | Fundamentos da IA Generativa |
-| técnico (Python já dominado) | 15–25% | Pensando como Programador, Coder Toolbox |
-| ferramenta | 25–60% | Claude Desktop, Cursor, Antigravity, Claude Code |
-| agentes | 50–80% | GPT, Hermes, OpenClaw, LangChain, Claude Avançado |
-| projeto | 70% | Langclean, Assistente OpenClaw |
-| reserva | 45% | Trilhas 7–8 [VERIFICAR] |
-
-AI Agent Lab: 9 estágios, **34h30** (Fundamentos/Prompt → API → AI Build → Tool Calling → Agent → RAG → Multi-Agent → AI App → Projeto Final).
-Revisão espaçada D+1/D+7/D+30: **12h23** (≈9% do total).
-
-## ETAPA 6 — Resumo do planejamento
+## Os quatro números da carga
 
 ```
-Carga de vídeo:      62h 34min (bruta)
-Conteúdo único:      62h 08min
-Prática estimada:    30h 05min
-Projetos:            34h 30min
-Revisão:             12h 23min
-Carga total:        139h 06min
-
-Período:   13/11/2026 → 27/01/2027
-Dias de estudo:   63
-Dias de descanso: 13 (domingos + 25/12 e 01/01; 24/12 e 31/12 com meia carga)
-Média:            2h12 por dia de estudo
-Rotina:           Seg/Ter/Qui 2h15 · Qua 2h · Sex 1h45 · Sáb 3h30 (projeto) · Dom descanso
-Fazer ÷ assistir: 1,04× (prática + projeto ≥ vídeo)
+Carga declarada da formação ........ 62h34   (cabeçalho do print)
+Carga identificada nos prints ...... 30h16   (18 aparições de 17 cursos)
+Conteúdo duplicado ................. 0h26    (Masterclass Claude Code, 2x)
+  → conteúdo único identificado .... 29h50   (17 cursos)
+Conteúdo ainda não identificado .... 32h18   = declarada − identificada bruta  [NÃO IDENTIFICADO]
+                                     (32h44 se a plataforma somou só conteúdo único) [VERIFICAR]
 ```
 
-## ETAPA 7 — Cronograma
+## Cursos e IDs
 
-Dia a dia em [`CRONOGRAMA.md`](CRONOGRAMA.md) (gerado por `scripts/export_schedule.py`). No app, ele é adaptativo.
+Ver `data/catalog.json`. IDs: GENAI-001, CLAUDE-001/002, CODE-001/002, OPENCLAW-001/002, HERMES-001, GPT-001, PY-001/002, UI-001, LANG-001/002, IDE-001/002/003. O mesmo ID em duas trilhas conta 1x na carga e no progresso.
 
-## ETAPA 8 — Por que é sustentável
+## Planejamento (somente conteúdo identificado)
 
-- **~2h nos dias úteis** fica no meio da faixa que você indicou (1h30–2h30) e é mantível por 10+ semanas; o sábado (3h30) concentra o Lab, onde o aprendizado vira competência.
-- **Terminar até 13–15/01** exigiria ~2h45 nos dias úteis e 3h45 aos sábados (média de 2h43) durante 9 semanas que incluem Natal e Ano-Novo. Isso fica acima do sustentável e sacrificaria prática. A recomendação é **27/01**, 12 dias depois de "meados de janeiro".
-- **A data é um teto conservador:** 32h18 são reserva para conteúdo não visível. Se parte dela for curso repetido entre trilhas, o término antecipa automaticamente quando o catálogo for completado.
-- Revisões curtas (≈15 min/dia), um descanso completo por semana e meia carga nas vésperas de feriado reduzem fadiga cognitiva.
+```
+FORMAÇÃO (vídeo único) ...... 29h50
+PRÁTICA (estimada) .......... 14h00
+PROJETOS (AI Agent Lab) ..... 34h30
+REVISÃO (D+1/D+7/D+30) ....   6h04
+TEMPO TOTAL DE APRENDIZADO .. 84h24   (a formação é só 35%)
+
+Início 13/11/2026 → fim do conteúdo identificado 28/12/2026
+63 → 38 dias de estudo · 8 de descanso · média 2h13 · maior dia 3h38 · 32 cargas diárias diferentes
+```
+
+O cronograma completo está em `CRONOGRAMA.md`. Os 32h18 não identificados **não** estão incluídos; quando forem identificados, a data final se desloca. Como ordem de grandeza (hipótese, não dado): se fossem cursos de agentes com 30–50% de prática, o fim iria para ~25–27/01/2027.

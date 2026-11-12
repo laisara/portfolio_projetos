@@ -23,7 +23,7 @@ def hm(m: float) -> str:
 conn = db.connect()
 db.init_schema(conn)
 cfg = settings.load(conn)
-catalog.ensure_catalog(conn, config.catalog_path(), cfg["segment_minutes"])
+catalog.ensure_catalog(conn, config.catalog_path())
 lab.seed_lab(conn, config.lab_path())
 res = tracker.pristine_plan(conn)
 names = {c["id"]: c["title"] for c in db.rows(conn, "SELECT id, title FROM contents")}

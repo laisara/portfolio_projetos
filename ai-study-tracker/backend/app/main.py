@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
 from contextlib import asynccontextmanager
 from datetime import date, timedelta
@@ -23,7 +24,7 @@ def bootstrap() -> None:
     with db.session_scope() as conn:
         db.init_schema(conn)
         cfg = settings_mod.load(conn)
-        catalog_mod.ensure_catalog(conn, config.catalog_path(), cfg["segment_minutes"])
+        catalog_mod.ensure_catalog(conn, config.catalog_path())
         lab.seed_lab(conn, config.lab_path())
         tracker.ensure_plan_fresh(conn)
         services.plan_summary(conn)  # grava a data final do plano original
@@ -68,7 +69,7 @@ def _reward(conn: sqlite3.Connection, before: dict, reason: str) -> dict:
 @app.get("/api/health")
 def health(conn: sqlite3.Connection = Depends(get_conn)):
     return {"ok": True, "version": config.APP_VERSION, "today": config.today().isoformat(),
-            "db": str(config.db_path())}
+            "db": str(config.db_path()), "lan": os.environ.get("AST_LAN") == "1"}
 
 
 @app.get("/api/dashboard")
@@ -80,9 +81,20 @@ def dashboard(conn: sqlite3.Connection = Depends(get_conn)):
 @app.get("/api/catalog")
 def get_catalog(conn: sqlite3.Connection = Depends(get_conn)):
     snap = services.snapshot(conn)
-    return {"analysis": catalog_mod.analysis(conn), "tracks": services.tracks_progress(conn, snap),
-            "sequence": [{"id": c["id"], "title": c["title"], "duration_min": c["duration_min"], "reserve": bool(c["reserve"]),
-                          "pct": snap["prog"]["per_content"][c["id"]]["pct"]} for c in snap["cat"]["contents"].values()]}
+    cfg = snap["cfg"]
+    apps: dict[str, list] = {}
+    for a in db.rows(conn, "SELECT * FROM appearances ORDER BY position"):
+        apps.setdefault(a["content_id"], []).append(a)
+    courses = []
+    for c in snap["cat"]["contents"].values():
+        pc = snap["prog"]["per_content"][c["id"]]
+        courses.append({"id": c["id"], "title": c["title"], "instructor": c["instructor"], "nature": c["nature"],
+                        "duration_min": c["duration_min"], "lesson_count": c["lesson_count"] if c["lessons_known"] or c["lesson_count"] else None,
+                        "lessons_identified": bool(c["lessons_known"]), "intro": bool(c["intro"]),
+                        "practice_ratio": tracker.practice_ratio(c, cfg), "practice_est_min": pc["practice_total"],
+                        "confidence": db.loads(c["confidence"], {}), "appearances": apps.get(c["id"], []),
+                        "pct": pc["pct"], "study_ord": c["study_ord"]})
+    return {"analysis": catalog_mod.analysis(conn), "tracks": services.tracks_progress(conn, snap), "courses": courses}
 
 
 @app.get("/api/contents/{content_id}")
@@ -99,12 +111,13 @@ def get_content(content_id: str, conn: sqlite3.Connection = Depends(get_conn)):
                     "watched_min": (lp.get(l["id"]) or {}).get("watched_min", 0)}
                    for l in snap["cat"]["lessons"] if l["module_id"] == m["id"]]
         modules.append({**m, "lessons": lessons, "practice_planned": pp.get(m["id"], 0), "practice_done": min(pp.get(m["id"], 0), pc.get(m["id"], 0))})
-    tracks = db.rows(conn, "SELECT t.id, t.title, t.theme, s.position FROM track_slots s JOIN tracks t ON t.id=s.track_id WHERE s.content_id=? ORDER BY t.ord", (content_id,))
+    appearances = db.rows(conn, "SELECT * FROM appearances WHERE content_id=? ORDER BY position", (content_id,))
     planned = db.rows(conn, "SELECT date, kind, minutes FROM plan_items WHERE content_id=? ORDER BY date", (content_id,))
     sessions = db.rows(conn, "SELECT * FROM sessions WHERE target_id IN (SELECT id FROM lessons WHERE content_id=? UNION SELECT id FROM modules WHERE content_id=?) ORDER BY date DESC LIMIT 20", (content_id, content_id))
     stages = [{"id": s["id"], "title": s["title"], "status": s["effective_status"]} for s in snap["stages"] if s["unlock_after"] == content_id]
     from .domain import NATURES
-    return {**c, "progress": snap["prog"]["per_content"][content_id], "modules": modules, "tracks": tracks,
+    return {**c, "progress": snap["prog"]["per_content"][content_id], "modules": modules, "appearances": appearances,
+            "confidence": db.loads(c.get("confidence"), {}), "practice_ratio_effective": tracker.practice_ratio(c, snap["cfg"]),
             "plan": {"first": planned[0]["date"] if planned else None, "last": planned[-1]["date"] if planned else None,
                      "minutes": sum(p["minutes"] for p in planned)},
             "sessions": sessions, "lab_stages": stages, "nature_info": NATURES.get(c["nature"], {})}
@@ -132,9 +145,10 @@ def toggle_lesson(lesson_id: str, body: LessonToggle, conn: sqlite3.Connection =
 def import_catalog(payload: dict, conn: sqlite3.Connection = Depends(get_conn)):
     cfg = settings_mod.load(conn)
     try:
-        result = catalog_mod.import_catalog(conn, payload, cfg["segment_minutes"])
+        result = catalog_mod.import_catalog(conn, payload)
     except ValidationError as exc:
         raise HTTPException(422, detail=[{"loc": e["loc"], "msg": e["msg"]} for e in exc.errors()])
+    db.set_meta(conn, "catalog_customized", "1")
     tracker.recalculate(conn, "catálogo importado")
     services.plan_summary(conn)
     return result
@@ -212,6 +226,11 @@ def _apply_side_effects(conn: sqlite3.Connection, s: SessionIn) -> None:
     if s.type == "VIDEO" and s.target_kind == "lesson" and s.target_id and s.target_id not in s.complete_lessons and s.status != "missed":
         conn.execute("INSERT INTO lesson_progress(lesson_id, watched_min) VALUES (?, ?) ON CONFLICT(lesson_id) DO UPDATE SET watched_min = watched_min + excluded.watched_min",
                      (s.target_id, s.actual_min))
+        les = db.row(conn, "SELECT duration_min FROM lessons WHERE id=?", (s.target_id,))
+        if les and les["duration_min"] and s.status == "done":
+            w = db.row(conn, "SELECT watched_min FROM lesson_progress WHERE lesson_id=?", (s.target_id,))["watched_min"]
+            if w >= les["duration_min"] * 0.95:
+                conn.execute("UPDATE lesson_progress SET completed_on=COALESCE(completed_on, ?) WHERE lesson_id=?", (d, s.target_id))
     for lid in s.complete_lessons:
         if not db.row(conn, "SELECT id FROM lessons WHERE id=?", (lid,)):
             raise ValueError(f"Aula inexistente: {lid}")
@@ -352,6 +371,32 @@ class SettingsIn(BaseModel):
     capacity: Optional[dict[str, int]] = None
     holidays: Optional[dict[str, float]] = None
     focus_minutes: Optional[int] = Field(default=None, ge=5, le=180)
+    block_minutes: Optional[int] = Field(default=None, ge=20, le=90)
+    practice_overrides: Optional[dict[str, float]] = None
+    competency_baselines: Optional[dict[str, float]] = None
+
+    @field_validator("practice_overrides")
+    @classmethod
+    def _pr(cls, v):
+        if v is None:
+            return v
+        for k, x in v.items():
+            if not 0 <= x <= 3:
+                raise ValueError(f"razão de prática de {k} deve ficar entre 0 e 3 (0%–300%)")
+        return v
+
+    @field_validator("competency_baselines")
+    @classmethod
+    def _bl(cls, v):
+        from .domain import COMPETENCY_IDS
+        if v is None:
+            return v
+        for k, x in v.items():
+            if k not in COMPETENCY_IDS:
+                raise ValueError(f"competência desconhecida: {k}")
+            if not 0 <= x <= 1:
+                raise ValueError("ponto de partida entre 0 e 1")
+        return v
 
     @field_validator("capacity")
     @classmethod
@@ -408,6 +453,7 @@ async def import_data(file: UploadFile = File(...), conn: sqlite3.Connection = D
         data = json.loads(raw.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError):
         raise ValueError("JSON inválido.")
+    backup_mod.backup_to_file(label="antes-de-importar")
     counts = backup_mod.import_json(conn, data)
     tracker.recalculate(conn, "dados importados")
     return {"imported": counts}

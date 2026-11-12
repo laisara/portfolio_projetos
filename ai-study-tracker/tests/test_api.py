@@ -1,5 +1,7 @@
 from datetime import date
 
+import pytest
+
 
 def test_bootstrap_dashboard_and_plan(client):
     d = client.get("/api/dashboard").json()
@@ -7,9 +9,10 @@ def test_bootstrap_dashboard_and_plan(client):
     assert d["today"]["items"], "o primeiro dia (13/11) deve ter estudo planejado"
     s = client.get("/api/plan/summary").json()
     assert s["start"] == "2026-11-13"
-    assert s["end"] and s["end"] > "2027-01-01"
-    assert s["rest_days"] >= 10
-    assert 100 <= s["avg_per_study_day"] <= 150
+    assert "2026-12-15" < s["end"] < "2027-01-15"   # só o conteúdo identificado; sem reserva
+    assert s["rest_days"] >= 6
+    assert 100 <= s["avg_per_study_day"] <= 160
+    assert abs(s["totals"]["video"] - 1790) < 15      # vídeo agendado == conteúdo único identificado
 
 
 def test_rest_day_has_nothing(client):
@@ -130,3 +133,80 @@ def test_static_pwa_assets(client):
     assert m.status_code == 200 and m.json()["display"] == "standalone"
     sw = client.get("/sw.js")
     assert sw.status_code == 200 and "no-cache" in sw.headers["cache-control"]
+
+
+def test_dashboard_separates_formation_from_total_time(client):
+    d = client.get("/api/dashboard").json()
+    p = d["load"]["planned"]
+    assert abs(p["formation"] - 1790) < 15
+    assert p["total"] == pytest.approx(p["formation"] + p["practice"] + p["project"] + p["review"])
+    assert p["total"] > p["formation"] * 2   # formação não é "o tempo total"
+    c = d["catalog"]
+    assert c["declared_min"] == 3754 and c["identified_unique_min"] == 1790 and c["unidentified_min"] == 1938
+    assert all(t["to_confirm"] for t in d["tracks"])
+
+
+def test_reviews_today_counter(client, set_today):
+    cid = "GENAI-001.COURSE"
+    client.post(f"/api/lessons/{cid}/toggle", json={"completed": True})
+    assert client.get("/api/dashboard").json()["reviews_today"]["pending"] == 0
+    set_today("2026-11-14")
+    d = client.get("/api/dashboard").json()
+    assert d["reviews_today"]["pending"] >= 1
+    key = next(r["key"] for r in client.get("/api/reviews").json()["reviews"] if r["interval"] == 1)
+    client.post(f"/api/reviews/{key}/done")
+    d = client.get("/api/dashboard").json()
+    assert d["reviews_today"]["done"] == 1
+
+
+def test_course_unit_auto_completes_at_95_percent(client):
+    c = client.get("/api/contents/CODE-001").json()
+    unit = c["modules"][0]["lessons"][0]
+    assert unit["id"] == "CODE-001.COURSE" and unit["duration_min"] == 26
+    base = {"date": "2026-11-13", "type": "VIDEO", "target_kind": "lesson", "target_id": unit["id"], "title": "x"}
+    client.post("/api/sessions", json={**base, "actual_min": 10})
+    assert client.get("/api/contents/CODE-001").json()["modules"][0]["lessons"][0]["completed_on"] is None
+    client.post("/api/sessions", json={**base, "actual_min": 15})
+    assert client.get("/api/contents/CODE-001").json()["modules"][0]["lessons"][0]["completed_on"] == "2026-11-13"
+
+
+def test_plan_sessions_are_plan_artifacts_and_follow_real_duration(client):
+    cal = client.get("/api/calendar?start=2026-11-13&end=2027-01-31").json()["days"]
+    vid = sum(i["minutes"] for d in cal for i in d["items"] if i["kind"] == "video" and i["content_id"] == "GENAI-001")
+    assert abs(vid - 92) < 3                                   # soma das sessões = duração real
+    assert all(i["minutes"] <= 50 for d in cal for i in d["items"] if i["kind"] == "video")   # sessões ≤ bloco configurado
+
+
+def test_practice_override_is_configurable_and_separate_from_real_duration(client):
+    before = client.get("/api/catalog").json()["courses"]
+    c0 = next(c for c in before if c["id"] == "GENAI-001")
+    r = client.put("/api/settings", json={"practice_overrides": {"GENAI-001": 1.0}})
+    assert r.status_code == 200
+    after = next(c for c in client.get("/api/catalog").json()["courses"] if c["id"] == "GENAI-001")
+    assert after["duration_min"] == c0["duration_min"] == 92      # duração real intacta
+    assert after["practice_est_min"] > c0["practice_est_min"]
+    assert client.put("/api/settings", json={"practice_overrides": {"GENAI-001": 9}}).status_code == 422
+
+
+def test_competency_baselines_editable(client):
+    base = {c["id"]: c for c in client.get("/api/competencies").json()["competencies"]}
+    assert base["rag"]["baseline"] == 0
+    client.put("/api/settings", json={"competency_baselines": {"rag": 0.3}})
+    after = {c["id"]: c for c in client.get("/api/competencies").json()["competencies"]}
+    assert after["rag"]["baseline"] == 0.3 and after["rag"]["level"] >= 0.3
+    assert client.put("/api/settings", json={"competency_baselines": {"nope": 0.3}}).status_code == 422
+
+
+def test_lan_flag_and_import_makes_safety_backup(client, monkeypatch, tmp_path):
+    assert client.get("/api/health").json()["lan"] is False
+    monkeypatch.setenv("AST_LAN", "1")
+    assert client.get("/api/health").json()["lan"] is True
+    exp = client.get("/api/export").content
+    client.post("/api/import", files={"file": ("e.json", exp, "application/json")})
+    assert any("antes-de-importar" in f.name for f in (tmp_path / "backups").iterdir())
+
+
+def test_restore_rejects_corrupt_and_creates_safety_backup(client, tmp_path):
+    bk = client.get("/api/backup").content
+    assert client.post("/api/restore", files={"file": ("b.db", bk, "application/octet-stream")}).json()["safety_backup"].startswith("antes-de-restaurar")
+    assert client.post("/api/restore", files={"file": ("x.db", b"SQLite format 3\x00" + b"junk" * 50, "application/octet-stream")}).status_code == 400

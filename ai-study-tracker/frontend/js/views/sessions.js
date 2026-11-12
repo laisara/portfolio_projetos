@@ -21,7 +21,7 @@ async function sessionForm(session) {
         ${session ? `<div class="field"><label for="sf-status">Status</label><select id="sf-status" class="input">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${session.status === k ? "selected" : ""}>${v}</option>`).join("")}</select></div>` : ""}
       </div>
       ${session ? "" : `<div class="field"><label for="sf-status">Status</label><select id="sf-status" class="input">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select></div>
-      <label class="row" id="sf-complete-wrap" style="margin-bottom:14px;cursor:pointer"><input type="checkbox" id="sf-complete" checked> Marcar o curso inteiro (todos os blocos) como assistido</label>`}
+      <label class="row" id="sf-complete-wrap" style="margin-bottom:14px;cursor:pointer"><input type="checkbox" id="sf-complete" checked> Marcar o curso inteiro como assistido</label>`}
       <div class="field"><label for="sf-notes">Observações</label><textarea id="sf-notes" class="input" maxlength="4000">${esc(session?.notes || "")}</textarea></div>
       <div class="row" style="justify-content:flex-end"><button type="button" class="btn" data-close>Cancelar</button><button class="btn primary" id="sf-save">${icon("check")} Salvar</button></div>
     </form>`, { label: "Registrar sessão" });

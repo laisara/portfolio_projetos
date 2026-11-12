@@ -1,5 +1,6 @@
 @echo off
 setlocal
+set PYTHONUTF8=1
 cd /d "%~dp0"
 rem Feche o start.bat antes de restaurar.
 rem Uso: restore.bat database\backups\backup-AAAAMMDD-HHMMSS.db

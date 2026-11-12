@@ -1,63 +1,66 @@
-import { api, bar, esc, hm, hours, icon, pct, skeleton, verify } from "../core.js";
+import { api, bar, esc, hm, icon, pct, skeleton, verify } from "../core.js";
 
-let tab = "tracks";
+let tab = "courses";
+const BADGE = { "CONFIRMADO": "good", "INFERIDO": "warn", "A VERIFICAR": "warn", "NÃO IDENTIFICADO": "warn", "ESTIMATIVA DO SISTEMA": "" };
+const badge = (txt) => { const key = Object.keys(BADGE).find((k) => (txt || "").startsWith(k)); return `<span class="chip ${BADGE[key] ?? ""}" style="height:20px;font-size:11px">${esc(txt)}</span>`; };
 
 export default async function catalog(el) {
   el.innerHTML = skeleton(500);
   const d = await api("/catalog");
   const a = d.analysis;
-  const focusTrack = sessionStorage.getItem("ast:track"); sessionStorage.removeItem("ast:track");
+  const cell = (label, val, note, extra = "") => `<div><div class="stat-label">${label}</div><div class="stat-value num" ${extra}>${val}</div><div class="faint" style="font-size:12.5px">${note}</div></div>`;
   el.innerHTML = `
-  <div class="page-head"><div><p class="eyebrow">${esc(a.name || "Formação")}</p><h1>Catálogo da formação</h1></div>
-    <div class="seg" role="group" aria-label="Visualização"><button data-tab="tracks" aria-pressed="${tab === "tracks"}">Trilhas</button><button data-tab="sequence" aria-pressed="${tab === "sequence"}">Sequência de estudo</button><button data-tab="analysis" aria-pressed="${tab === "analysis"}">Análise</button></div></div>
+  <div class="page-head"><div><p class="eyebrow">${esc(a.name || "Formação")}</p><h1>Catálogo e auditoria de carga</h1></div>
+    <div class="seg" role="group" aria-label="Visualização"><button data-tab="courses" aria-pressed="${tab === "courses"}">Cursos</button><button data-tab="tracks" aria-pressed="${tab === "tracks"}">Trilhas</button><button data-tab="audit" aria-pressed="${tab === "audit"}">Auditoria</button></div></div>
 
-  <section class="panel flush" aria-label="Carga bruta x única">
-    <div class="compare">
-      <div><div class="stat-label">Carga bruta (declarada)</div><div class="stat-value num">${hm(a.gross_min, { compact: true })}</div><div class="faint" style="font-size:12.5px">soma de todas as aparições nas trilhas</div></div>
-      <div><div class="stat-label">Conteúdo único</div><div class="stat-value num">${hm(a.unique_min, { compact: true })}</div><div class="faint" style="font-size:12.5px">${a.duplicates.length} conteúdo(s) repetido(s) contado(s) uma vez · −${hm(a.duplicates.reduce((s, x) => s + x.saved_min, 0))}</div></div>
-      <div><div class="stat-label">Visível nos prints</div><div class="stat-value num">${hm(a.visible_unique_min, { compact: true })} <small>únicos</small></div><div class="faint" style="font-size:12.5px">${a.courses_unique} cursos · reserva ${verify(true)} ${hm(a.reserve_min, { compact: true })}</div></div>
+  <section class="panel flush" aria-label="De onde vêm as 63 horas">
+    <div class="compare" style="grid-template-columns:repeat(4,1fr)">
+      ${cell("Carga declarada da formação", hm(a.declared_min, { compact: true }), "informada no cabeçalho do print")}
+      ${cell("Carga identificada nos prints", hm(a.identified_gross_min, { compact: true }), `${a.appearances} aparições de ${a.courses} cursos`, 'style="color:var(--green-hover)"')}
+      ${cell("Conteúdo duplicado", hm(a.duplicate_min, { compact: true }), `${a.duplicates.length} curso repetido · conta 1x → único ${hm(a.identified_unique_min)}`)}
+      ${cell("Ainda não identificado", hm(a.unidentified_min, { compact: true }), `<span class="verify">NÃO IDENTIFICADO</span> não agendado`)}
     </div>
   </section>
-  ${a.status !== "final" ? `<div class="notice section" style="margin-top:16px">${icon("triangle-alert")}<div>${esc(a.note || "")}<br><span class="faint">Quando você mandar os prints que faltam (nomes das trilhas, cursos #1/#2, trilhas 7–8 e listas de aulas), basta atualizar <span class="mono">data/catalog.json</span> ou importar em Ajustes → Catálogo.</span></div></div>` : ""}
+  <p class="faint" style="font-size:12.5px;margin:8px 2px 0">Não identificado = declarada − identificada bruta. Se a plataforma somou só conteúdo único, seria ${hm(a.unidentified_if_unique_min)} <span class="verify">VERIFICAR</span>. Nenhuma dessas horas é tratada como curso real.</p>
   <div id="cat-body" class="section"></div>`;
 
   const body = el.querySelector("#cat-body");
   const draw = () => {
-    if (tab === "tracks") {
-      body.innerHTML = d.tracks.map((t) => `
-      <section class="section" id="trk-${t.id}" style="margin-top:20px">
-        <div class="section-head"><div class="row"><span class="track-num">${t.ord}</span><h2>${esc(t.title)} ${verify(t.verify, "NOME")}</h2><span class="faint">· ${esc(t.theme || "")}</span></div>
-          <div class="row" style="min-width:180px">${bar(t.pct)}<span class="num" style="font-weight:600">${pct(t.pct)}</span></div></div>
-        <div class="panel flush">${t.slots.map((s) => s.placeholder
-          ? `<div class="slot placeholder"><span class="track-num">${s.position}</span><div>Curso na posição #${s.position} não visível nos prints ${verify(true)}</div><span class="faint">—</span></div>`
-          : `<a class="slot" href="#/course/${encodeURIComponent(s.content_id)}"><span class="track-num">${s.position}</span>
-              <div style="min-width:0"><div style="font-weight:500">${esc(s.title)} ${s.reserve ? verify(true, "NÃO MAPEADO") : ""}</div>
-                <div class="row wrap" style="gap:8px;margin-top:4px"><span class="id-tag">${s.content_id}</span>${s.shared_with.length ? `<span class="chip accent">${icon("git-branch")} também na ${s.shared_with.map((x) => x.replace("T", "Trilha ")).join(", ")} · contado 1x</span>` : ""}</div></div>
-              <div style="text-align:right;min-width:90px"><div class="num" style="font-weight:600">${hm(s.duration_min, { compact: true })}</div><div class="faint num" style="font-size:12px">${pct(s.pct)}</div></div></a>`).join("")}
-        </div>
-        <div class="row wrap faint" style="font-size:12.5px;margin-top:8px;gap:14px"><span>${hours(t.video_total)} de vídeo</span><span>${t.lessons_done}/${t.lessons} aulas/blocos</span>${t.projects.length ? `<span>Lab: ${t.projects.map((p) => p.id).join(", ")}</span>` : ""}</div>
-      </section>`).join("");
-      if (focusTrack) document.getElementById(`trk-${focusTrack}`)?.scrollIntoView({ behavior: "smooth" });
-    } else if (tab === "sequence") {
-      body.innerHTML = `<div class="notice info" style="margin-bottom:16px">${icon("info")}<div>A ordem de estudo não é a ordem das trilhas: cada curso é estudado <b>uma única vez</b>, numa sequência pedagógica (fundamentos → uso profissional de LLM → programação com IA → ferramentas → agentes → aplicações). Cursos repetidos entre trilhas aparecem só uma vez aqui.</div></div>
-      <div class="panel flush">${d.sequence.map((c, i) => `<a class="slot" href="#/course/${encodeURIComponent(c.id)}"><span class="track-num">${i + 1}</span>
-        <div><div style="font-weight:500">${esc(c.title)} ${c.reserve ? verify(true, "NÃO MAPEADO") : ""}</div><div style="margin-top:6px;max-width:320px">${bar(c.pct, "", "thin")}</div></div>
-        <div style="text-align:right"><span class="id-tag">${c.id}</span><div class="num faint" style="font-size:12.5px;margin-top:4px">${hm(c.duration_min, { compact: true })}</div></div></a>`).join("")}</div>`;
+    if (tab === "courses") {
+      body.innerHTML = `<div class="panel flush">${d.courses.sort((x, y) => x.study_ord - y.study_ord).map((c, i) => `
+        <a class="slot" href="#/course/${encodeURIComponent(c.id)}" style="grid-template-columns:32px 1fr auto">
+          <span class="track-num">${i + 1}</span>
+          <div style="min-width:0"><div style="font-weight:500">${esc(c.title)}</div>
+            <div class="row wrap" style="gap:8px;margin-top:5px"><span class="id-tag">${c.id}</span>
+              <span class="faint" style="font-size:12px">print: ${c.appearances.map((p) => "#" + p.position).join(" e ")}</span>
+              ${c.appearances.length > 1 ? `<span class="chip accent">${icon("git-branch")} aparece ${c.appearances.length}x · conta 1x</span>` : ""}
+              <span class="faint" style="font-size:12px">Trilha:</span><span class="verify">VERIFICAR</span></div></div>
+          <div style="text-align:right;min-width:150px"><div class="num" style="font-weight:600">${hm(c.duration_min, { compact: true })} <span class="faint" style="font-weight:400;font-size:12px">vídeo</span></div>
+            <div class="faint num" style="font-size:12px">prática est. ${hm(c.practice_est_min, { compact: true })} · ${pct(c.pct)}</div></div></a>`).join("")}</div>
+        <p class="faint" style="font-size:12.5px;margin-top:10px">A ordem é uma <b>sugestão do sistema</b> (fundamentos → uso de LLM → programação → ferramentas → agentes), não a ordem das trilhas.</p>`;
+    } else if (tab === "tracks") {
+      body.innerHTML = `<div class="notice info" style="margin-bottom:16px">${icon("info")}<div>A formação declara <b>${a.tracks_total} trilhas</b>, mas os prints não mostram o nome de nenhuma nem a qual trilha cada card pertence. Para não inventar, todas estão <b>A confirmar</b>. Quando você enviar essa informação, a associação passa a valer e o progresso por trilha aparece.</div></div>
+        <div class="panel flush">${d.tracks.map((t) => t.to_confirm
+          ? `<div class="slot placeholder" style="grid-template-columns:32px 1fr auto"><span class="track-num">${t.ord}</span><div>${esc(t.title)}</div><span class="verify">A CONFIRMAR</span></div>`
+          : `<div class="slot" style="grid-template-columns:32px 1fr auto"><span class="track-num">${t.ord}</span><div><b>${esc(t.title)}</b>${t.name ? " · " + esc(t.name) : ""}<div class="faint" style="font-size:12.5px">${t.courses.map((c) => esc(c.title)).join(" · ")}</div></div><div style="min-width:140px">${bar(t.pct)}</div></div>`).join("")}</div>
+        <div class="section-head" style="margin-top:24px"><span class="label">Possível agrupamento pelas posições dos cards (INFERIDO)</span></div>
+        <div class="panel">${Object.entries(d.courses.reduce((g, c) => { c.appearances.forEach((p) => (g[p.inferred_group || "?"] ||= []).push({ ...p, title: c.title })); return g; }, {})).sort().map(([g, items]) => `
+          <div class="row wrap" style="padding:6px 0;gap:8px"><span class="chip">grupo ${g}</span>${items.sort((x, y) => x.position - y.position).map((i) => `<span class="faint" style="font-size:12.5px">#${i.position} ${esc(i.title)}</span>`).join('<span class="faint">›</span>')}</div>`).join("")}
+          <p class="faint" style="font-size:12px;margin:8px 0 0">Deduzido de cards com posições consecutivas e posições repetidas (dois cards #3 não podem estar na mesma trilha). Não é fato: não use como trilha.</p></div>`;
     } else {
       body.innerHTML = `<div class="grid grid-2">
-        <section class="panel"><h2 style="margin-bottom:12px">Contagem</h2>
-          <dl class="kv"><dt>Trilhas</dt><dd>${a.tracks} de ${a.declared_tracks ?? "?"} declaradas (2 sem nenhum curso visível)</dd>
-          <dt>Cursos únicos visíveis</dt><dd>${a.courses_unique}</dd><dt>Aparições nas trilhas</dt><dd>${a.course_appearances}</dd>
-          <dt>Posições não visíveis</dt><dd>${a.placeholders} ${verify(true)}</dd>
-          <dt>Aulas mapeadas</dt><dd>${a.lessons_mapped} ${a.lessons_mapped === 0 ? verify(true, "LISTAS DE AULAS") : ""}</dd>
-          <dt>Blocos de estudo</dt><dd>${a.study_blocks} (cursos sem lista de aulas são divididos em blocos de ~40 min — a duração total é real)</dd>
-          <dt>Duração declarada</dt><dd class="num">${hm(a.declared_min)}</dd></dl></section>
-        <section class="panel"><h2 style="margin-bottom:12px">Duplicidades e sobreposições</h2>
-          ${a.duplicates.map((x) => `<div class="mini-list"><div><span class="id-tag">${x.content_id}</span><span>${esc(x.title)}</span><span class="spacer"></span><span class="faint">${x.tracks.join(" + ")} · ${hm(x.duration_min)}</span></div></div>`).join("")}
-          <p class="faint" style="font-size:12.5px">Mesmo ID em várias trilhas: conta 1x no progresso e na carga horária, mas o progresso aparece em todas as trilhas.</p>
-          ${a.overlaps.map((x) => `<div class="notice info" style="margin-top:10px">${icon("layers")}<div><b>${esc(x.title)}</b><br>${esc(x.note)}</div></div>`).join("")}
-          ${a.intro_courses.length ? `<p style="margin-top:14px"><b>Introdutórios:</b> ${a.intro_courses.map((x) => esc(x.title)).join(", ")}</p>` : ""}
-        </section></div>`;
+        <section class="panel"><h2 style="margin-bottom:12px">Status dos dados</h2>
+          <dl class="kv"><dt>Título, duração, posição</dt><dd>${badge("CONFIRMADO")} nos prints (instrutor truncado como no print)</dd>
+          <dt>Trilha de cada curso</dt><dd>${badge("A VERIFICAR")} ${a.courses_without_confirmed_track} de ${a.courses} sem trilha</dd>
+          <dt>Nomes das trilhas</dt><dd>${badge("A VERIFICAR")} ${a.tracks_confirmed}/${a.tracks_total} confirmadas</dd>
+          <dt>Módulos e aulas</dt><dd>${badge("NÃO IDENTIFICADO")} só o Antigravity informa "17 aulas"; nenhum título de aula</dd>
+          <dt>Prática por curso</dt><dd>${badge("ESTIMATIVA DO SISTEMA")} configurável em Ajustes</dd>
+          <dt>Ordem de estudo</dt><dd>${badge("INFERIDO")} sugestão do sistema</dd>
+          <dt>Unidades no catálogo</dt><dd>${a.course_level_units} cursos inteiros · ${a.lessons_identified} aulas identificadas</dd></dl></section>
+        <section class="panel"><h2 style="margin-bottom:12px">Duplicidade e sobreposição</h2>
+          ${a.duplicates.map((x) => `<div class="mini-list"><div><span class="id-tag">${x.content_id}</span><span>${esc(x.title)}</span><span class="spacer"></span><span class="faint">cards #${x.positions.join(" e #")} · ${hm(x.duration_min)}</span></div></div>`).join("")}
+          <p class="faint" style="font-size:12.5px">Mesmo título, duração, instrutor e nº de inscritos nos dois cards → o mesmo curso. Conta 1x na carga e no progresso. Trilhas: ${badge("A VERIFICAR")}</p>
+          ${a.overlaps.map((x) => `<div class="notice info" style="margin-top:10px">${icon("layers")}<div><b>${esc(x.title)}</b><br>${esc(x.note)}</div></div>`).join("")}</section></div>`;
     }
   };
   el.querySelectorAll("[data-tab]").forEach((b) => b.onclick = () => { tab = b.dataset.tab; el.querySelectorAll("[data-tab]").forEach((x) => x.setAttribute("aria-pressed", x === b)); draw(); });

@@ -37,7 +37,7 @@ export default async function skills(el) {
       <section class="panel" style="display:grid;place-items:center">${radar(cs)}
         <div class="legend" style="margin-top:6px"><span><span class="dot" style="background:var(--accent)"></span>Atual</span><span><span class="dot" style="background:var(--text-3)"></span>Ponto de partida (experiência prévia)</span></div></section>
       <section class="panel"><h2 style="margin-bottom:10px">Como é calculado</h2>
-        <p class="muted" style="margin:0 0 10px;font-size:13px">Cada competência parte do seu conhecimento prévio (Python, SQL, APIs, automação) e evolui com evidências de aprendizado:</p>
+        <p class="muted" style="margin:0 0 10px;font-size:13px">Cada competência parte de um ponto de partida <b>estimado e editável</b> (Ajustes) — não é um fato medido — e evolui com evidências reais de aprendizado:</p>
         <div class="mini-list"><div><span class="dot k-video"></span>Conteúdo assistido<span class="spacer"></span><b>35%</b></div><div><span class="dot k-practice"></span>Prática concluída<span class="spacer"></span><b>30%</b></div>
         <div><span class="dot k-project"></span>Projetos do Lab (horas + checklist)<span class="spacer"></span><b>25%</b></div><div><span class="dot k-review"></span>Revisões em dia<span class="spacer"></span><b>10%</b></div></div>
         <p class="faint" style="font-size:12.5px;margin:10px 0 0">${icon("info", "icon icon-sm")} RAG não aparece nos cursos visíveis: essa competência evolui pelo LAB-6 do AI Agent Lab.</p></section>

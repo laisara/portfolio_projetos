@@ -39,7 +39,8 @@ def session_for(item: dict, day: str, factor: float = 1.0) -> dict:
             "notes": random.choice(NOTES)}
     if k == "video":
         return {**base, "type": "VIDEO", "target_kind": "lesson", "target_id": item["ref"],
-                "complete_lessons": [item["ref"]] if factor >= 0.95 and not item["detail"].get("partial") else []}
+                "complete_lessons": [item["ref"]] if factor >= 0.95 and not item["detail"].get("partial")
+                and (not item["detail"].get("course_level") or item["detail"].get("block") == item["detail"].get("of")) else []}
     if k == "practice":
         return {**base, "type": "PRACTICE", "target_kind": "module", "target_id": item["ref"]}
     if k == "project":

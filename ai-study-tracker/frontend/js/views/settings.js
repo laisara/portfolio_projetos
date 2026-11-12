@@ -1,4 +1,4 @@
-import { api, busy, confirmDialog, esc, fmtDate, hm, icon, toast, WEEK } from "../core.js";
+import { api, busy, confirmDialog, esc, fmtDate, hm, icon, pct, toast, WEEK } from "../core.js";
 
 function download(blob, name) {
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click();
@@ -92,6 +92,36 @@ export default async function settings(el) {
       window.dispatchEvent(new Event("study:changed"));
     } catch (err) { toast(err.message.startsWith("Unexpected") ? "JSON inválido." : err.message, { type: "error" }); }
   };
+  // LAN: aviso explícito
+  el.querySelector(".grid.grid-2").insertAdjacentHTML("beforebegin", h.lan
+    ? `<div class="notice" style="margin-bottom:16px">${icon("triangle-alert")}<div><b>Modo LAN ativo.</b> Qualquer dispositivo com acesso à sua rede Wi-Fi pode abrir este app e ler/alterar seus dados (não há senha). Use só em rede confiável.</div></div>` : "");
+
+  // Prática por curso e pontos de partida (estimativas editáveis)
+  const [cat, comps] = await Promise.all([api("/catalog"), api("/competencies")]);
+  el.insertAdjacentHTML("beforeend", `<div class="grid grid-2 section">
+    <section class="panel"><h2 style="margin-bottom:6px">Prática por curso <span class="chip" style="height:20px;font-size:11px">ESTIMATIVA DO SISTEMA</span></h2>
+      <p class="faint" style="font-size:12.5px;margin:0 0 12px">Prática = % da duração real do vídeo. Não vem dos prints.</p>
+      <form id="pr-form">${cat.courses.map((c) => `<div class="row" style="padding:5px 0;border-top:1px solid var(--border)">
+        <label for="pr-${c.id}" style="flex:1;min-width:0"><span style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(c.title)}</span><span class="faint" style="font-size:11.5px">vídeo ${hm(c.duration_min)} → prática ${hm(c.practice_est_min)}</span></label>
+        <input id="pr-${c.id}" data-id="${c.id}" class="input num" type="number" min="0" max="300" step="5" value="${Math.round(c.practice_ratio * 100)}" style="width:78px"><span class="faint">%</span></div>`).join("")}
+        <button class="btn primary" style="margin-top:12px" id="pr-save">${icon("check")} Salvar e recalcular</button></form></section>
+    <section class="panel"><h2 style="margin-bottom:6px">Competências: ponto de partida <span class="chip" style="height:20px;font-size:11px">ESTIMATIVA EDITÁVEL</span></h2>
+      <p class="faint" style="font-size:12.5px;margin:0 0 12px">Quanto você já domina antes da formação. Valores iniciais são chutes razoáveis; ajuste à sua realidade.</p>
+      <form id="bl-form">${comps.competencies.map((c) => `<div class="row" style="padding:5px 0;border-top:1px solid var(--border)">
+        <label for="bl-${c.id}" style="flex:1">${esc(c.label)}</label>
+        <input id="bl-${c.id}" data-id="${c.id}" class="input num" type="number" min="0" max="100" step="5" value="${Math.round(c.baseline * 100)}" style="width:78px"><span class="faint">%</span></div>`).join("")}
+        <button class="btn primary" style="margin-top:12px" id="bl-save">${icon("check")} Salvar</button></form></section></div>`);
+  const saveMap = (formSel, key, divisor, btnSel) => el.querySelector(formSel).onsubmit = async (e) => {
+    e.preventDefault();
+    const map = {};
+    el.querySelectorAll(`${formSel} input[data-id]`).forEach((i) => { map[i.dataset.id] = Math.max(0, Math.min(key === "practice_overrides" ? 300 : 100, +i.value || 0)) / divisor; });
+    const btn = el.querySelector(btnSel); busy(btn);
+    try { await api("/settings", { method: "PUT", body: { [key]: map } }); toast("Salvo e plano recalculado.", { type: "good" }); window.dispatchEvent(new Event("study:changed")); }
+    catch (err) { toast(err.message, { type: "error" }); } finally { busy(btn, false); }
+  };
+  saveMap("#pr-form", "practice_overrides", 100, "#pr-save");
+  saveMap("#bl-form", "competency_baselines", 100, "#bl-save");
+
   const inst = el.querySelector("#install");
   const enable = () => { if (window.__installPrompt) inst.disabled = false; };
   enable(); window.addEventListener("pwa:installable", enable, { once: true });

@@ -6,6 +6,7 @@ apagado. Apenas o planejamento de hoje em diante é recalculado.
 from __future__ import annotations
 
 import json
+import math
 import sqlite3
 from collections import defaultdict
 from datetime import date, datetime, timedelta
@@ -27,14 +28,20 @@ def load_catalog(conn: sqlite3.Connection) -> dict[str, Any]:
     return {"contents": contents, "modules": {m["id"]: m for m in modules}, "lessons": lessons}
 
 
-def practice_planned(cat: dict) -> dict[str, float]:
-    """Minutos de prática planejados por módulo/bloco."""
+def practice_ratio(content: dict, cfg: dict) -> float:
+    """Estimativa de prática/vídeo: override do usuário > padrão do catálogo."""
+    ov = (cfg.get("practice_overrides") or {}).get(content["id"])
+    return float(content["practice_ratio"] if ov is None else ov)
+
+
+def practice_planned(cat: dict, cfg: dict) -> dict[str, float]:
+    """Minutos de prática ESTIMADOS por módulo (≠ duração real das aulas)."""
     by_module: dict[str, float] = defaultdict(float)
     for l in cat["lessons"]:
         by_module[l["module_id"]] += l["duration_min"]
     out = {}
     for mid, vid in by_module.items():
-        ratio = cat["contents"][cat["modules"][mid]["content_id"]]["practice_ratio"]
+        ratio = practice_ratio(cat["contents"][cat["modules"][mid]["content_id"]], cfg)
         out[mid] = max(10.0, round5(vid * ratio)) if ratio > 0 else 0.0
     return out
 
@@ -86,46 +93,79 @@ def real_reviews(conn: sqlite3.Connection, cat: dict, cfg: dict, today: date) ->
 
 
 # ---------------------------------------------------------------- plano
-def plan_inputs(conn: sqlite3.Connection, today: date) -> dict:
-    cfg = settings_mod.load(conn)
-    cat = load_catalog(conn)
-    lp = lesson_state(conn)
-    planned_practice = practice_planned(cat)
-    credit = session_credit(conn, "PRACTICE", "module")
+def make_units(cat: dict, cfg: dict, lp: dict, credit: dict[str, float]) -> list[Unit]:
+    """Unidades de agenda a partir do catálogo REAL e do progresso.
 
-    units: list[Unit] = []
+    - Curso com aulas identificadas: cada aula + a prática do módulo.
+    - Curso sem lista de aulas (hoje, todos): o curso é uma unidade só; o PLANO o divide em
+      sessões de vídeo de até `block_minutes`, cada uma seguida da sua prática. Essas sessões
+      existem só no cronograma e são recalculadas — não fazem parte do catálogo.
+    """
+    block = float(cfg.get("block_minutes", 45))
+    pp = practice_planned(cat, cfg)
     mod_lessons: dict[str, list[dict]] = defaultdict(list)
     order: list[str] = []
     for l in cat["lessons"]:
         if l["module_id"] not in mod_lessons:
             order.append(l["module_id"])
         mod_lessons[l["module_id"]].append(l)
+    units: list[Unit] = []
     for mid in order:
         m = cat["modules"][mid]
         c = cat["contents"][m["content_id"]]
+        nat = NATURES.get(c["nature"], NATURES["ferramenta"])
+        prac_rem = max(0.0, pp.get(mid, 0) - credit.get(mid, 0))
+        course_level = all(l["segment"] for l in mod_lessons[mid])
+        if course_level:
+            l = mod_lessons[mid][0]
+            st = lp.get(l["id"])
+            if st and st["completed_on"]:
+                continue
+            rem = max(5.0, l["duration_min"] - (st["watched_min"] if st else 0))
+            n = max(1, math.ceil(rem / block - 0.05))
+            vid = [round(rem / n)] * n
+            vid[-1] = round(rem - sum(vid[:-1]))
+            pr = [round5(prac_rem / n)] * n if prac_rem >= 5 else [0.0] * n
+            if prac_rem >= 5:
+                pr[-1] = max(0.0, round5(prac_rem - sum(pr[:-1])))
+            for i in range(n):
+                title = c["title"] + (f" · sessão {i + 1}/{n}" if n > 1 else "")
+                units.append(Unit(f"V:{l['id']}:{i}", "video", l["id"], title, float(vid[i]), c["id"], "APRENDER",
+                                  {"lesson_id": l["id"], "module_id": mid, "course": c["title"], "block": i + 1, "of": n,
+                                   "course_level": True}))
+                if pr[i] >= 5:
+                    units.append(Unit(f"P:{mid}:{i}", "practice", mid, f"Prática · {c['title']}" + (f" · {i + 1}/{n}" if n > 1 else ""),
+                                      float(pr[i]), c["id"], nat["phase"],
+                                      {"module_id": mid, "course": c["title"], "action": nat["action"], "block": i + 1, "of": n}, splittable=True))
+            continue
         for l in mod_lessons[mid]:
             st = lp.get(l["id"])
             if st and st["completed_on"]:
                 continue
             remaining = max(5.0, l["duration_min"] - (st["watched_min"] if st else 0))
             units.append(Unit(f"V:{l['id']}", "video", l["id"], l["title"], remaining, c["id"], "APRENDER",
-                              {"lesson_id": l["id"], "module_id": mid, "course": c["title"],
-                               "verify": bool(l["verify"]), "segment": bool(l["segment"])},
-                              splittable=bool(l["segment"]) or l["duration_min"] > 50))
-        rem = planned_practice.get(mid, 0) - credit.get(mid, 0)
-        if rem >= 5:
-            nat = NATURES.get(c["nature"], NATURES["ferramenta"])
-            units.append(Unit(f"P:{mid}", "practice", mid, f"Prática · {c['title']}" + (f" · {m['title']}" if m['title'] else ""),
-                              round5(rem) or 5.0, c["id"], nat["phase"],
-                              {"module_id": mid, "course": c["title"], "action": nat["action"]}, splittable=True))
+                              {"lesson_id": l["id"], "module_id": mid, "course": c["title"]},
+                              splittable=l["duration_min"] > 50))
+        if prac_rem >= 5:
+            units.append(Unit(f"P:{mid}", "practice", mid, f"Prática · {c['title']} · {m['title']}", round5(prac_rem) or 5.0,
+                              c["id"], nat["phase"], {"module_id": mid, "course": c["title"], "action": nat["action"]}, splittable=True))
+    return units
 
-    stage_credit = session_credit(conn, "PROJECT", "stage")
+
+def make_stages(conn: sqlite3.Connection, cat: dict, stage_credit: dict[str, float], pristine: bool = False) -> list[Stage]:
     stages = []
     for s in db.rows(conn, "SELECT * FROM lab_stages ORDER BY ord"):
-        rem = 0.0 if s["status"] == "done" else max(0.0, s["planned_hours"] * 60 - stage_credit.get(s["id"], 0))
+        rem = s["planned_hours"] * 60 if pristine else (0.0 if s["status"] == "done" else max(0.0, s["planned_hours"] * 60 - stage_credit.get(s["id"], 0)))
         unlock = s["unlock_after"] if s["unlock_after"] in cat["contents"] else None
         stages.append(Stage(s["id"], f"AI Agent Lab · {s['title']}", round5(rem), unlock))
+    return stages
 
+
+def plan_inputs(conn: sqlite3.Connection, today: date) -> dict:
+    cfg = settings_mod.load(conn)
+    cat = load_catalog(conn)
+    units = make_units(cat, cfg, lesson_state(conn), session_credit(conn, "PRACTICE", "module"))
+    stages = make_stages(conn, cat, session_credit(conn, "PROJECT", "stage"))
     reviews = [Review(r["key"], date.fromisoformat(r["learned_on"]), r["interval"], date.fromisoformat(r["due"]),
                       r["minutes"], real=True)
                for r in real_reviews(conn, cat, cfg, today) if r["status"] in ("due", "scheduled")]
@@ -140,24 +180,8 @@ def pristine_plan(conn: sqlite3.Connection) -> PlanResult:
     """Plano original completo (sem progresso) — base do resumo de planejamento."""
     cfg = settings_mod.load(conn)
     cat = load_catalog(conn)
-    pp = practice_planned(cat)
-    units, seen = [], []
-    mods: dict[str, list] = defaultdict(list)
-    for l in cat["lessons"]:
-        if l["module_id"] not in mods:
-            seen.append(l["module_id"])
-        mods[l["module_id"]].append(l)
-    for mid in seen:
-        c = cat["contents"][cat["modules"][mid]["content_id"]]
-        for l in mods[mid]:
-            units.append(Unit(f"V:{l['id']}", "video", l["id"], l["title"], l["duration_min"], c["id"], "APRENDER",
-                              splittable=bool(l["segment"]) or l["duration_min"] > 50))
-        if pp.get(mid, 0) >= 5:
-            units.append(Unit(f"P:{mid}", "practice", mid, "Prática", pp[mid], c["id"], "CONSTRUIR", splittable=True))
-    stages = [Stage(s["id"], s["title"], s["planned_hours"] * 60,
-                    s["unlock_after"] if s["unlock_after"] in cat["contents"] else None)
-              for s in db.rows(conn, "SELECT * FROM lab_stages ORDER BY ord")]
-    return build_plan(start=date.fromisoformat(cfg["start_date"]), units=units, stages=stages, reviews=[], settings=cfg)
+    return build_plan(start=date.fromisoformat(cfg["start_date"]), units=make_units(cat, cfg, {}, {}),
+                      stages=make_stages(conn, cat, {}, pristine=True), reviews=[], settings=cfg)
 
 
 def recalculate(conn: sqlite3.Connection, reason: str = "manual") -> dict:
@@ -196,7 +220,7 @@ def ensure_plan_fresh(conn: sqlite3.Connection) -> None:
 def progress(conn: sqlite3.Connection) -> dict:
     cat = load_catalog(conn)
     lp = lesson_state(conn)
-    pp = practice_planned(cat)
+    pp = practice_planned(cat, settings_mod.load(conn))
     pcredit = session_credit(conn, "PRACTICE", "module")
     scredit = session_credit(conn, "PROJECT", "stage")
     stages = db.rows(conn, "SELECT * FROM lab_stages ORDER BY ord")

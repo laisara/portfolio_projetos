@@ -174,7 +174,8 @@ function finishDialog() {
       <div class="field"><label for="fd-min">Tempo realizado (min)</label><input id="fd-min" class="input num" type="number" min="1" max="720" value="${mins}" required></div>
       <div class="field"><label for="fd-status">Status</label><select id="fd-status" class="input"><option value="done">Concluída</option><option value="partial">Parcial (continuar depois)</option></select></div>
     </div>
-    ${s.kind === "video" ? `<label class="row" style="margin-bottom:14px;cursor:pointer"><input type="checkbox" id="fd-lesson" checked> Marcar aula/bloco como concluído</label>` : ""}
+    ${s.kind === "video" && !s.detail?.course_level ? `<label class="row" style="margin-bottom:14px;cursor:pointer"><input type="checkbox" id="fd-lesson" checked> Marcar aula como concluída</label>` : ""}
+    ${s.kind === "video" && s.detail?.course_level ? `<p class="faint" style="font-size:12.5px">O tempo entra no progresso do curso; ele é concluído sozinho ao chegar a 95% assistido.</p>` : ""}
     ${s.kind === "review" ? `<p class="faint" style="font-size:12.5px">${(s.review_keys || []).length} revisão(ões) serão marcadas como feitas.</p>` : ""}
     <div class="field"><label for="fd-notes">Observações / o que aprendi</label><textarea id="fd-notes" class="input" maxlength="4000" placeholder="Uma frase sobre o que ficou claro e o que ainda está confuso."></textarea></div>
     <div class="row" style="justify-content:flex-end"><button class="btn" id="fd-back">Voltar ao timer</button><button class="btn primary" id="fd-save">${icon("check")} Registrar sessão</button></div>`,

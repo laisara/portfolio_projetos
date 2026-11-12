@@ -34,9 +34,12 @@ def validate_db_file(path: Path) -> None:
             raise ValueError("O arquivo não é um banco SQLite válido.")
     conn = sqlite3.connect(path)
     try:
-        if conn.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
-            raise ValueError("Banco corrompido (integrity_check falhou).")
-        names = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        try:
+            if conn.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
+                raise ValueError("Banco corrompido (integrity_check falhou).")
+            names = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        except sqlite3.DatabaseError as exc:
+            raise ValueError(f"Banco corrompido ou ilegível: {exc}") from exc
         missing = REQUIRED_TABLES - names
         if missing:
             raise ValueError(f"Backup incompatível: faltam tabelas {sorted(missing)}.")

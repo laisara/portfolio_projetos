@@ -5,21 +5,21 @@ CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 
 -- Catálogo -----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS tracks (
-  id TEXT PRIMARY KEY, ord INTEGER NOT NULL, title TEXT NOT NULL, theme TEXT,
-  verify INTEGER NOT NULL DEFAULT 0
+  id TEXT PRIMARY KEY, ord INTEGER NOT NULL, title TEXT NOT NULL, name TEXT,
+  confirmed INTEGER NOT NULL DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS contents (
   id TEXT PRIMARY KEY, title TEXT NOT NULL, instructor TEXT, nature TEXT,
   practice_ratio REAL NOT NULL, duration_min REAL NOT NULL, lesson_count INTEGER,
   lessons_known INTEGER NOT NULL DEFAULT 0, intro INTEGER NOT NULL DEFAULT 0,
-  reserve INTEGER NOT NULL DEFAULT 0, verify INTEGER NOT NULL DEFAULT 0,
-  study_ord INTEGER NOT NULL, competencies TEXT NOT NULL DEFAULT '[]', overlap_note TEXT
+  verify INTEGER NOT NULL DEFAULT 0, confidence TEXT NOT NULL DEFAULT '{}',
+  study_ord INTEGER NOT NULL, competencies TEXT NOT NULL DEFAULT '[]', overlap_note TEXT, nature_default_ratio REAL
 );
-CREATE TABLE IF NOT EXISTS track_slots (
-  track_id TEXT NOT NULL REFERENCES tracks(id) ON DELETE CASCADE,
-  position INTEGER NOT NULL, content_id TEXT REFERENCES contents(id) ON DELETE CASCADE,
-  placeholder INTEGER NOT NULL DEFAULT 0,
-  PRIMARY KEY (track_id, position)
+-- Aparições de um curso nos prints. track_id NULL = trilha A VERIFICAR.
+CREATE TABLE IF NOT EXISTS appearances (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  content_id TEXT NOT NULL REFERENCES contents(id) ON DELETE CASCADE,
+  track_id TEXT, position INTEGER NOT NULL, inferred_group TEXT
 );
 CREATE TABLE IF NOT EXISTS modules (
   id TEXT PRIMARY KEY, content_id TEXT NOT NULL REFERENCES contents(id) ON DELETE CASCADE,

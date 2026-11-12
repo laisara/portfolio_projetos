@@ -12,25 +12,26 @@ export default async function plan(el) {
     <button class="btn" id="recalc">${icon("refresh-cw")} Recalcular agora</button></div>
 
   <div class="grid grid-2">
-    <section class="panel"><h2 style="margin-bottom:10px">Carga</h2>
+    <section class="panel"><h2 style="margin-bottom:10px">Carga planejada (conteúdo identificado)</h2>
       <div class="mini-list">
-        ${row(`<span class="dot k-video" style="display:inline-block;margin-right:8px"></span>Carga de vídeo (bruta)`, hm(a.gross_min), "todas as trilhas")}
-        ${row(`<span class="dot k-video" style="display:inline-block;margin-right:8px"></span>Conteúdo único`, hm(a.unique_min), `−${hm(a.gross_min - a.unique_min)} repetido`)}
-        ${row(`<span class="dot k-practice" style="display:inline-block;margin-right:8px"></span>Prática estimada`, hm(t.practice), "por natureza do curso")}
-        ${row(`<span class="dot k-project" style="display:inline-block;margin-right:8px"></span>Projetos (AI Agent Lab)`, hm(t.project), "9 estágios")}
-        ${row(`<span class="dot k-review" style="display:inline-block;margin-right:8px"></span>Revisão`, hm(t.review), "D+1 · D+7 · D+30")}
-        ${row(`<b>Carga total estimada</b>`, hm(p.total_min))}
-      </div></section>
-    <section class="panel"><h2 style="margin-bottom:10px">Período</h2>
+        ${row(`<span class="dot k-video" style="display:inline-block;margin-right:8px"></span>FORMAÇÃO (vídeo, único)`, hm(t.video), "duração real dos prints")}
+        ${row(`<span class="dot k-practice" style="display:inline-block;margin-right:8px"></span>PRÁTICA`, hm(t.practice), "estimativa configurável")}
+        ${row(`<span class="dot k-project" style="display:inline-block;margin-right:8px"></span>PROJETOS (AI Agent Lab)`, hm(t.project), "9 estágios")}
+        ${row(`<span class="dot k-review" style="display:inline-block;margin-right:8px"></span>REVISÃO`, hm(t.review), "D+1 · D+7 · D+30")}
+        ${row(`<b>TEMPO TOTAL DE APRENDIZADO</b>`, `<span style="color:var(--green-hover)">${hm(p.total_min)}</span>`)}
+      </div>
+      <p class="faint" style="font-size:12.5px;margin:12px 0 0">A formação (vídeo) é só ${Math.round(t.video / p.total_min * 100)}% do tempo total: o resto é prática, projetos e revisão.</p></section>
+    <section class="panel"><h2 style="margin-bottom:10px">Período e ritmo</h2>
       <div class="mini-list">
-        ${row("Período", `${fmtDate(p.start, "full")} → ${fmtDate(p.end, "full")}`)}
+        ${row("Data inicial", fmtDate(p.start, "full"))}
+        ${row("Data final (conteúdo identificado)", fmtDate(p.end, "full"))}
         ${row("Dias de estudo", p.study_days)}
         ${row("Dias de descanso", p.rest_days, "domingos + 25/12 e 01/01")}
         ${row("Média por dia de estudo", hm(p.avg_per_study_day))}
-        ${row("Dia mais longo", hm(p.max_day), "sábado de projeto")}
-        ${row("Fazer ÷ assistir", `${p.doing_ratio.toFixed(2)}×`, "prática+projeto / vídeo")}
+        ${row("Maior carga diária", hm(p.max_day), "sábado de projeto")}
+        ${row("Prática+projeto ÷ vídeo", `${p.doing_ratio.toFixed(2)}×`)}
       </div>
-      ${a.status !== "final" ? `<div class="notice" style="margin-top:14px">${icon("triangle-alert")}<div>${hm(a.reserve_min)} de vídeo vêm da <b>reserva</b> ${verify(true)} (62h34 − cursos visíveis). Se parte dela for curso repetido entre trilhas, a data final antecipa.</div></div>` : ""}
+      <div class="notice" style="margin-top:14px">${icon("triangle-alert")}<div>Declarado ${hm(a.declared_min)} · identificado ${hm(a.identified_gross_min)} (único ${hm(a.identified_unique_min)}). Os <b>${hm(a.unidentified_min)}</b> <span class="verify">NÃO IDENTIFICADO</span> não estão no cronograma: quando forem identificados, a data final se desloca.</div></div>
     </section>
   </div>
 
@@ -44,12 +45,12 @@ export default async function plan(el) {
   <div class="grid grid-2 section">
     <section class="panel"><h2 style="margin-bottom:12px">Por que essa distribuição</h2>
       <ul class="muted" style="margin:0;padding-left:18px;line-height:1.7;font-size:13.5px">
-        <li><b>~2h/dia útil e 3h30 no sábado</b>: dentro da faixa sustentável por 10+ semanas; sábado concentra o AI Agent Lab.</li>
-        <li><b>Prática proporcional à natureza</b>: conceitual 30%, ferramentas 40–60%, agentes/projetos 60–80%; Python introdutório só 15–25% (você já domina).</li>
-        <li><b>Ciclo diário</b>: revisar (10–15 min) → aprender → construir logo após cada bloco → consolidar no Lab.</li>
-        <li><b>Revisão espaçada curta</b>: D+1, D+7, D+30 viram uma única sessão diária de ~15 min (≈9% do total).</li>
+        <li><b>~2h nos dias úteis e até 3h30 no sábado</b> (sua faixa: 1h30–2h30 e 2h30–3h30): sustentável por semanas; o sábado concentra o AI Agent Lab.</li>
+        <li><b>Prática é uma estimativa</b> proporcional ao tipo de curso (15%–80% do vídeo), editável em Ajustes. Python introdutório recebe pouca prática porque você já domina.</li>
+        <li><b>Ciclo diário</b>: revisar (curto) → aprender → construir logo após cada sessão de vídeo → consolidar no Lab.</li>
+        <li><b>Revisão D+1/D+7/D+30</b> agrupada em uma sessão diária de poucos minutos.</li>
         <li><b>Descanso real</b>: domingos e feriados (25/12, 01/01) vazios; 24/12 e 31/12 com meia carga.</li>
-        <li><b>Terminar até 13–15/01 exigiria ~2h45 nos dias úteis e 3h45 no sábado</b> (média 2h43/dia) por 9 semanas, com as festas no meio — acima do sustentável. Optamos por aprender melhor: +12 dias.</li>
+        <li><b>A data final não é 63h ÷ dias</b>: sai do algoritmo, que respeita capacidade diária, descanso, prática e revisão. Ela só cobre o conteúdo identificado.</li>
       </ul></section>
     <section class="panel"><h2 style="margin-bottom:12px">Recálculos (cronograma adaptativo)</h2>
       ${p.revisions.length ? `<table class="tbl"><thead><tr><th>Quando</th><th>Motivo</th><th class="r">Término</th></tr></thead><tbody>${p.revisions.map((r) => `<tr><td class="num faint">${esc(r.generated_at.replace("T", " ").slice(5, 16))}</td><td>${esc(r.reason)}</td><td class="r num">${fmtDate(r.end_date)}</td></tr>`).join("")}</tbody></table>` : `<p class="faint">Sem recálculos.</p>`}

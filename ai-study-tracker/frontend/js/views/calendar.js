@@ -76,7 +76,7 @@ export default async function calendar(el) {
       const data = await api(`/calendar?start=${isoDate(gridStart)}&end=${isoDate(gridEnd)}`);
       let days = data.days;
       while (days.length > 35 && days.slice(-7).every((x) => parseDate(x.date).getMonth() !== m)) days = days.slice(0, -7);
-      body.innerHTML = `<div class="cal" role="grid">${["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"].map((w) => `<div class="cal-dow" role="columnheader">${w}</div>`).join("")}
+      body.innerHTML = `<div class="cal">${["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"].map((w) => `<div class="cal-dow">${w}</div>`).join("")}
         ${days.map((x) => cell(x, m)).join("")}</div>
         <p class="faint" style="font-size:12.5px;margin-top:12px">Plano: ${fmtDate(data.plan_start, "full")} → ${fmtDate(data.plan_end, "full")}. Dias passados mostram a foto do plano daquele dia e o realizado; o futuro é recalculado a cada sessão.</p>`;
       body.querySelectorAll(".cal-day").forEach((b) => b.onclick = () => openDay(days.find((x) => x.date === b.dataset.date)));

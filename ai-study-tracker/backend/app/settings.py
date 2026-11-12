@@ -14,7 +14,9 @@ DEFAULTS: dict[str, Any] = {
     "capacity": {"0": 135, "1": 135, "2": 120, "3": 135, "4": 105, "5": 210, "6": 0},
     # multiplicador de capacidade em datas especiais (0 = descanso)
     "holidays": {"2026-12-24": 0.5, "2026-12-25": 0, "2026-12-31": 0.5, "2027-01-01": 0},
-    "segment_minutes": 40,      # tamanho dos blocos quando as aulas ainda não foram mapeadas
+    "block_minutes": 45,        # tamanho máximo de uma sessão de vídeo no cronograma (artefato do plano, não do catálogo)
+    "practice_overrides": {},   # {content_id: razão prática/vídeo} — sobrescreve a estimativa padrão do catálogo
+    "competency_baselines": {},  # {competência: 0..1} — ponto de partida editável (estimativa, não fato)
     "review": {
         "intervals": [1, 7, 30],
         "pct": {"1": 0.08, "7": 0.06, "30": 0.05},

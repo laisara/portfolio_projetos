@@ -7,26 +7,27 @@ O app não é um checklist de aulas: ele organiza a formação no ciclo
 
 e transforma a formação em competências, projetos (AI Agent Lab) e evolução mensurável.
 
-![Painel](docs/screenshots/01-dashboard.png)
+![Painel](docs/screenshots/01-dashboard-desktop.png)
 
 | | |
 |---|---|
-| ![Calendário](docs/screenshots/02-calendario.png) | ![AI Agent Lab](docs/screenshots/05-lab.png) |
-| ![Competências](docs/screenshots/06-competencias.png) | ![Focus](docs/screenshots/04-focus.png) |
+| ![Calendário](docs/screenshots/03-calendario.png) | ![Mobile](docs/screenshots/02-dashboard-mobile.png) |
+| ![Formação](docs/screenshots/04-formacao-auditoria.png) | ![Curso](docs/screenshots/05-curso.png) |
 
 > Os prints usam um banco de **demonstração** (`scripts/demo_seed.py`) que simula 3 semanas de estudo.
 
-## Planejamento
+## Planejamento (somente o conteúdo identificado nos prints)
 
 | | |
 |---|---|
-| Período | **13/11/2026 → 27/01/2027** |
-| Vídeo (único) | 62h08 (bruto 62h34; *Masterclass Claude Code* aparece em 2 trilhas e conta 1x) |
-| Prática · Projetos · Revisão | 30h05 · 34h30 · 12h23 |
-| Total | **139h06** em 63 dias de estudo + 13 de descanso · média **2h12/dia** |
+| Carga declarada · identificada · duplicada · **não identificada** | 62h34 · 30h16 · 0h26 · **32h18 [NÃO IDENTIFICADO, não agendado]** |
+| FORMAÇÃO (vídeo único) · PRÁTICA · PROJETOS · REVISÃO | 29h50 · 14h00 · 34h30 · 6h04 |
+| **TEMPO TOTAL DE APRENDIZADO** | **84h24** |
+| Período | 13/11/2026 → 28/12/2026 (fim do conteúdo identificado) |
+| Dias de estudo · descanso · média · maior dia | 38 · 8 · 2h13 · 3h38 |
 
-A análise completa dos prints (o que foi extraído, IDs, duplicidades e o que está marcado como **[VERIFICAR]**)
-está em [`docs/ANALISE.md`](docs/ANALISE.md). O cronograma dia a dia está em [`docs/CRONOGRAMA.md`](docs/CRONOGRAMA.md).
+Trilhas: os prints não mostram nomes nem a associação curso↔trilha, então as 8 trilhas estão **A confirmar**.
+Detalhes e classificação CONFIRMADO / INFERIDO / A VERIFICAR em [`docs/ANALISE.md`](docs/ANALISE.md); cronograma em [`docs/CRONOGRAMA.md`](docs/CRONOGRAMA.md).
 
 ## Funcionalidades
 
@@ -62,7 +63,7 @@ Linux/macOS: `./start.sh`.
 | Onde | Como |
 |---|---|
 | Este PC | <http://localhost:8000> |
-| Celular na mesma rede Wi-Fi | `start.bat --lan` → abra o endereço `http://192.168.x.x:8000` exibido no terminal (libere a porta 8000 no Firewall do Windows quando ele perguntar) |
+| Celular na mesma rede Wi-Fi (**qualquer dispositivo da rede passa a acessar o app, sem senha**) | `start.bat --lan` → abra o endereço `http://192.168.x.x:8000` exibido no terminal (libere a porta 8000 no Firewall do Windows quando ele perguntar) |
 
 Atalhos de teclado: `1`–`9` navegam entre as telas e `f` abre o Focus Mode.
 
@@ -98,18 +99,19 @@ Offline, o app abre pelo cache e mostra os últimos dados salvos. Para registrar
 
 ## Atualizar o catálogo (quando chegarem os prints que faltam)
 
-Nos prints atuais faltam os nomes das trilhas, as posições #1/#2 de várias trilhas, as trilhas 7–8 e as listas de aulas.
-Edite `data/catalog.json` (formato abaixo) e importe em **Ajustes → Catálogo → Importar catálogo**.
+Nos prints atuais **não** aparecem: nomes das trilhas, a trilha de cada curso, módulos e aulas, e as 32h18 restantes.
+Preencha `appearances[].track`, `tracks[].name/confirmed` ou adicione cursos/aulas reais em `data/catalog.json` e importe em **Ajustes → Catálogo**. Nunca invente: aula sem duração é rejeitada.
 O progresso é preservado pelos IDs das aulas, e o plano, a carga única e a data final são recalculados.
 
 ```json
 {
   "meta": { "name": "...", "status": "final", "declared_video": "62:34:00", "study_sequence": ["GENAI-001", "..."] },
-  "tracks": [ { "id": "T1", "order": 1, "title": "Nome da trilha", "slots": [ { "position": 1, "content": "GENAI-001" } ] } ],
+  "tracks": [ { "id": "T1", "order": 1, "title": "Trilha 1", "name": "Nome confirmado", "confirmed": true } ],
   "contents": {
     "GENAI-001": {
       "title": "Fundamentos da IA Generativa", "nature": "conceitual", "practice_ratio": 0.3,
       "competencies": ["fundamentals", "prompt"],
+      "appearances": [ { "track": "T1", "position": 2 } ],
       "modules": [ { "title": "Módulo 1", "lessons": [ { "id": "GENAI-001.M1.L01", "title": "Aula 1", "duration": "12:30" } ] } ]
     }
   }
@@ -117,8 +119,8 @@ O progresso é preservado pelos IDs das aulas, e o plano, a carga única e a dat
 ```
 
 Use o mesmo ID quando um curso aparece em várias trilhas: ele conta 1x na carga e no progresso.
-Naturezas válidas: `conceitual`, `tecnico`, `ferramenta`, `agentes`, `projeto`, `reserva`.
-Sem `modules`, informe `duration` e o curso é dividido em blocos de ~40 min.
+Naturezas válidas: `conceitual`, `tecnico`, `ferramenta`, `agentes`, `projeto`.
+Sem `modules`, informe só a `duration` real: o curso é uma unidade e o progresso é medido por tempo assistido.
 
 ## Arquitetura
 
@@ -153,11 +155,13 @@ adaptativo determinístico.
 
 ```bash
 python -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
-.venv/bin/python -m pytest              # 33 testes
+.venv/bin/python -m pytest              # 57 testes
 python scripts/export_schedule.py       # regenera docs/CRONOGRAMA.md
 python scripts/demo_seed.py --db database/demo.db --until 2026-12-03   # banco de demonstração
 AST_DB=database/demo.db AST_TODAY=2026-12-03 python scripts/run.py      # roda com data simulada
 ```
+
+Acessibilidade: `scripts/audit_a11y.js` (axe-core). Performance: `scripts/audit_perf.js`.
 
 Variáveis: `AST_DB` (caminho do banco), `AST_TODAY` (simula a data de hoje), `AST_CATALOG`, `AST_BACKUP_DIR`.
 

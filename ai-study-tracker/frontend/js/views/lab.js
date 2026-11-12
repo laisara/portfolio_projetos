@@ -19,7 +19,7 @@ export default async function lab(el) {
     <div class="stage ${s.effective_status}">
       <div class="stage-node">${s.effective_status === "done" ? icon("check", "icon icon-sm") : s.ord}</div>
       <a class="stage-card" href="#/lab/${s.id}">
-        <div class="row wrap"><span class="id-tag">${s.id}</span><h3>${esc(s.title)}</h3><span class="faint" style="font-size:12.5px">${esc(s.subtitle || "")}</span><span class="spacer"></span>${statusChip(s.effective_status)}</div>
+        <div class="row wrap"><span class="id-tag">${s.id}</span><h2>${esc(s.title)}</h2><span class="faint" style="font-size:12.5px">${esc(s.subtitle || "")}</span><span class="spacer"></span>${statusChip(s.effective_status)}</div>
         <p class="muted" style="margin:8px 0 12px;font-size:13px;max-width:720px">${esc(s.objective)}</p>
         <div class="row" style="gap:14px">${bar(s.pct, "k-project")}<span class="num" style="font-weight:600;min-width:40px;text-align:right">${pct(s.pct)}</span></div>
         <div class="row wrap faint" style="font-size:12px;margin-top:10px;gap:14px">

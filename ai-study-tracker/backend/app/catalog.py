@@ -1,8 +1,14 @@
-"""Catálogo da formação: validação, importação, IDs únicos e análise de duplicidades."""
+"""Catálogo da formação: validação, importação, IDs únicos e auditoria de carga.
+
+Regras:
+- Só entra no catálogo o que está nos prints. Nada de reserva de horas nem aulas sintéticas.
+- Curso sem lista de aulas = UMA unidade de curso com a duração real (aulas: NÃO IDENTIFICADO).
+- Trilha desconhecida = `track: null` (A VERIFICAR). Nomes de trilha desconhecidos = null.
+- O conteúdo que falta para completar a carga declarada é só um NÚMERO de auditoria; não é agendado.
+"""
 from __future__ import annotations
 
 import json
-import math
 import re
 import sqlite3
 from typing import Any, Optional
@@ -13,6 +19,7 @@ from . import db
 from .domain import COMPETENCY_IDS, NATURES
 
 ID_RE = re.compile(r"^[A-Z][A-Z0-9]*-[A-Z0-9]+$")
+STATUS = ("CONFIRMADO", "INFERIDO", "A VERIFICAR")
 
 
 def parse_duration(value: Any) -> Optional[float]:
@@ -36,21 +43,26 @@ def parse_duration(value: Any) -> Optional[float]:
 class LessonIn(BaseModel):
     id: Optional[str] = None
     title: str = Field(min_length=1)
-    duration: Any = None
-    verify: bool = False
+    duration: Any  # obrigatório: aula sem duração real não entra no catálogo
 
     @field_validator("duration")
     @classmethod
     def _dur(cls, v):
-        parse_duration(v)
+        if parse_duration(v) is None:
+            raise ValueError("aula sem duração: use [VERIFICAR] fora do catálogo, não invente")
         return v
 
 
 class ModuleIn(BaseModel):
     id: Optional[str] = None
     title: str = Field(min_length=1)
-    verify: bool = False
     lessons: list[LessonIn] = Field(min_length=1)
+
+
+class AppearanceIn(BaseModel):
+    track: Optional[str] = None          # None = trilha A VERIFICAR
+    position: int = Field(ge=1)          # número do card no print
+    inferred_group: Optional[str] = None  # agrupamento inferido (INFERIDO)
 
 
 class ContentIn(BaseModel):
@@ -61,17 +73,17 @@ class ContentIn(BaseModel):
     nature: str = "ferramenta"
     practice_ratio: float = Field(default=0.5, ge=0, le=3)
     intro: bool = False
-    reserve: bool = False
-    verify: bool = False
     overlap_note: Optional[str] = None
     competencies: list[str] = []
+    appearances: list[AppearanceIn] = []
+    confidence: dict[str, str] = {}
     modules: list[ModuleIn] = []
 
     @field_validator("nature")
     @classmethod
     def _nature(cls, v):
-        if v not in NATURES:
-            raise ValueError(f"natureza inválida: {v} (use {', '.join(NATURES)})")
+        if v not in NATURES or v == "reserva":
+            raise ValueError(f"natureza inválida: {v}")
         return v
 
     @field_validator("competencies")
@@ -85,19 +97,7 @@ class ContentIn(BaseModel):
     @model_validator(mode="after")
     def _has_duration(self):
         if parse_duration(self.duration) is None and not self.modules:
-            raise ValueError(f"'{self.title}': informe duration ou modules com aulas")
-        return self
-
-
-class SlotIn(BaseModel):
-    position: int = Field(ge=1)
-    content: Optional[str] = None
-    placeholder: bool = False
-
-    @model_validator(mode="after")
-    def _one(self):
-        if not self.placeholder and not self.content:
-            raise ValueError("slot precisa de 'content' ou 'placeholder: true'")
+            raise ValueError(f"'{self.title}': informe a duração real ou módulos com aulas")
         return self
 
 
@@ -105,9 +105,8 @@ class TrackIn(BaseModel):
     id: str = Field(min_length=1)
     order: int = Field(ge=1)
     title: str = Field(min_length=1)
-    theme: Optional[str] = None
-    verify: bool = False
-    slots: list[SlotIn] = Field(min_length=1)
+    name: Optional[str] = None
+    confirmed: bool = False
 
 
 class CatalogIn(BaseModel):
@@ -123,13 +122,10 @@ class CatalogIn(BaseModel):
         ids = [t.id for t in self.tracks]
         if len(ids) != len(set(ids)):
             raise ValueError("IDs de trilha duplicados")
-        for t in self.tracks:
-            pos = [s.position for s in t.slots]
-            if len(pos) != len(set(pos)):
-                raise ValueError(f"{t.id}: posições repetidas")
-            for s in t.slots:
-                if s.content and s.content not in self.contents:
-                    raise ValueError(f"{t.id}: conteúdo {s.content} não definido em 'contents'")
+        for cid, c in self.contents.items():
+            for a in c.appearances:
+                if a.track is not None and a.track not in ids:
+                    raise ValueError(f"{cid}: trilha {a.track} não existe")
         seq = self.meta.get("study_sequence") or []
         unknown = [c for c in seq if c not in self.contents]
         if unknown:
@@ -139,70 +135,52 @@ class CatalogIn(BaseModel):
 
 def study_sequence(cat: CatalogIn) -> list[str]:
     seq = list(dict.fromkeys(cat.meta.get("study_sequence") or []))
-    for t in sorted(cat.tracks, key=lambda t: t.order):
-        for s in sorted(t.slots, key=lambda s: s.position):
-            if s.content and s.content not in seq:
-                seq.append(s.content)
-    seq += [c for c in cat.contents if c not in seq]
-    return seq
+    return seq + [c for c in cat.contents if c not in seq]
 
 
-def import_catalog(conn: sqlite3.Connection, data: dict, segment_minutes: int = 40) -> dict:
+def import_catalog(conn: sqlite3.Connection, data: dict) -> dict:
     """Substitui o catálogo. O progresso (lesson_progress) é preservado por ID de aula."""
     cat = CatalogIn.model_validate(data)
-    conn.execute("DELETE FROM track_slots")
-    conn.execute("DELETE FROM lessons")
-    conn.execute("DELETE FROM modules")
-    conn.execute("DELETE FROM contents")
-    conn.execute("DELETE FROM tracks")
-
+    for t in ("appearances", "lessons", "modules", "contents", "tracks"):
+        conn.execute(f"DELETE FROM {t}")
     seq_counter = 0
     for study_ord, cid in enumerate(study_sequence(cat)):
         c = cat.contents[cid]
         lessons_known = bool(c.modules)
-        modules: list[tuple[str, str, bool, list[tuple[str, str, float, bool, bool]]]] = []
         if lessons_known:
+            modules = []
             for mi, m in enumerate(c.modules, start=1):
                 mid = m.id or f"{cid}.M{mi}"
-                les = []
-                for li, l in enumerate(m.lessons, start=1):
-                    dur = parse_duration(l.duration)
-                    les.append((l.id or f"{mid}.L{li:02d}", l.title, dur if dur is not None else 0.0, l.verify or dur is None, False))
-                modules.append((mid, m.title, m.verify, les))
-            total = sum(l[2] for m in modules for l in m[3])
+                modules.append((mid, m.title, [(l.id or f"{mid}.L{li:02d}", l.title, parse_duration(l.duration), False)
+                                               for li, l in enumerate(m.lessons, start=1)]))
+            total = sum(l[2] for m in modules for l in m[2])
         else:
-            # Aulas ainda não mapeadas: divide a duração real do curso em blocos de estudo
+            # Uma única unidade = o curso inteiro, com a duração REAL do print.
             total = parse_duration(c.duration) or 0.0
-            n = max(1, round(total / segment_minutes))
-            base = total / n
-            for i in range(1, n + 1):
-                mtitle = f"Parte {i} de {n}" if n > 1 else ""
-                ltitle = f"{c.title} — parte {i}/{n}" if n > 1 else c.title
-                modules.append((f"{cid}.P{i}", mtitle, True, [(f"{cid}.P{i}", ltitle, round(base, 2), True, True)]))
+            modules = [(f"{cid}.M0", "", [(f"{cid}.COURSE", c.title, total, True)])]
         conn.execute(
             """INSERT INTO contents(id, title, instructor, nature, practice_ratio, duration_min, lesson_count,
-               lessons_known, intro, reserve, verify, study_ord, competencies, overlap_note)
-               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+               lessons_known, intro, verify, confidence, study_ord, competencies, overlap_note, nature_default_ratio)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (cid, c.title, c.instructor, c.nature, c.practice_ratio, total,
-             c.lesson_count or (sum(len(m[3]) for m in modules) if lessons_known else None),
-             int(lessons_known), int(c.intro), int(c.reserve), int(c.verify),
-             study_ord, json.dumps(c.competencies), c.overlap_note),
-        )
-        for mo, (mid, mtitle, mverify, les) in enumerate(modules, start=1):
-            conn.execute("INSERT INTO modules(id, content_id, ord, title, verify) VALUES (?,?,?,?,?)",
-                         (mid, cid, mo, mtitle, int(mverify)))
-            for lo, (lid, ltitle, dur, lverify, segment) in enumerate(les, start=1):
+             c.lesson_count or (sum(len(m[2]) for m in modules) if lessons_known else None),
+             int(lessons_known), int(c.intro), int(not all(a.track for a in c.appearances) or not c.appearances),
+             json.dumps(c.confidence, ensure_ascii=False), study_ord, json.dumps(c.competencies),
+             c.overlap_note, c.practice_ratio))
+        for mo, (mid, mtitle, les) in enumerate(modules, start=1):
+            conn.execute("INSERT INTO modules(id, content_id, ord, title, verify) VALUES (?,?,?,?,0)", (mid, cid, mo, mtitle))
+            for lo, (lid, ltitle, dur, course_level) in enumerate(les, start=1):
                 seq_counter += 1
-                conn.execute(
-                    "INSERT INTO lessons(id, module_id, content_id, ord, seq, title, duration_min, verify, segment) VALUES (?,?,?,?,?,?,?,?,?)",
-                    (lid, mid, cid, lo, seq_counter, ltitle, dur, int(lverify), int(segment)),
-                )
+                conn.execute("INSERT INTO lessons(id, module_id, content_id, ord, seq, title, duration_min, verify, segment) VALUES (?,?,?,?,?,?,?,?,?)",
+                             (lid, mid, cid, lo, seq_counter, ltitle, dur, 0, int(course_level)))
+        for a in c.appearances:
+            conn.execute("INSERT INTO appearances(content_id, track_id, position, inferred_group) VALUES (?,?,?,?)",
+                         (cid, a.track, a.position, a.inferred_group))
     for t in cat.tracks:
-        conn.execute("INSERT INTO tracks(id, ord, title, theme, verify) VALUES (?,?,?,?,?)",
-                     (t.id, t.order, t.title, t.theme, int(t.verify)))
-        for s in t.slots:
-            conn.execute("INSERT INTO track_slots(track_id, position, content_id, placeholder) VALUES (?,?,?,?)",
-                         (t.id, s.position, s.content, int(s.placeholder)))
+        conn.execute("INSERT INTO tracks(id, ord, title, name, confirmed) VALUES (?,?,?,?,?)",
+                     (t.id, t.order, t.title, t.name, int(t.confirmed)))
+    # progresso órfão (aulas que não existem mais) é descartado; o resto é preservado
+    conn.execute("DELETE FROM lesson_progress WHERE lesson_id NOT IN (SELECT id FROM lessons)")
     db.set_meta(conn, "catalog_meta", json.dumps(cat.meta, ensure_ascii=False))
     return analysis(conn)
 
@@ -212,51 +190,52 @@ def catalog_meta(conn: sqlite3.Connection) -> dict:
 
 
 def analysis(conn: sqlite3.Connection) -> dict:
-    """Carga bruta × carga única, duplicidades e pendências [VERIFICAR]."""
+    """Carga declarada × identificada × duplicada × não identificada (auditoria)."""
     meta = catalog_meta(conn)
     contents = {c["id"]: c for c in db.rows(conn, "SELECT * FROM contents")}
-    slots = db.rows(conn, "SELECT s.*, t.title AS track_title, t.ord AS track_ord FROM track_slots s JOIN tracks t ON t.id = s.track_id ORDER BY t.ord, s.position")
-    filled = [s for s in slots if s["content_id"]]
-    gross = sum(contents[s["content_id"]]["duration_min"] for s in filled)
+    apps = db.rows(conn, "SELECT * FROM appearances ORDER BY content_id, position")
+    gross = sum(contents[a["content_id"]]["duration_min"] for a in apps)
     unique = sum(c["duration_min"] for c in contents.values())
-    by_content: dict[str, list[str]] = {}
-    for s in filled:
-        by_content.setdefault(s["content_id"], []).append(s["track_id"])
+    by_content: dict[str, list[dict]] = {}
+    for a in apps:
+        by_content.setdefault(a["content_id"], []).append(a)
     duplicates = [
-        {"content_id": cid, "title": contents[cid]["title"], "tracks": tids,
-         "duration_min": contents[cid]["duration_min"],
-         "saved_min": contents[cid]["duration_min"] * (len(tids) - 1)}
-        for cid, tids in by_content.items() if len(tids) > 1
+        {"content_id": cid, "title": contents[cid]["title"], "appearances": len(al),
+         "tracks": [a["track_id"] or "A VERIFICAR" for a in al], "positions": [a["position"] for a in al],
+         "duration_min": contents[cid]["duration_min"], "duplicate_min": contents[cid]["duration_min"] * (len(al) - 1)}
+        for cid, al in by_content.items() if len(al) > 1
     ]
-    visible = [c for c in contents.values() if not c["reserve"]]
     declared = parse_duration(meta.get("declared_video"))
-    lessons = db.row(conn, "SELECT COUNT(*) AS n, SUM(segment) AS seg, SUM(verify) AS ver FROM lessons") or {}
+    dup_min = sum(d["duplicate_min"] for d in duplicates)
+    lessons = db.row(conn, "SELECT COUNT(*) AS n, SUM(segment) AS course_level FROM lessons") or {}
+    tracks = db.rows(conn, "SELECT * FROM tracks ORDER BY ord")
+    confirmed_tracks = [t for t in tracks if t["confirmed"]]
     return {
-        "name": meta.get("name"),
-        "status": meta.get("status", "final"),
-        "note": meta.get("note"),
-        "tracks": db.row(conn, "SELECT COUNT(*) AS n FROM tracks")["n"],
-        "declared_tracks": meta.get("declared_tracks"),
-        "courses_unique": len(visible),
-        "course_appearances": len([s for s in filled if not contents[s["content_id"]]["reserve"]]),
-        "placeholders": len([s for s in slots if s["placeholder"]]),
-        "reserve_min": sum(c["duration_min"] for c in contents.values() if c["reserve"]),
-        "lessons": lessons.get("n") or 0,
-        "lessons_mapped": (lessons.get("n") or 0) - (lessons.get("seg") or 0),
-        "study_blocks": lessons.get("seg") or 0,
-        "verify_items": (lessons.get("ver") or 0),
-        "gross_min": gross,
-        "unique_min": unique,
-        "visible_gross_min": sum(contents[s["content_id"]]["duration_min"] for s in filled if not contents[s["content_id"]]["reserve"]),
-        "visible_unique_min": sum(c["duration_min"] for c in visible),
+        "name": meta.get("name"), "note": meta.get("note"), "version": meta.get("catalog_version", 1),
         "declared_min": declared,
+        "identified_gross_min": gross,
+        "duplicate_min": dup_min,
+        "identified_unique_min": unique,
+        # a carga declarada pode somar cada aparição (bruta) ou só o conteúdo único: mostramos as duas leituras
+        "unidentified_min": None if declared is None else max(0.0, declared - gross),
+        "unidentified_if_unique_min": None if declared is None else max(0.0, declared - unique),
+        "identified_pct": None if not declared else unique / declared,
+        "tracks_total": len(tracks), "declared_tracks": meta.get("declared_tracks"),
+        "tracks_confirmed": len(confirmed_tracks),
+        "courses": len(contents), "appearances": len(apps),
+        "courses_without_confirmed_track": len([c for c in contents if not any(a["track_id"] for a in by_content.get(c, []))]),
+        "lessons_identified": (lessons.get("n") or 0) - (lessons.get("course_level") or 0),
+        "course_level_units": lessons.get("course_level") or 0,
         "duplicates": duplicates,
-        "intro_courses": [{"content_id": c["id"], "title": c["title"]} for c in visible if c["intro"]],
-        "overlaps": [{"content_id": c["id"], "title": c["title"], "note": c["overlap_note"]} for c in visible if c["overlap_note"]],
+        "intro_courses": [{"content_id": c["id"], "title": c["title"]} for c in contents.values() if c["intro"]],
+        "overlaps": [{"content_id": c["id"], "title": c["title"], "note": c["overlap_note"]} for c in contents.values() if c["overlap_note"]],
     }
 
 
-def ensure_catalog(conn: sqlite3.Connection, path, segment_minutes: int) -> None:
-    if db.row(conn, "SELECT COUNT(*) AS n FROM contents")["n"] == 0:
-        data = json.loads(path.read_text(encoding="utf-8"))
-        import_catalog(conn, data, segment_minutes)
+def ensure_catalog(conn: sqlite3.Connection, path) -> None:
+    """Importa o catálogo do arquivo quando o banco está vazio ou a versão do arquivo é mais nova."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    n = db.row(conn, "SELECT COUNT(*) AS n FROM contents")["n"]
+    stored = (catalog_meta(conn) or {}).get("catalog_version", 0)
+    if n == 0 or (data.get("meta", {}).get("catalog_version", 1) > stored and not db.get_meta(conn, "catalog_customized")):
+        import_catalog(conn, data)
