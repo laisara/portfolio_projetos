@@ -10,7 +10,7 @@ export default async function catalog(el) {
   const focusTrack = sessionStorage.getItem("ast:track"); sessionStorage.removeItem("ast:track");
   const cell = (label, val, note, extra = "") => `<div><div class="stat-label">${label}</div><div class="stat-value num" ${extra}>${val}</div><div class="faint" style="font-size:12.5px">${note}</div></div>`;
   el.innerHTML = `
-  <div class="page-head"><div><p class="eyebrow">${esc(a.name || "Formação")}</p><h1>Formação</h1></div>
+  <div class="page-head"><div><p class="eyebrow">${esc(a.name || "Formação")}</p><h1>Trilhas</h1></div>
     <div class="seg" role="group" aria-label="Visualização"><button data-tab="tracks" aria-pressed="${tab === "tracks"}">Trilhas</button><button data-tab="courses" aria-pressed="${tab === "courses"}">Cursos únicos</button><button data-tab="audit" aria-pressed="${tab === "audit"}">Carga</button></div></div>
 
   <section class="panel flush" aria-label="Carga da formação">

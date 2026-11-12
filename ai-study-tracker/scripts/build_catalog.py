@@ -32,7 +32,16 @@ def parse_module(title: str, block: str):
         sec = dur(d.strip())
         if sec is None:
             tl = t.lower()
-            kind = "placeholder" if "ainda está em produção" in tl else ("quiz" if tl.startswith(("quiz", "teste")) else "other")
+            if "ainda está em produção" in tl:
+                kind = "placeholder"                       # aviso de conteúdo futuro
+            elif tl.startswith("teste"):
+                kind = "test"                              # teste final
+            elif tl.startswith("quiz"):
+                kind = "quiz"
+            elif tl.startswith(("guia", "aviso", "atualização")) or "tabela de memória" in tl or "github e deploy" in tl:
+                kind = "guide"                             # guia / documentação / aviso
+            else:
+                kind = "other"                             # aula sem duração informada no player
         else:
             kind = "video"
         lessons.append({"n": int(n), "title": t.strip(), "seconds": sec, "kind": kind})
@@ -686,7 +695,7 @@ def build():
             contents[cid]["note"] = c["note"]
     data = {
         "meta": {
-            "catalog_version": 4,
+            "catalog_version": 5,
             "name": "Formação Engenheiro de Agentes de IA",
             "provider": "Asimov Academy",
             "declared_video": "62:34:00",

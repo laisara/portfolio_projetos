@@ -21,6 +21,15 @@ DEFAULTS: dict[str, Any] = {
         "daily_cap": 25,
         "grace": {"1": 2, "7": 5, "30": 10},
     },
+    "project_weekday": 5,       # sábado = dia de projeto
+    "weekday_project_threshold": 240,
+    "weekday_project_block": 45,
+    # estimativas (NUNCA são duração oficial da formação)
+    "estimates": {"quiz": 5, "test": 10, "guide": 5, "other": 10},   # min por atividade sem duração
+    "practice_ratio": {"default": 0.20, "agents": 0.30, "project": 0.15, "conceptual": 0.10, "basic": 0.05, "start": 0.0,
+                       "basic_ids": ["LOGIC-001", "PYTHON-001", "SETUP-001", "PY-001", "PY-002"],
+                       "conceptual_ids": ["LLM-001", "GENAI-001"]},
+    "practice_overrides": {},   # {content_id: razão prática/vídeo}
     "competency_baselines": {},  # {competência: 0..1} — ponto de partida editável (estimativa, não fato)
     "focus_minutes": 25,
 }

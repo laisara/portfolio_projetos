@@ -15,30 +15,33 @@ export default async function plan(el) {
   <div class="grid grid-2">
     <section class="panel"><h2 style="margin-bottom:10px">Carga planejada</h2>
       <div class="mini-list">
-        ${row(`${dot("video")}FORMAÇÃO (aulas, conteúdo único)`, hm(t.video), `${a.courses} cursos · ${a.lessons} aulas`)}
-        ${row(`${dot("review")}REVISÃO (D+1 · D+7 · D+30)`, hm(t.review), "sessões curtas")}
-        ${row(`<b>TEMPO TOTAL DE APRENDIZADO</b>`, `<span style="color:var(--green-hover)">${hm(p.total_min)}</span>`, "aulas + revisão")}
+        ${row(`${dot("video")}FORMAÇÃO (soma das aulas)`, hm(a.unique_min), `${a.courses} cursos · ${a.lessons} aulas`)}
+        ${row(`${dot("practice")}PRÁTICA`, "+ " + hm(t.practice), "estimada")}
+        ${row(`${dot("project")}PROJETOS`, "+ " + hm(t.project), "lista de projetos")}
+        ${row(`${dot("review")}REVISÃO (D+1 · D+7 · D+30)`, "+ " + hm(t.review), "estimada")}
+        ${row(`<b>TOTAL DE APRENDIZAGEM</b>`, `<span style="color:var(--green-hover)">${hm(a.unique_min + t.practice + t.project + t.review)}</span>`, "formação + prática + projetos + revisão")}
       </div>
-      <div class="notice info" style="margin-top:14px">${icon("info")}<div>O plano tem só <b>aulas e revisão</b>. Prática e projetos próprios entram como sessões que você registra (valem mais XP). A carga bruta das 8 trilhas é ${hm(a.gross_min)}; o conteúdo repetido (${hm(a.duplicate_min)}) conta uma vez.</div></div>
+      <div class="notice info" style="margin-top:14px">${icon("info")}<div>A <b>formação</b> é só a soma das aulas (${hm(a.unique_min)}). Prática, projetos e revisão são tempo <b>adicional estimado</b> pelo planejador. A carga bruta das 8 trilhas é ${hm(a.gross_min)}; o conteúdo repetido (${hm(a.duplicate_min)}) conta uma vez.</div></div>
     </section>
     <section class="panel"><h2 style="margin-bottom:10px">Período e ritmo</h2>
       <div class="mini-list">
         ${row("Data inicial", fmtDate(p.start, "full"))}
         ${row("Última aula", fmtDate(p.lessons_end, "full"))}
+        ${row("Última atividade (sem revisão)", fmtDate(p.work_end, "full"))}
         ${row("Última revisão (D+30)", fmtDate(p.end, "full"))}
-        ${row("Dias de aula", p.study_days)}
+        ${row("Dias de estudo", p.study_days)}
         ${row("Dias só com revisão", p.review_only_days, "cauda D+7/D+30, poucos minutos")}
         ${row("Dias de descanso", p.rest_days, "domingos e feriados, até a última aula")}
-        ${row("Média por dia de aula", hm(p.avg_per_study_day), "aulas + revisão")}
-        ${row("Maior carga diária", hm(p.max_day), "sábado")}
+        ${row("Média por dia de estudo", hm(p.avg_per_study_day))}
+        ${row("Maior carga diária", hm(p.max_day), "sábado (projeto)")}
       </div>
     </section>
   </div>
 
   <section class="panel section"><div class="panel-head"><h2>Carga semanal planejada</h2>
-    <div class="legend">${["video", "review"].map((k) => `<span><span class="dot ${KIND[k].cls}"></span>${KIND[k].label}</span>`).join("")}</div></div>
+    <div class="legend">${["video", "practice", "project", "review"].map((k) => `<span><span class="dot ${KIND[k].cls}"></span>${KIND[k].label}</span>`).join("")}</div></div>
     <div class="weekchart" style="margin-bottom:26px">${p.weeks.map((w) => `<div class="col" title="Semana de ${fmtDate(w.week)}: ${hm(w.total)}">
-      ${["review", "video"].map((k) => w[k] ? `<i class="${KIND[k].cls}" style="height:${(w[k] / maxWeek) * 100}%"></i>` : "").join("")}<span>${fmtDate(w.week)}</span></div>`).join("")}</div>
+      ${["review", "project", "practice", "video"].map((k) => w[k] ? `<i class="${KIND[k].cls}" style="height:${(w[k] / maxWeek) * 100}%"></i>` : "").join("")}<span>${fmtDate(w.week)}</span></div>`).join("")}</div>
     <div class="row wrap faint" style="font-size:12.5px;gap:16px">${Object.entries(p.avg_by_weekday).map(([d, m]) => `<span>${d.slice(0, 3)}: <b class="num" style="color:var(--text-2)">${hm(m, { compact: true })}</b></span>`).join("")}<span>Dom: descanso</span></div>
   </section>
 
@@ -47,7 +50,8 @@ export default async function plan(el) {
       <ul class="muted" style="margin:0;padding-left:18px;line-height:1.7;font-size:13.5px">
         <li><b>1h45–2h15 nos dias úteis e até 3h30 no sábado</b>, com domingo livre: ritmo sustentável por semanas.</li>
         <li><b>Ordem da plataforma</b>: trilhas na ordem, cursos na ordem de cada trilha. Curso repetido aparece uma vez.</li>
-        <li><b>Aulas inteiras</b>: nenhuma aula é cortada (exceto as de mais de 50 min que não cabem no dia).</li>
+        <li><b>Aulas inteiras</b>: cada aula aparece uma única vez no plano, sem ser cortada entre dois dias.</li>
+        <li><b>Prática depois de cada curso e projetos aos sábados</b>: o tempo é estimado e editável; a prática diminui nos cursos de programação básica, que você já domina.</li>
         <li><b>Revisão espaçada curta</b>: D+1, D+7 e D+30 agrupados em uma sessão diária de poucos minutos.</li>
         <li><b>Quizzes, testes e guias</b> ("-") acompanham a aula anterior e não ocupam tempo no plano.</li>
         <li><b>A data final não é carga ÷ dias</b>: sai do algoritmo (capacidade por dia, descanso, feriados e revisão). Se você estudar mais ou menos, o futuro é recalculado e o histórico é preservado.</li>

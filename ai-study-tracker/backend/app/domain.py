@@ -27,6 +27,8 @@ XP_REVIEW_ON_TIME = 15
 XP_REVIEW_LATE = 5
 XP_CONTENT_DONE = 100
 XP_TRACK_DONE = 300
+XP_PROJECT_ITEM = 20
+XP_PROJECT = 300
 
 LEVELS = [
     {"id": 1, "name": "Explorer", "xp": 0, "tagline": "Mapeando o território da IA generativa."},

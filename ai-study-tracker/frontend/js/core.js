@@ -60,6 +60,11 @@ export function hm(min, { zero = "0m", compact = false } = {}) {
 export const dur = (min, has = true) => (has === false || has === 0 ? '<span class="dash" title="Sem duração no player">-</span>' : hm(min, { zero: "0m" }));
 export function mmss(min) { const s = Math.round(min * 60); return s >= 3600 ? `${Math.floor(s / 3600)}:${String(Math.floor(s % 3600 / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}` : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; }
 export const COMP_LABEL = { python: "Python", apis: "APIs", fundamentals: "Fundamentos de LLM", prompt: "Prompt Engineering", aicoding: "Dev. assistido por IA", tools: "Tools/MCP", agents: "AI Agents", rag: "RAG", multiagent: "Multi-Agent", systems: "AI Systems" };
+// h m s exatos (ex.: 66h21m37s) — usado para a carga oficial da formação
+export function hms(min) { const t = Math.round((min || 0) * 60); return `${Math.floor(t / 3600)}h${String(Math.floor(t % 3600 / 60)).padStart(2, "0")}m${String(t % 60).padStart(2, "0")}s`; }
+export const KIND_LABEL = { quiz: "quiz", test: "teste", guide: "guia", other: "sem duração", placeholder: "em breve" };
+export function lessonStatus(l) { return l.completed_on ? "done" : l.watched_min > 0 ? "doing" : "todo"; }
+export const STATUS_LABEL = { todo: "Não iniciada", doing: "Em andamento", done: "Concluída" };
 export const hours = (min) => `${(min / 60).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}h`;
 export const pct = (x) => `${Math.round((x || 0) * 100)}%`;
 export const WEEK = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];

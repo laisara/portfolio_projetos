@@ -45,7 +45,7 @@ def test_bat_reference_existing_files_and_venv_layout():
     assert (ROOT / "requirements.txt").exists()
 
 
-def test_server_is_local_only():
+def test_server_is_local_by_default_and_lan_requires_flag_with_warning():
     run = (ROOT / "scripts" / "run.py").read_text()
-    assert 'host="127.0.0.1"' in run and "--lan" not in run and "0.0.0.0" not in run
-    assert not (ROOT / "start.sh").exists() or "--lan" not in (ROOT / "start.sh").read_text()
+    assert '"127.0.0.1"' in run and 'if args.lan else "127.0.0.1"' in run
+    assert "QUALQUER dispositivo" in run

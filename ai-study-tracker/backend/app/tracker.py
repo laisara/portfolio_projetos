@@ -16,7 +16,7 @@ from typing import Any
 
 from . import config, db
 from . import settings as settings_mod
-from .planner import PlanResult, Review, Unit, build_plan, review_minutes
+from .planner import PlanResult, Review, Stage, Unit, build_plan, review_minutes, round5
 
 
 # ---------------------------------------------------------------- leitura base
@@ -76,48 +76,109 @@ def real_reviews(conn: sqlite3.Connection, cat: dict, cfg: dict, today: date) ->
     return out
 
 
-# ---------------------------------------------------------------- plano
-def make_units(cat: dict, lp: dict) -> list[Unit]:
-    """Uma unidade de agenda por aula pendente, na ordem do catálogo (aula sem duração = 0 min)."""
-    units: list[Unit] = []
+# ---------------------------------------------------------------- prática (estimada) e projetos
+def practice_ratio(content: dict, cfg: dict) -> float:
+    """Razão prática/vídeo ESTIMADA (nunca é duração oficial). Override do usuário > tabela simples."""
+    ov = (cfg.get("practice_overrides") or {}).get(content["id"])
+    if ov is not None:
+        return float(ov)
+    t = cfg["practice_ratio"]
+    cid = content["id"]
+    if cid.startswith("START-"):
+        return float(t["start"])
+    if cid in t["basic_ids"]:          # você já domina programação básica: pouca prática aqui
+        return float(t["basic"])
+    if cid in t["conceptual_ids"]:
+        return float(t["conceptual"])
+    if content["type"] == "projeto":
+        return float(t["project"])
+    if set(content["competencies"]) & {"agents", "tools", "rag", "multiagent"}:
+        return float(t["agents"])
+    return float(t["default"])
+
+
+def practice_estimates(cat: dict, cfg: dict) -> dict[str, dict]:
+    """Prática estimada por curso = razão × vídeo + estimativa das atividades sem duração (quiz/teste/guia)."""
+    est_cfg = cfg["estimates"]
+    out = {}
+    for cid, c in cat["contents"].items():
+        if c["optional"]:
+            continue
+        ls = [l for l in cat["lessons"] if l["content_id"] == cid and is_required(l)]
+        video = sum(l["duration_min"] for l in ls)
+        acts = [l for l in ls if not l["has_duration"]]
+        act_min = sum(float(est_cfg.get(l["kind"], est_cfg["other"])) for l in acts)
+        ratio = practice_ratio(c, cfg)
+        out[cid] = {"ratio": ratio, "video_min": video, "activities": len(acts), "activity_min": act_min,
+                    "minutes": round5(ratio * video + act_min)}
+    return out
+
+
+def practice_credit(conn: sqlite3.Connection) -> dict[str, float]:
+    return {r["target_id"]: r["m"] for r in db.rows(
+        conn, "SELECT target_id, SUM(actual_min) AS m FROM sessions WHERE type='PRACTICE' AND target_kind='content' AND status!='missed' GROUP BY target_id")}
+
+
+def make_units(cat: dict, cfg: dict, lp: dict, credit: dict[str, float]) -> list[Unit]:
+    """Fila do plano: por curso, cada aula pendente (0 min se sem duração) e depois a prática estimada restante."""
+    est = practice_estimates(cat, cfg)
+    by_content: dict[str, list[dict]] = defaultdict(list)
     for l in cat["lessons"]:
-        if not is_required(l):
+        by_content[l["content_id"]].append(l)
+    units: list[Unit] = []
+    for cid, c in cat["contents"].items():          # ordem do catálogo (study_ord)
+        if c["optional"]:
             continue
-        c = cat["contents"][l["content_id"]]
-        if c["optional"]:           # opcionais não entram no cronograma
-            continue
-        st = lp.get(l["id"])
-        if st and st["completed_on"]:
-            continue
-        if l["has_duration"]:
-            remaining = max(0.01, round(l["duration_min"] - (st["watched_min"] if st else 0), 3))
-        else:
-            remaining = 0.0
-        units.append(Unit(f"V:{l['id']}", "video", l["id"], l["title"], remaining, c["id"], "APRENDER",
-                          {"lesson_id": l["id"], "module_id": l["module_id"], "course": c["title"],
-                           "num": l["num"], "lesson_kind": l["kind"], "has_duration": bool(l["has_duration"])},
-                          splittable=l["duration_min"] > 50))
+        for l in by_content[cid]:
+            if not is_required(l):
+                continue
+            st = lp.get(l["id"])
+            if st and st["completed_on"]:
+                continue
+            remaining = max(0.01, round(l["duration_min"] - (st["watched_min"] if st else 0), 3)) if l["has_duration"] else 0.0
+            units.append(Unit(f"V:{l['id']}", "video", l["id"], l["title"], remaining, cid, "APRENDER",
+                              {"lesson_id": l["id"], "module_id": l["module_id"], "course": c["title"], "num": l["num"],
+                               "lesson_kind": l["kind"], "has_duration": bool(l["has_duration"])},
+                              splittable=False))   # aula é atômica: aparece uma única vez no plano
+        rem = est[cid]["minutes"] - credit.get(cid, 0.0)
+        if rem >= 5:
+            units.append(Unit(f"P:{cid}", "practice", cid, f"Prática · {c['title']}", round5(rem), cid, "PRÁTICA",
+                              {"course": c["title"], "estimate": True, "activities": est[cid]["activities"]}, splittable=True))
     return units
 
 
+def make_stages(conn: sqlite3.Connection, pristine: bool = False) -> list[Stage]:
+    from . import projects as proj
+    cat_titles = {c["id"]: c["title"] for c in db.rows(conn, "SELECT id, title FROM contents")}
+    stages = []
+    for p in proj.list_projects(conn, {}, cat_titles):
+        done = p["status"] == "done" and not pristine
+        rem = p["planned_min"] if pristine else (0.0 if done else max(0.0, p["planned_min"] - p["worked_min"]))
+        stages.append(Stage(p["id"], p["title"], round5(rem), p["unlock_after"]))
+    return stages
+
+
+# ---------------------------------------------------------------- plano
 def plan_inputs(conn: sqlite3.Connection, today: date) -> dict:
     cfg = settings_mod.load(conn)
     cat = load_catalog(conn)
-    units = make_units(cat, lesson_state(conn))
+    units = make_units(cat, cfg, lesson_state(conn), practice_credit(conn))
+    stages = make_stages(conn)
     reviews = [Review(r["key"], date.fromisoformat(r["learned_on"]), r["interval"], date.fromisoformat(r["due"]),
                       r["minutes"], real=True)
                for r in real_reviews(conn, cat, cfg, today) if r["status"] in ("due", "scheduled")]
     done_today = db.row(conn, "SELECT COALESCE(SUM(actual_min),0) AS m FROM sessions WHERE date=? AND status!='missed'",
                         (today.isoformat(),))["m"]
     start = max(today, date.fromisoformat(cfg["start_date"]))
-    return {"cfg": cfg, "cat": cat, "units": units, "reviews": reviews, "done_today": done_today, "start": start}
+    return {"cfg": cfg, "cat": cat, "units": units, "stages": stages, "reviews": reviews, "done_today": done_today, "start": start}
 
 
 def pristine_plan(conn: sqlite3.Connection) -> PlanResult:
     """Plano original completo (sem progresso) — base do resumo de planejamento."""
     cfg = settings_mod.load(conn)
     cat = load_catalog(conn)
-    return build_plan(start=date.fromisoformat(cfg["start_date"]), units=make_units(cat, {}), reviews=[], settings=cfg)
+    return build_plan(start=date.fromisoformat(cfg["start_date"]), units=make_units(cat, cfg, {}, {}),
+                      stages=make_stages(conn, pristine=True), reviews=[], settings=cfg)
 
 
 def recalculate(conn: sqlite3.Connection, reason: str = "manual") -> dict:
@@ -128,7 +189,7 @@ def recalculate(conn: sqlite3.Connection, reason: str = "manual") -> dict:
     if current:  # "foto" do plano do dia, antes de reescrevê-lo
         conn.execute("INSERT OR IGNORE INTO day_baseline(date, planned_min, items) VALUES (?,?,?)",
                      (iso, sum(i["minutes"] for i in current), json.dumps(current, ensure_ascii=False)))
-    result = build_plan(start=inp["start"], units=inp["units"], reviews=inp["reviews"], settings=inp["cfg"],
+    result = build_plan(start=inp["start"], units=inp["units"], stages=inp["stages"], reviews=inp["reviews"], settings=inp["cfg"],
                         done_today_min=inp["done_today"], today=today)
     total = sum(result.totals.values())
     cur = conn.execute("INSERT INTO plan_revisions(generated_at, from_date, end_date, total_min, reason) VALUES (?,?,?,?,?)",

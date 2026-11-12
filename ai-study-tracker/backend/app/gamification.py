@@ -33,6 +33,7 @@ ACHIEVEMENTS = [
     ("ten_courses", "Dez cursos", "Concluir 10 cursos.", 250, "layers", lambda s: s["contents_done"] >= 10),
     ("first_track", "Trilha concluída", "Concluir todos os cursos de uma trilha.", 300, "route", lambda s: s["tracks_done"] >= 1),
     ("half_formation", "Metade do caminho", "Concluir metade do conteúdo da formação.", 400, "target", lambda s: s["overall"] >= 0.5),
+    ("first_project", "Primeiro projeto", "Concluir um projeto da lista.", 200, "hammer", lambda s: s["projects_done"] >= 1),
     ("doer", "Fazer > Assistir", "Prática + projeto registrados maiores que o tempo de aula (mín. 5h de aula).", 250, "zap",
      lambda s: s["video_min"] >= 300 and s["build_min"] > s["video_min"]),
     ("formation_done", "Formação concluída", "Concluir todos os cursos da formação.", 1000, "trophy", lambda s: s["overall"] >= 0.9999),
@@ -40,6 +41,7 @@ ACHIEVEMENTS = [
 
 
 def compute(conn: sqlite3.Connection, prog: dict, reviews: list[dict], streak: dict, tracks: list[dict], today: date) -> dict:
+    from . import projects as proj
     sessions = db.rows(conn, "SELECT * FROM sessions ORDER BY date, id")
     ledger: list[dict] = []
     for s in sessions:
@@ -61,6 +63,15 @@ def compute(conn: sqlite3.Connection, prog: dict, reviews: list[dict], streak: d
     for t in tracks_done:
         ledger.append({"date": None, "xp": D.XP_TRACK_DONE, "label": f"Trilha concluída · {t['title']}", "kind": "TRACK"})
 
+    projects_done = 0
+    for p in proj.list_projects(conn, {}, {}):
+        for it in p["items"]:
+            if it["done_on"]:
+                ledger.append({"date": it["done_on"], "xp": D.XP_PROJECT_ITEM, "label": f"Checklist · {it['title']}", "kind": "PROJECT_ITEM"})
+        if p["status"] == "done":
+            projects_done += 1
+            ledger.append({"date": None, "xp": D.XP_PROJECT, "label": f"Projeto concluído · {p['title']}", "kind": "PROJECT_DONE"})
+
     mt = prog["minutes_by_type"]
     stats = {
         "sessions": len([s for s in sessions if s["status"] != "missed"]),
@@ -70,7 +81,7 @@ def compute(conn: sqlite3.Connection, prog: dict, reviews: list[dict], streak: d
         "video_min": mt["VIDEO"], "build_min": mt["PRACTICE"] + mt["PROJECT"],
         "reviews_done": len([r for r in reviews if r["status"] == "done"]),
         "reviews_on_time": len([r for r in reviews if r["status"] == "done" and r["on_time"]]),
-        "contents_done": len(contents_done), "tracks_done": len(tracks_done), "overall": prog["overall"],
+        "contents_done": len(contents_done), "tracks_done": len(tracks_done), "overall": prog["overall"], "projects_done": projects_done,
     }
     stored = {r["id"]: r["unlocked_on"] for r in db.rows(conn, "SELECT * FROM achievements_unlocked")}
     achievements = []
@@ -101,7 +112,8 @@ def compute(conn: sqlite3.Connection, prog: dict, reviews: list[dict], streak: d
     return {"xp": total, "level": level, "next_level": nxt, "level_pct": pct, "levels": D.LEVELS,
             "achievements": achievements, "ledger": ledger[:60], "xp_by_kind": by_kind, "stats": stats,
             "rules": {"per_min": D.XP_PER_MIN, "lesson": D.XP_LESSON, "review_on_time": D.XP_REVIEW_ON_TIME,
-                      "review_late": D.XP_REVIEW_LATE, "content": D.XP_CONTENT_DONE, "track": D.XP_TRACK_DONE}}
+                      "review_late": D.XP_REVIEW_LATE, "content": D.XP_CONTENT_DONE, "track": D.XP_TRACK_DONE,
+                      "project_item": D.XP_PROJECT_ITEM, "project": D.XP_PROJECT}}
 
 
 def competencies(prog: dict, contents: dict, reviews: list[dict], learned: dict[str, set], baselines: dict | None = None) -> list[dict]:

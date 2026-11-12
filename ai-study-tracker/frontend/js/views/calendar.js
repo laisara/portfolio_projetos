@@ -1,7 +1,7 @@
-import { api, esc, fmtDate, hm, icon, isoDate, KIND, MON3, MONTHS, openLayer, parseDate, skeleton, TYPE_LABEL, TYPE_KIND, WEEK } from "../core.js";
+import { api, esc, fmtDate, hm, icon, isoDate, KIND, MON3, MONTHS, openLayer, parseDate, skeleton, toast, TYPE_LABEL, TYPE_KIND, WEEK } from "../core.js";
 import { bindStart, taskRow } from "./dashboard.js";
 
-const ORDER = ["video", "review"];
+const ORDER = ["video", "practice", "project", "review"];
 let cursor = null;
 let mode = null;
 
@@ -54,15 +54,16 @@ export default async function calendar(el) {
   const start = parseDate(settings.start_date);
   if (!cursor) cursor = new Date(Math.max(today, start).valueOf());
   cursor.setDate(1);
-  el.innerHTML = `<div class="page-head"><div><p class="eyebrow">Cronograma adaptativo</p><h1>Calendário</h1></div>
+  el.innerHTML = `<div class="page-head"><div><p class="eyebrow">Aula → prática → projeto → revisão</p><h1>Calendário</h1></div>
     <div class="row wrap">
       <div class="seg" role="group" aria-label="Visualização"><button data-mode="month" aria-pressed="${mode === "month"}">Mês</button><button data-mode="agenda" aria-pressed="${mode === "agenda"}">Agenda</button></div>
       <div class="cal-toolbar"><button class="btn icon-only" id="prev" aria-label="Mês anterior">${icon("chevron-left")}</button>
       <span class="cal-title" id="cal-title"></span>
       <button class="btn icon-only" id="next" aria-label="Próximo mês">${icon("chevron-right")}</button>
-      <button class="btn" id="today">Hoje</button></div>
+      <button class="btn" id="today">Hoje</button>
+      <button class="btn" id="adjust" title="Recalcula o futuro a partir de hoje (dia perdido, atraso ou adiantamento)">${icon("refresh-cw")} Ajustar cronograma</button></div>
     </div></div>
-    <div class="legend" style="margin-bottom:14px">${["video", "review"].map((k) => `<span><span class="dot ${KIND[k].cls}"></span>${KIND[k].label}</span>`).join("")}<span><span class="dot k-rest" style="background:var(--c-rest);outline:1px solid var(--border-2)"></span>Descanso</span><span class="faint">Prática e projetos próprios: registre em Sessões</span></div>
+    <div class="legend" style="margin-bottom:14px">${["video", "practice", "project", "review"].map((k) => `<span><span class="dot ${KIND[k].cls}"></span>${KIND[k].label}</span>`).join("")}<span><span class="dot k-rest" style="background:var(--c-rest);outline:1px solid var(--border-2)"></span>Descanso</span></div>
     <div id="cal-body">${skeleton(600)}</div>`;
   const body = el.querySelector("#cal-body");
 
@@ -95,6 +96,7 @@ export default async function calendar(el) {
   }
   el.querySelector("#prev").onclick = () => { cursor.setMonth(cursor.getMonth() - 1); draw(); };
   el.querySelector("#next").onclick = () => { cursor.setMonth(cursor.getMonth() + 1); draw(); };
+  el.querySelector("#adjust").onclick = async () => { try { const r = await api("/plan/recalculate", { method: "POST" }); toast(`Cronograma ajustado · última atividade ${fmtDate(r.end_date, "full")}`, { type: "good" }); await draw(); } catch (e) { toast(e.message, { type: "error" }); } };
   el.querySelector("#today").onclick = () => { cursor = new Date(today); cursor.setDate(1); draw(); };
   el.querySelectorAll("[data-mode]").forEach((b) => b.onclick = () => { mode = b.dataset.mode; calendar(el); });
   await draw();

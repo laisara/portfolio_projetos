@@ -10,7 +10,7 @@ from typing import Any, Iterator
 from . import config
 
 SCHEMA = (Path(__file__).parent / "schema.sql").read_text(encoding="utf-8")
-SCHEMA_VERSION = "4"
+SCHEMA_VERSION = "5"
 
 
 def connect(path: Path | None = None) -> sqlite3.Connection:
@@ -52,8 +52,10 @@ def init_schema(conn: sqlite3.Connection) -> None:
         for t in ("appearances", "track_slots", "lessons", "modules", "contents", "tracks"):
             conn.execute(f"DROP TABLE IF EXISTS {t}")
         conn.execute("DELETE FROM meta WHERE key IN ('catalog_meta','catalog_customized')")
-    for t in ("lab_tasks", "lab_milestones", "lab_stages"):
-        conn.execute(f"DROP TABLE IF EXISTS {t}")
+    lab_cols = {r[1] for r in conn.execute("PRAGMA table_info(lab_stages)")}
+    if lab_cols and "practice" not in lab_cols:     # formato antigo do Lab (v1)
+        for t in ("lab_tasks", "lab_milestones", "lab_stages"):
+            conn.execute(f"DROP TABLE IF EXISTS {t}")
     conn.executescript(SCHEMA)
     conn.execute("INSERT OR IGNORE INTO meta(key, value) VALUES ('schema_version', ?)", (SCHEMA_VERSION,))
 

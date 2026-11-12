@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from collections import defaultdict
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 from . import catalog as catalog_mod
 from . import config, db, gamification, tracker
@@ -81,42 +81,80 @@ def today_view(conn: sqlite3.Connection, snap: dict) -> dict:
             "done_min": sum(s["actual_min"] for s in sessions if s["status"] != "missed")}
 
 
+def week_summary(conn: sqlite3.Connection, today: date) -> dict:
+    mon = today - timedelta(days=today.weekday())
+    days = [(mon + timedelta(days=i)).isoformat() for i in range(7)]
+    iso = today.isoformat()
+    sess = db.rows(conn, "SELECT date, actual_min FROM sessions WHERE date BETWEEN ? AND ? AND status!='missed'", (days[0], days[-1]))
+    done = sum(x["actual_min"] for x in sess)
+    planned = 0.0
+    base = {r["date"]: r["planned_min"] for r in db.rows(conn, "SELECT date, planned_min FROM day_baseline WHERE date BETWEEN ? AND ?", (days[0], days[-1]))}
+    plan = {r["date"]: r["m"] for r in db.rows(conn, "SELECT date, SUM(minutes) AS m FROM plan_items WHERE date BETWEEN ? AND ? GROUP BY date", (days[0], days[-1]))}
+    for d in days:
+        if d < iso:
+            planned += base.get(d) or sum(x["actual_min"] for x in sess if x["date"] == d)
+        elif d == iso:
+            planned += base.get(d) or (plan.get(d, 0) + sum(x["actual_min"] for x in sess if x["date"] == d))
+        else:
+            planned += plan.get(d, 0)
+    return {"start": days[0], "end": days[-1], "sessions": len(sess), "studied_min": done, "planned_min": planned,
+            "pct": min(1.0, done / planned) if planned else 0.0}
+
+
+def study_now(today_items: list[dict], next_day: dict | None, cat: dict, lp: dict) -> dict | None:
+    """O próximo passo: primeira aula/prática/projeto do plano de hoje (ou do próximo dia de estudo)."""
+    items = today_items or (next_day or {}).get("items") or []
+    pick = next((i for i in items if i["kind"] in ("video", "practice", "project")), None) or next((i for i in items), None)
+    if not pick:
+        return None
+    out = {"item": pick, "today": bool(today_items), "kind": pick["kind"], "title": pick["title"], "minutes": pick["minutes"],
+           "course": pick["detail"].get("course"), "num": pick["detail"].get("num"),
+           "has_duration": pick["detail"].get("has_duration", True)}
+    if pick["kind"] == "video":
+        l = next((l for l in cat["lessons"] if l["id"] == pick["ref"]), None)
+        if l:
+            out["duration_min"] = l["duration_min"]
+            out["lesson_kind"] = l["kind"]
+            out["continuing"] = bool((lp.get(l["id"]) or {}).get("watched_min"))
+    return out
+
+
 def dashboard(conn: sqlite3.Connection) -> dict:
     tracker.ensure_plan_fresh(conn)
     snap = snapshot(conn)
-    snap["_today_items"] = _items_for(conn, snap["today"].isoformat())
+    today = snap["today"]
+    today_items = _items_for(conn, today.isoformat())
     prog, game = snap["prog"], snap["game"]
+    tv = today_view(conn, snap)
     end = db.row(conn, "SELECT MAX(date) AS d FROM plan_items")["d"]
     lessons_end = db.row(conn, "SELECT MAX(date) AS d FROM plan_items WHERE kind='video'")["d"]
+    work_end = db.row(conn, "SELECT MAX(date) AS d FROM plan_items WHERE kind!='review'")["d"]
     pristine_end = db.get_meta(conn, "pristine_end")
     ana = catalog_mod.analysis(conn)
-    pristine = tracker.pristine_plan(conn).totals
+    pr = tracker.pristine_plan(conn).totals
     mt = prog["minutes_by_type"]
-    load = {"planned": {"formation": pristine["video"], "review": pristine["review"], "total": pristine["video"] + pristine["review"]},
-            "done": {"formation": mt["VIDEO"], "practice": mt["PRACTICE"], "project": mt["PROJECT"], "review": mt["REVIEW"],
-                     "total": sum(mt.values())}}
-    iso = snap["today"].isoformat()
-    todays = [r for it in snap["_today_items"] if it["kind"] == "review" for r in it["detail"].get("reviews", [])]
-    done_today = db.row(conn, "SELECT COUNT(*) AS n FROM review_log WHERE done_on=?", (iso,))["n"]
-    upcoming = []
-    for it in db.rows(conn, "SELECT date, detail FROM plan_items WHERE kind='review' AND date>=? ORDER BY date LIMIT 6", (iso,)):
-        for r in db.loads(it["detail"], {}).get("reviews", []):
-            upcoming.append({**r, "planned_for": it["date"]})
+    planned = {"formation": ana["unique_min"], "practice": pr["practice"], "project": pr["project"], "review": pr["review"]}
+    planned["total"] = sum(planned.values())
+    load = {"planned": planned,
+            "done": {"formation": prog["video_done"], "practice": mt["PRACTICE"], "project": mt["PROJECT"], "review": mt["REVIEW"],
+                     "total": prog["video_done"] + mt["PRACTICE"] + mt["PROJECT"] + mt["REVIEW"]}}
+    todays = [r for it in today_items if it["kind"] == "review" for r in it["detail"].get("reviews", [])]
+    done_today = db.row(conn, "SELECT COUNT(*) AS n FROM review_log WHERE done_on=?", (today.isoformat(),))["n"]
     core = {k: v for k, v in prog["per_content"].items() if not v["optional"]}
-    courses_done = len([1 for pc in core.values() if pc["complete"]])
+    hour = datetime.now().hour
     return {
-        "today": today_view(conn, snap),
+        "today": tv, "study_now": study_now(today_items, tv["next_day"], snap["cat"], tracker.lesson_state(conn)),
+        "greeting": "Bom dia" if hour < 12 else "Boa tarde" if hour < 18 else "Boa noite",
         "overall": prog["overall"],
-        "video": {"done": prog["video_done"], "total": prog["video_total"]},
+        "video": {"done": prog["video_done"], "total": prog["video_total"], "remaining": prog["video_total"] - prog["video_done"]},
         "lessons": {"done": prog["lessons_done"], "total": prog["lessons"]},
-        "courses": {"done": courses_done, "total": len(core)},
+        "courses": {"done": len([1 for pc in core.values() if pc["complete"]]), "total": len(core)},
         "minutes_by_type": mt,
         "xp": game["xp"], "level": game["level"], "next_level": game["next_level"], "level_pct": game["level_pct"],
-        "streak": snap["streak"],
-        "upcoming_reviews": upcoming[:6],
+        "streak": snap["streak"], "week": week_summary(conn, today),
         "reviews_today": {"pending": len(todays), "done": done_today, "total": len(todays) + done_today},
         "tracks": snap["tracks"],
-        "plan_end": end, "lessons_end": lessons_end, "pristine_end": pristine_end,
+        "plan_end": end, "lessons_end": lessons_end, "work_end": work_end, "pristine_end": pristine_end,
         "catalog": {k: ana[k] for k in ("declared_min", "gross_min", "duplicate_min", "unique_min", "diff_vs_declared_min", "tracks", "courses", "lessons")},
         "load": load,
     }
@@ -167,9 +205,10 @@ def plan_summary(conn: sqlite3.Connection) -> dict:
     res = tracker.pristine_plan(conn)
     cfg = settings_mod.load(conn)
     ana = catalog_mod.analysis(conn)
-    lesson_days = [d for d in res.days if any(i.kind == "video" for i in d.items)]
-    review_only = [d for d in res.days if d.items and not any(i.kind == "video" for i in d.items)]
-    rest = [d for d in res.days if d.capacity == 0 and res.lessons_end and d.date <= res.lessons_end]
+    lesson_days = [d for d in res.days if any(i.kind in ("video", "practice", "project") for i in d.items)]
+    review_only = [d for d in res.days if d.items and not any(i.kind in ("video", "practice", "project") for i in d.items)]
+    last_work = max((d.date for d in lesson_days), default=None)
+    rest = [d for d in res.days if d.capacity == 0 and last_work and d.date <= last_work]
     total = sum(res.totals.values())
     study = lesson_days
     weeks = defaultdict(lambda: defaultdict(float))
@@ -185,6 +224,7 @@ def plan_summary(conn: sqlite3.Connection) -> dict:
         "catalog": ana, "totals": res.totals, "total_min": total,
         "start": cfg["start_date"], "end": res.end_date.isoformat() if res.end_date else None,
         "lessons_end": res.lessons_end.isoformat() if res.lessons_end else None,
+        "work_end": max((d.date for d in res.days if any(i.kind != "review" for i in d.items)), default=None).isoformat(),
         "current_end": db.row(conn, "SELECT MAX(date) AS d FROM plan_items")["d"],
         "current_lessons_end": db.row(conn, "SELECT MAX(date) AS d FROM plan_items WHERE kind='video'")["d"],
         "study_days": len(lesson_days), "review_only_days": len(review_only), "rest_days": len(rest), "calendar_days": len(res.days),

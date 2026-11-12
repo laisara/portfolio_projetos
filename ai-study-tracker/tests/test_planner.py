@@ -14,11 +14,28 @@ def plan(us, **kw):
     return build_plan(start=START, units=us, reviews=kw.pop("reviews", []), settings=DEFAULTS, **kw)
 
 
-def test_only_lessons_and_reviews_in_plan():
+def test_lessons_only_input_gives_lessons_and_reviews():
     res = plan(units(60))
-    kinds = {i.kind for d in res.days for i in d.items}
-    assert kinds == {"video", "review"}
-    assert set(res.totals) == {"video", "review"}
+    assert {i.kind for d in res.days for i in d.items} == {"video", "review"}
+    assert set(res.totals) == {"video", "practice", "project", "review"} and res.totals["practice"] == res.totals["project"] == 0
+
+
+def test_practice_follows_course_and_projects_wait_for_unlock_and_prefer_saturday():
+    from backend.app.planner import Stage
+    us = []
+    for c in range(3):
+        us += [Unit(f"V:{c}:{i}", "video", f"L{c}{i}", "aula", 40, f"C{c}", "APRENDER") for i in range(4)]
+        us.append(Unit(f"P:{c}", "practice", f"C{c}", "Prática", 60, f"C{c}", "PRÁTICA", splittable=True))
+    res = plan(us, stages=[Stage("PROJ", "Projeto", 240, "C1")])
+    order = [(i.kind, i.content_id) for d in res.days for i in d.items if i.kind in ("video", "practice")]
+    for c in ("C0", "C1", "C2"):                     # vídeo → prática dentro de cada curso
+        kinds = [k for k, cid in order if cid == c]
+        assert kinds.index("practice") > max(i for i, k in enumerate(kinds) if k == "video")
+    assert abs(res.totals["practice"] - 180) < 0.01 and abs(res.totals["project"] - 240) < 0.01
+    last_c1 = max(d.date for d in res.days for i in d.items if i.content_id == "C1" and i.kind in ("video", "practice"))
+    proj_days = [d for d in res.days for i in d.items if i.kind == "project"]
+    assert proj_days and all(d.date >= last_c1 for d in proj_days)
+    assert proj_days[0].date.weekday() == 5 or sum(i.minutes for d in proj_days for i in d.items if i.kind == "project") >= 240
 
 
 def test_rest_days_and_holidays_are_empty():

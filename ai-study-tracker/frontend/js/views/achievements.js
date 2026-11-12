@@ -7,7 +7,7 @@ export default async function achievements(el) {
   const maxRate = Math.max(...Object.values(r.per_min));
   const unlocked = g.achievements.filter((a) => a.unlocked).length;
   el.innerHTML = `
-  <div class="page-head"><div><p class="eyebrow">Gamificação</p><h1>Nível e conquistas</h1></div><span class="chip">${icon("flame")} melhor sequência: ${g.streak.best} dias</span></div>
+  <div class="page-head"><div><p class="eyebrow">XP · nível · conquistas</p><h1>Progresso</h1></div><span class="chip">${icon("flame")} melhor sequência: ${g.streak.best} dias</span></div>
   <section class="panel">
     <div class="level-hero">
       <div class="level-badge">${g.level.id}</div>
@@ -30,7 +30,8 @@ export default async function achievements(el) {
         <div>Aula concluída<span class="spacer"></span><b class="num">+${r.lesson}</b></div>
         <div>Revisão no prazo / atrasada<span class="spacer"></span><b class="num">+${r.review_on_time} / +${r.review_late}</b></div>
         <div>Curso concluído (todas as aulas)<span class="spacer"></span><b class="num">+${r.content}</b></div>
-        <div>Trilha concluída<span class="spacer"></span><b class="num">+${r.track}</b></div></div></section>
+        <div>Trilha concluída<span class="spacer"></span><b class="num">+${r.track}</b></div>
+        <div>Item de checklist / projeto concluído<span class="spacer"></span><b class="num">+${r.project_item} / +${r.project}</b></div></div></section>
     <section class="panel"><h2 style="margin-bottom:12px">Histórico de XP</h2>
       ${g.ledger.length ? `<div class="mini-list">${g.ledger.slice(0, 18).map((e) => `<div><span class="faint num" style="min-width:42px">${e.date ? fmtDate(e.date) : "—"}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(e.label)}</span><span class="spacer"></span><b class="num" style="color:var(--warn)">+${Math.round(e.xp)}</b></div>`).join("")}</div>`
         : `<div class="empty">${icon("zap")}<b>Nenhum XP ainda</b>Comece uma sessão para ganhar os primeiros pontos.</div>`}</section>

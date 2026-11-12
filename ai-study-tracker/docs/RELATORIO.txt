@@ -5,9 +5,9 @@ Data: 12/11/2026 · Branch: ccr-97dc7c3e-vbe1hb · Pasta: ai-study-tracker/
 
 1. O QUE É O PRODUTO (escopo final decidido por você)
 --------------------------------------------------------------------------------
-- App pessoal e local-first, SOMENTE DESKTOP (Windows), para CONTROLAR OS ESTUDOS:
+- App pessoal e local-first, desktop e celular (PWA), para CONTROLAR OS ESTUDOS:
   Formação -> Trilhas -> Módulos -> Aulas.
-- REMOVIDO por decisão sua: AI Agent Lab, mobile, modo LAN e prática automática.
+- Decisão final (MVP): mobile, AI Agent Lab, prática e projetos VOLTARAM ao escopo.
 - Stack: Python + FastAPI + SQLite; frontend HTML/CSS/JS sem build; PWA (manifest +
   service worker). Servidor escuta apenas em 127.0.0.1.
 - Identidade visual: Dark + verde esmeralda (tokens --bg-primary, --green-primary etc.).
@@ -46,19 +46,12 @@ Data: 12/11/2026 · Branch: ccr-97dc7c3e-vbe1hb · Pasta: ai-study-tracker/
 - Correção feita durante o recebimento: Dominando Automações com n8n soma 2h47m26s
   (um erro de aritmética meu havia indicado 3h35; não havia aulas repetidas).
 
-3. CRONOGRAMA (só aulas + revisão)
+3. CRONOGRAMA (VÍDEO -> PRÁTICA -> PROJETO -> REVISÃO)
 --------------------------------------------------------------------------------
-- Início 13/11/2026 · ÚLTIMA AULA 21/12/2026 · última revisão D+30: 20/01/2027.
-- Formação 66h22 + Revisão 9h26 = TEMPO TOTAL DE APRENDIZADO 75h48.
-- 33 dias de aula · 20 dias só com revisão (cauda D+7/D+30) · 6 dias de descanso até a
-  última aula · média 2h14 por dia de aula · maior dia 3h33 (sábado).
-- Rotina: Seg/Ter/Qui 2h15 · Qua 2h · Sex 1h45 · Sáb 3h30 · Dom descanso;
-  24/12 e 31/12 com meia carga; 25/12 e 01/01 descanso.
-- A data NÃO é carga ÷ dias: sai do algoritmo (capacidade por dia, descanso, revisão).
-- Adaptativo: recalcula só o futuro; histórico e "foto" do plano de cada dia preservados.
-- Prática e projetos próprios: você registra como sessões (valem mais XP); não entram
-  no plano automático.
-- Dia a dia completo: docs/CRONOGRAMA.md.
+- Início 13/11/2026 · última aula 09/01/2027 · fim do trabalho 13/01/2027 · revisões até 08/02/2027.
+- Formação 66h21m37s (real) + Prática ~18h15 + Projetos ~18h + Revisão ~10h50 (estimativas) = ~113h25.
+- 51 dias de estudo · média 2h12 · máximo 3h30 · descanso aos domingos. Cada aula aparece uma única vez.
+- Detalhe em docs/CRONOGRAMA.md.
 
 4. FUNCIONALIDADES IMPLEMENTADAS
 --------------------------------------------------------------------------------
@@ -72,7 +65,7 @@ Ajustes · backup/restore (.db) · export/import (JSON) · PWA.
 
 5. QUALIDADE E VALIDAÇÃO (o que foi realmente verificado)
 --------------------------------------------------------------------------------
-- 72 testes pytest passando (inclui a auditoria de durações): catálogo, duplicidades, números oficiais, planner,
+- 79 testes pytest passando (inclui a auditoria de durações): catálogo, duplicidades, números oficiais, planner,
   aula sem duração, progresso compartilhado entre trilhas (concluir/desmarcar),
   placeholder, sessões, XP, revisão, adaptação (atraso/adiantamento), backup,
   restore (inclui arquivo corrompido), import, PWA e checagem estática dos .bat.
@@ -81,7 +74,7 @@ Ajustes · backup/restore (.db) · export/import (JSON) · PWA.
   0 externas, heap ~10 MB.
 - Chrome (CDP): 0 erros de instalabilidade e de manifest; abre offline com os últimos
   dados (testado nesta versão).
-- Screenshots reais do app rodando: docs/screenshots/ (13 telas, banco de demonstração).
+- Fluxo real no navegador (scripts/e2e_flow.js): 16 verificações OK. Screenshots em docs/screenshots/ (banco de demonstração).
 
 6. NÃO VALIDADO (declaração explícita)
 --------------------------------------------------------------------------------

@@ -31,3 +31,7 @@ def today() -> date:
     """Data de hoje. AST_TODAY=YYYY-MM-DD permite simular datas (demo/testes)."""
     forced = os.environ.get("AST_TODAY")
     return date.fromisoformat(forced) if forced else date.today()
+
+
+def projects_path() -> Path:
+    return Path(os.environ.get("AST_PROJECTS", DATA_DIR / "projects.json"))

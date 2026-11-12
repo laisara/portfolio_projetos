@@ -1,0 +1,16 @@
+{
+  "projects": [
+    {"id": "PROJ-1", "title": "Projeto 1 — Biblioteca de prompts e skills", "planned_hours": 3, "unlock_after": "CLAUDE-002",
+     "description": "Transformar o que você aprendeu de Claude, Prompt e Skills em um kit que você usa de verdade no trabalho.",
+     "checklist": ["Escolher 5 tarefas reais para automatizar com IA", "Escrever e testar um prompt para cada tarefa", "Criar 1 skill própria e testar", "Guardar tudo em uma pasta/repositório com README"]},
+    {"id": "PROJ-2", "title": "Projeto 2 — Agente pessoal com ferramentas", "planned_hours": 4, "unlock_after": "HERMES-001",
+     "description": "Um agente pessoal rodando de verdade, com pelo menos duas ferramentas.",
+     "checklist": ["Definir o que o agente faz por você", "Configurar o agente (OpenClaw ou Hermes)", "Conectar 2 ferramentas/MCPs", "Usar por 3 dias e anotar o que falhou"]},
+    {"id": "PROJ-3", "title": "Projeto 3 — Agente de dados com n8n/SQL", "planned_hours": 5, "unlock_after": "N8N-007",
+     "description": "Aproveitar sua experiência com SQL, n8n e dashboards para um agente que consulta dados e entrega insights.",
+     "checklist": ["Escolher uma base real e uma pergunta de negócio", "Agente consulta o SQL com ferramenta somente leitura", "Fluxo no n8n entrega o resultado (e-mail, chat ou dashboard)", "10 perguntas de teste com resultado esperado"]},
+    {"id": "PROJ-FINAL", "title": "Projeto Final — Sistema de agentes", "planned_hours": 6, "unlock_after": null,
+     "description": "O sistema que prova que você aplica o que aprendeu: agentes, ferramentas, RAG e uma interface.",
+     "checklist": ["Definir problema, usuário e critério de sucesso", "Desenhar a arquitetura (agentes, ferramentas, dados)", "Implementar o MVP", "Avaliar com casos de teste", "Publicar com README e demo"]}
+  ]
+}

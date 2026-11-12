@@ -19,7 +19,7 @@ from . import db
 from .domain import COMPETENCY_IDS
 
 ID_RE = re.compile(r"^[A-Z][A-Z0-9]*-[A-Z0-9]+$")
-KINDS = ("video", "quiz", "other", "placeholder")
+KINDS = ("video", "quiz", "test", "guide", "other", "placeholder")
 
 
 def parse_duration(value: Any) -> Optional[float]:

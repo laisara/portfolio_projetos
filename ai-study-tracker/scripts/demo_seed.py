@@ -60,6 +60,13 @@ def main() -> None:
                 if it["kind"] == "video" and it["detail"].get("lesson_id") and not it["detail"].get("partial"):
                     done_lessons.append(it["ref"])
                     minutes += it["minutes"]
+                elif it["kind"] == "practice":
+                    c.post("/api/sessions", json={"date": iso, "type": "PRACTICE", "target_kind": "content", "target_id": it["ref"],
+                                                  "title": it["title"], "planned_min": round(it["minutes"]), "actual_min": max(1, round(it["minutes"])),
+                                                  "notes": "Reproduzi o exemplo no meu projeto."})
+                elif it["kind"] == "project":
+                    c.post("/api/sessions", json={"date": iso, "type": "PROJECT", "target_kind": "project", "target_id": it["ref"],
+                                                  "title": it["title"], "planned_min": round(it["minutes"]), "actual_min": max(1, round(it["minutes"]))})
                 elif it["kind"] == "review":
                     review_keys += [r["key"] for r in it["detail"]["reviews"]]
                     minutes += it["minutes"]
@@ -70,9 +77,11 @@ def main() -> None:
                     "actual_min": max(1, round(minutes * factor)), "focus": random.random() < 0.7,
                     "notes": random.choice(NOTES), "complete_lessons": done_lessons, "review_keys": review_keys})
                 assert r.status_code == 201, r.text
-            if d.weekday() == 5 and d < until:   # sábado: prática própria registrada à mão
-                c.post("/api/sessions", json={"date": iso, "type": "PRACTICE", "title": "Prática: reproduzi o exemplo no meu projeto",
-                                              "actual_min": 40, "notes": "Testei a skill no meu dashboard."})
+            if iso == "2026-11-28":              # itens de checklist do projeto 1 concluídos
+                pr = c.get("/api/projects").json()["projects"][0]
+                for item in pr["items"][:2]:
+                    c.post(f"/api/projects/items/{item['id']}/toggle")
+                c.patch("/api/lab/stages/LAB-1", json={"status": "done"}); c.patch("/api/lab/stages/LAB-2", json={"status": "doing"})
             d += timedelta(days=1)
         dash = c.get("/api/dashboard").json()
         print(f"demo ok: {db_path} · hoje={until} · progresso {dash['overall']:.0%} · XP {dash['xp']} · {dash['level']['name']} · término {dash['plan_end']}")

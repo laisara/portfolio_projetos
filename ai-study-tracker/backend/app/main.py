@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from . import backup as backup_mod
 from . import catalog as catalog_mod
-from . import config, db, gamification, services, tracker
+from . import config, db, gamification, projects, services, tracker
 from . import settings as settings_mod
 from .db import get_conn
 from .domain import COMPETENCY_IDS
@@ -24,6 +24,7 @@ def bootstrap() -> None:
     with db.session_scope() as conn:
         db.init_schema(conn)
         catalog_mod.ensure_catalog(conn, config.catalog_path())
+        projects.seed(conn, config.projects_path(), config.lab_path())
         tracker.ensure_plan_fresh(conn)
         services.plan_summary(conn)  # grava a data final do plano original
 
@@ -109,7 +110,8 @@ def get_content(content_id: str, conn: sqlite3.Connection = Depends(get_conn)):
     apps = db.rows(conn, "SELECT t.id, t.title, t.group_name, a.position FROM appearances a JOIN tracks t ON t.id=a.track_id WHERE a.content_id=? ORDER BY t.ord", (content_id,))
     planned = db.rows(conn, "SELECT date, kind, minutes FROM plan_items WHERE content_id=? ORDER BY date", (content_id,))
     sessions = db.rows(conn, "SELECT * FROM sessions WHERE target_id IN (SELECT id FROM lessons WHERE content_id=?) OR target_id=? ORDER BY date DESC LIMIT 20", (content_id, content_id))
-    return {**c, "progress": snap["prog"]["per_content"][content_id], "modules": modules, "tracks": apps,
+    est = tracker.practice_estimates(snap["cat"], snap["cfg"]).get(content_id)
+    return {**c, "progress": snap["prog"]["per_content"][content_id], "modules": modules, "tracks": apps, "practice_estimate": est,
             "plan": {"first": planned[0]["date"] if planned else None, "last": planned[-1]["date"] if planned else None,
                      "minutes": sum(p["minutes"] for p in planned)}, "sessions": sessions}
 
@@ -210,7 +212,7 @@ SessionType = Literal["VIDEO", "PRACTICE", "PROJECT", "REVIEW", "OTHER"]
 class SessionIn(BaseModel):
     date: date
     type: SessionType
-    target_kind: Literal["lesson", "content", "review", "free"] = "free"
+    target_kind: Literal["lesson", "content", "project", "review", "free"] = "free"
     target_id: Optional[str] = Field(default=None, max_length=200)
     title: str = Field(min_length=1, max_length=200)
     planned_min: float = Field(default=0, ge=0, le=720)
@@ -326,6 +328,69 @@ def reviews(conn: sqlite3.Connection = Depends(get_conn)):
     return {"reviews": services.snapshot(conn)["reviews"]}
 
 
+@app.get("/api/reviews/today")
+def reviews_today(conn: sqlite3.Connection = Depends(get_conn)):
+    """Revisões que vencem hoje (ou atrasadas ainda no prazo), com os cursos estudados naquele dia."""
+    snap = services.snapshot(conn)
+    les_content = {l["id"]: snap["cat"]["contents"][l["content_id"]]["title"] for l in snap["cat"]["lessons"]}
+    learned: dict[str, list[str]] = {}
+    for r in db.rows(conn, "SELECT lesson_id, completed_on FROM lesson_progress WHERE completed_on IS NOT NULL"):
+        if r["lesson_id"] in les_content:
+            learned.setdefault(r["completed_on"], [])
+            if les_content[r["lesson_id"]] not in learned[r["completed_on"]]:
+                learned[r["completed_on"]].append(les_content[r["lesson_id"]])
+    due = [{**r, "courses": learned.get(r["learned_on"], [])} for r in snap["reviews"] if r["status"] == "due"]
+    upcoming = [{**r, "courses": learned.get(r["learned_on"], [])} for r in snap["reviews"] if r["status"] == "scheduled"][:12]
+    done_today = db.row(conn, "SELECT COUNT(*) AS n FROM review_log WHERE done_on=?", (snap["today"].isoformat(),))["n"]
+    return {"due": due, "upcoming": upcoming, "done_today": done_today, "minutes": sum(r["minutes"] for r in due)}
+
+
+# ------------------------------------------------------------------- projetos e AI Agent Lab (listas simples)
+def _content_state(conn):
+    snap = services.snapshot(conn)
+    return ({k: v["complete"] for k, v in snap["prog"]["per_content"].items()}, {k: c["title"] for k, c in snap["cat"]["contents"].items()})
+
+
+@app.get("/api/projects")
+def get_projects(conn: sqlite3.Connection = Depends(get_conn)):
+    done, titles = _content_state(conn)
+    return {"projects": projects.list_projects(conn, done, titles)}
+
+
+@app.post("/api/projects/items/{item_id}/toggle")
+def toggle_project_item(item_id: int, conn: sqlite3.Connection = Depends(get_conn)):
+    before = _xp_state(conn)
+    projects.toggle_item(conn, item_id, config.today().isoformat())
+    return _reward(conn, before, "projeto")
+
+
+class ProjectNotes(BaseModel):
+    notes: str = Field(max_length=20000)
+
+
+@app.patch("/api/projects/{project_id}")
+def patch_project(project_id: str, body: ProjectNotes, conn: sqlite3.Connection = Depends(get_conn)):
+    if not db.row(conn, "SELECT id FROM projects WHERE id=?", (project_id,)):
+        raise KeyError(project_id)
+    conn.execute("UPDATE projects SET notes=? WHERE id=?", (body.notes, project_id))
+    return {"ok": True}
+
+
+@app.get("/api/lab")
+def get_lab(conn: sqlite3.Connection = Depends(get_conn)):
+    return {"stages": db.rows(conn, "SELECT * FROM lab_stages ORDER BY ord")}
+
+
+class StagePatch(BaseModel):
+    status: Literal["todo", "doing", "done"]
+
+
+@app.patch("/api/lab/stages/{stage_id}")
+def patch_stage(stage_id: str, body: StagePatch, conn: sqlite3.Connection = Depends(get_conn)):
+    projects.set_stage_status(conn, stage_id, body.status)
+    return {"ok": True}
+
+
 # ------------------------------------------------------------------- gamificação e competências
 @app.get("/api/gamification")
 def get_gamification(conn: sqlite3.Connection = Depends(get_conn)):
@@ -351,6 +416,14 @@ class SettingsIn(BaseModel):
     holidays: Optional[dict[str, float]] = None
     focus_minutes: Optional[int] = Field(default=None, ge=5, le=180)
     competency_baselines: Optional[dict[str, float]] = None
+    practice_overrides: Optional[dict[str, float]] = None
+
+    @field_validator("practice_overrides")
+    @classmethod
+    def _pr(cls, v):
+        if v is not None and any(not 0 <= x <= 3 for x in v.values()):
+            raise ValueError("razão de prática entre 0 e 3")
+        return v
 
     @field_validator("capacity")
     @classmethod

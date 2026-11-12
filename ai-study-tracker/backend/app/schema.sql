@@ -52,6 +52,20 @@ CREATE TABLE IF NOT EXISTS review_log (
 );
 CREATE TABLE IF NOT EXISTS achievements_unlocked (id TEXT PRIMARY KEY, unlocked_on TEXT NOT NULL);
 
+-- Projetos (lista simples com checklist) e AI Agent Lab (etapas simples) ----
+CREATE TABLE IF NOT EXISTS projects (
+  id TEXT PRIMARY KEY, ord INTEGER NOT NULL, title TEXT NOT NULL, description TEXT NOT NULL DEFAULT '',
+  planned_hours REAL NOT NULL, unlock_after TEXT, notes TEXT NOT NULL DEFAULT ''
+);
+CREATE TABLE IF NOT EXISTS project_items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  ord INTEGER NOT NULL, title TEXT NOT NULL, done_on TEXT
+);
+CREATE TABLE IF NOT EXISTS lab_stages (
+  id TEXT PRIMARY KEY, ord INTEGER NOT NULL, title TEXT NOT NULL, description TEXT NOT NULL DEFAULT '',
+  practice TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'todo' CHECK (status IN ('todo','doing','done'))
+);
+
 -- Planejamento -------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS plan_items (
   id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT NOT NULL, seq INTEGER NOT NULL,

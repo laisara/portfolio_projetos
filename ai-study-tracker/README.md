@@ -1,95 +1,76 @@
 # AI Engineer Study Tracker
 
-App pessoal e **local-first**, só para desktop (Windows), para **controlar os estudos** da formação
-**Engenheiro de Agentes de IA**: Formação → Trilhas → Módulos → Aulas.
+App pessoal e **local-first** para estudar a formação **Engenheiro de Agentes de IA**:
+Formação → Trilhas → Cursos → Aulas, com plano diário, prática, projetos e revisão espaçada.
+Funciona no **desktop e no celular** (PWA instalável, offline, dados salvos no seu computador).
 
-![Painel](docs/screenshots/01-painel.png)
+![Painel](docs/screenshots/01-dashboard-desktop.png)
 
 | | |
 |---|---|
-| ![Calendário](docs/screenshots/02-calendario.png) | ![Formação](docs/screenshots/03-formacao-trilhas.png) |
-| ![Curso](docs/screenshots/05-curso-com-quizzes.png) | ![Planejamento](docs/screenshots/10-planejamento.png) |
+| ![Mobile](docs/screenshots/02-dashboard-mobile.png) | ![Cronograma](docs/screenshots/04-cronograma.png) |
+| ![Trilhas](docs/screenshots/05-trilhas.png) | ![Sessão](docs/screenshots/07-sessao.png) |
 
 > Os prints usam um banco de **demonstração** (`scripts/demo_seed.py`), não dados reais.
+
+## Uso rápido
+
+1. Instale o [Python 3.10+](https://www.python.org/downloads/) (marque *Add python.exe to PATH*) e dê duplo clique em **`install.bat`**.
+2. Duplo clique em **`start.bat`** → abre <http://localhost:8000>.
+3. Tela **Hoje** → **Começar estudo** → *Iniciar / Concluir*. Ao concluir: aula marcada, progresso, XP, sequência,
+   revisão futura (D+1/D+7/D+30) e a próxima atividade carregada.
+
+Navegação: Hoje · Cronograma · Trilhas · Projetos · Revisões · AI Agent Lab · Progresso (no celular, barra inferior).
+
+## Instalar como app (PWA)
+
+- **Desktop (Chrome/Edge):** com o `start.bat` rodando, abra `localhost:8000` e clique em **Instalar** na barra de endereço.
+- **Celular:** o PWA exige HTTPS (ou localhost). Rode `start.bat --lan --https` (precisa de certificado, ex. `mkcert`),
+  abra o endereço mostrado no celular, mesma rede Wi-Fi, e use *Adicionar à tela inicial*. Sem HTTPS o site abre no celular,
+  mas não instala. O servidor padrão escuta só em 127.0.0.1.
+- Dados ficam no computador (`database/study_tracker.db`); o celular acessa o mesmo servidor.
 
 ## O catálogo (fonte: player da plataforma)
 
 | | |
 |---|---|
-| Trilhas | 8 (2 grupos: *Produtividade pessoal com IA* e *Criando sistemas profissionais de inteligência artificial*) |
-| Cursos únicos · aulas | 42 · 463 |
-| Carga bruta (soma das 8 trilhas) | 74h30m39s (48 aparições de cursos) |
+| Trilhas | 8 (2 grupos) |
+| Cursos únicos · aulas | 42 · 463 (462 obrigatórias + 1 aviso "em breve") |
+| Carga bruta (soma das 8 trilhas) | 74h30m39s |
 | Duplicado | 8h09m02s (*Fundamentos da IA Generativa* em 6 trilhas, *Masterclass Claude Code* em 2) |
-| **Conteúdo único a estudar** | **66h21m37s** (soma das durações das aulas) |
-| Declarado pela plataforma | 62h34 (só informativo; diferença +3h47) |
+| **Formação (conteúdo único)** | **66h21m37s** (soma das durações das aulas) |
+| Sem duração (quiz, teste, guia, vídeo) | 56, contam 0 min e aparecem como "-" |
 
-Regras: a duração de um curso é a **soma das aulas**; aula sem duração no player aparece como **"-"** e conta 0 min
-(56 itens: quizzes, testes e guias); módulo sem título vira "Módulo N"; **eletivos ficam de fora**, exceto o opcional
-(Projetos para Professores e Para se aprofundar). O eletivo *Git e GitHub* (20 aulas, 3h08m34s) está cadastrado como **opcional**: estudável e com progresso próprio, mas fora do progresso geral, das trilhas e do cronograma. **Curso repetido tem um cadastro só:** concluir
-uma aula, um módulo ou o curso vale em todas as trilhas.
+Duração do curso = soma das aulas (batem com os cards do site em 42/42 cursos; a trilha 8 diverge ~29 min do cabeçalho
+do site e a divergência não foi explicada: vale a soma das aulas). Eletivos *Projetos para Professores* e *Para se aprofundar*
+ficam fora; *Git e GitHub* é **opcional** (fora de progresso e plano). Curso repetido tem um cadastro só (progresso compartilhado).
 
-## Cronograma (só aulas + revisão)
+## Cronograma (modelo VÍDEO → PRÁTICA → PROJETO → REVISÃO)
 
-Início 13/11/2026 · **aulas até 21/12/2026** · revisões D+30 até 20/01/2027 · 33 dias de aula · 6 de descanso ·
-média 2h14 por dia de aula · maior dia 3h33. Formação 66h22 + revisão 9h26 = **75h48** de aprendizado.
-Rotina: Seg/Ter/Qui 2h15 · Qua 2h · Sex 1h45 · Sáb 3h30 · Dom descanso. Dia a dia em [`docs/CRONOGRAMA.md`](docs/CRONOGRAMA.md).
-
-Prática e projetos próprios **não** entram no plano automático: você os registra como sessões (valem mais XP).
-O cronograma é adaptativo: recalcula só o futuro e preserva o histórico.
+Início **13/11/2026** · última aula ~**09/01/2027** · fim do trabalho ~**13/01/2027** · revisões D+30 até ~08/02/2027 ·
+51 dias de estudo · média 2h12 · máximo 3h30 · descanso aos domingos.
+Rotina: Seg/Ter/Qui 2h15 · Qua 2h · Sex 1h45 · Sáb 3h30 (dia de projeto) · Dom descanso; 24/12 e 31/12 metade; 25/12 e 01/01 descanso.
+Totais planejados: **Formação 66h21m37s** + Prática ~18h15 + Projetos ~18h + Revisão ~10h50 = **~113h25 de aprendizagem**.
+**Prática, projetos e revisão são estimativas do planejador**; só a formação é duração real. O plano recalcula só o futuro (atrasos/adiantamentos).
 
 ## Funcionalidades
 
-Painel · Calendário · Formação (trilhas, cursos, módulos, aulas) · Sessões e **Focus Mode** · revisão espaçada
-D+1/D+7/D+30 · XP, 6 níveis e 17 conquistas · mapa de competências (pontos de partida editáveis) ·
-backup/restauração (.db) · exportação/importação (JSON) · PWA instalável no Windows com uso offline.
+Hoje (Estudar agora + checklist) · Cronograma · Trilhas/Cursos/Aulas · sessão (Iniciar/Pausar/Concluir) ·
+revisões · projetos (3 + final) · AI Agent Lab (9 etapas) · XP, 6 níveis, sequência e conquistas ·
+competências · backup/restauração (.db) · exportação/importação (JSON) · PWA offline.
 
-## 1. Instalação (Windows)
+## Backup
 
-Pré-requisito: [Python 3.10+](https://www.python.org/downloads/) (marque **"Add python.exe to PATH"**).
-Dê duplo clique em **`install.bat`**.
+`backup.bat`, `restore.bat <arquivo>` ou em *Ajustes e dados* (backup .db, restaurar, exportar/importar JSON).
 
-## 2. Execução e acesso
-
-Duplo clique em **`start.bat`** → abre <http://localhost:8000>. O servidor escuta **só em 127.0.0.1** (este PC).
-Atalhos: `1`–`8` navegam entre telas e `f` abre o Focus Mode.
-
-## 3. Backup e restauração
-
-- **`backup.bat`** → `database\backups\backup-AAAAMMDD-HHMMSS.db` (mantém os 30 mais recentes).
-- **`restore.bat database\backups\backup-....db`** (feche o `start.bat` antes; cria backup de segurança).
-- No app: Ajustes → Backup (.db), Restaurar, Exportar/Importar JSON (importar também cria backup de segurança).
-
-## 4. Instalar como app (PWA)
-
-Com o `start.bat` rodando, abra `localhost:8000` no Chrome ou Edge e clique no ícone **Instalar** da barra de endereço.
-
-## Atualizar o catálogo
-
-O catálogo é gerado por `scripts/build_catalog.py` → `data/catalog.json` (formato validado em `backend/app/catalog.py`).
-Em Ajustes → Catálogo é possível importar um `catalog.json` novo; o progresso é preservado pelos IDs das aulas.
-
-## Arquitetura
-
-```
-ai-study-tracker/
-├── backend/app/   main.py (API) · planner.py (algoritmo, função pura) · tracker.py (progresso/recálculo)
-│                  catalog.py · gamification.py · services.py · backup.py · settings.py · schema.sql
-├── frontend/      PWA: HTML + CSS + JS (módulos ES, sem build), manifest, service worker, fontes e ícones locais
-├── data/          catalog.json
-├── database/      study_tracker.db e backups/ (não versionados)
-├── docs/          ANALISE.md · CRONOGRAMA.md · RELATORIO.txt · screenshots/
-├── scripts/       run.py · build_catalog.py · audit_durations.py · backup.py · restore.py · export_schedule.py · demo_seed.py · audit_*.js
-├── tests/         pytest (72 casos)
-└── install.bat · start.bat · backup.bat · restore.bat
-```
-
-## Desenvolvimento
+## Testes
 
 ```bash
 python -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
-.venv/bin/python -m pytest
+.venv/bin/python -m pytest            # 79 testes
+node scripts/e2e_flow.js http://localhost:8000/ out   # fluxo real no navegador (Playwright)
 python scripts/build_catalog.py && python scripts/audit_durations.py && python scripts/export_schedule.py
 ```
 
-Variáveis: `AST_DB`, `AST_TODAY` (simula a data), `AST_CATALOG`, `AST_BACKUP_DIR`.
-Licenças de terceiros: Inter e JetBrains Mono (OFL), ícones Lucide (ISC), em `frontend/fonts` e `frontend/icons`.
+Variáveis: `AST_DB`, `AST_TODAY`, `AST_CATALOG`, `AST_BACKUP_DIR`. Fonte: Inter (Aptos é proprietária e não vem junto).
+Licenças: Inter e JetBrains Mono (OFL), ícones Lucide (ISC).

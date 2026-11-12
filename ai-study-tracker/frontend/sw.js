@@ -1,12 +1,12 @@
 // Service worker — app shell offline + cache dos últimos dados (local-first).
-const VERSION = "ast-v2.0.0";
+const VERSION = "ast-v3.0.0";
 const SHELL = [
   "/", "/index.html", "/css/app.css", "/manifest.webmanifest",
   "/js/app.js", "/js/core.js", "/js/focus.js",
   "/js/views/dashboard.js", "/js/views/calendar.js", "/js/views/catalog.js", "/js/views/course.js",
   "/js/views/skills.js", "/js/views/achievements.js",
-  "/js/views/sessions.js", "/js/views/plan.js", "/js/views/settings.js",
-  "/icons/sprite.svg", "/icons/favicon.svg", "/icons/icon-192.png", "/icons/icon-512.png",
+  "/js/views/sessions.js", "/js/views/plan.js", "/js/views/settings.js", "/js/views/reviews.js", "/js/views/projects.js", "/js/views/lab.js",
+  "/icons/sprite.svg", "/icons/favicon.svg", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/maskable-512.png", "/icons/apple-touch-icon.png",
   "/fonts/inter-latin-400-normal.woff2", "/fonts/inter-latin-500-normal.woff2",
   "/fonts/inter-latin-600-normal.woff2", "/fonts/inter-latin-700-normal.woff2",
   "/fonts/jetbrains-mono-latin-400-normal.woff2", "/fonts/jetbrains-mono-latin-500-normal.woff2",

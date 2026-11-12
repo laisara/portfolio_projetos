@@ -1,6 +1,6 @@
 {
  "meta": {
-  "catalog_version": 4,
+  "catalog_version": 5,
   "name": "Formação Engenheiro de Agentes de IA",
   "provider": "Asimov Academy",
   "declared_video": "62:34:00",
@@ -1143,7 +1143,7 @@
        "id": "PY-001.L21",
        "n": 21,
        "title": "Teste Final",
-       "kind": "quiz"
+       "kind": "test"
       }
      ]
     },
@@ -1222,13 +1222,13 @@
        "id": "PY-002.L03",
        "n": 3,
        "title": "Guia de Instalação – Python",
-       "kind": "other"
+       "kind": "guide"
       },
       {
        "id": "PY-002.L04",
        "n": 4,
        "title": "Guia de Instalação – Cursor",
-       "kind": "other"
+       "kind": "guide"
       },
       {
        "id": "PY-002.L05",
@@ -1255,7 +1255,7 @@
        "id": "PY-002.L08",
        "n": 8,
        "title": "Guia de Instalação – Git",
-       "kind": "other"
+       "kind": "guide"
       },
       {
        "id": "PY-002.L09",
@@ -1348,7 +1348,7 @@
        "id": "UI-001.L02",
        "n": 2,
        "title": "Guia de Instalação – Antigravity",
-       "kind": "other"
+       "kind": "guide"
       }
      ]
     }
@@ -2157,7 +2157,7 @@
        "id": "N8N-001.L13",
        "n": 13,
        "title": "Teste final",
-       "kind": "quiz"
+       "kind": "test"
       }
      ]
     },
@@ -2462,7 +2462,7 @@
        "id": "N8N-004.L09",
        "n": 9,
        "title": "Criando a tabela de memória do agente no Supabase (n8n_chat_histories)",
-       "kind": "other"
+       "kind": "guide"
       },
       {
        "id": "N8N-004.L10",
@@ -2844,7 +2844,7 @@
        "id": "LLM-001.L14",
        "n": 14,
        "title": "Teste final",
-       "kind": "quiz"
+       "kind": "test"
       }
      ]
     }
@@ -2994,7 +2994,7 @@
        "id": "LOGIC-001.L17",
        "n": 17,
        "title": "Teste final – Lógica de programação",
-       "kind": "quiz"
+       "kind": "test"
       }
      ]
     }
@@ -3356,7 +3356,7 @@
        "id": "PYTHON-001.L46",
        "n": 46,
        "title": "Teste final – Python Básico",
-       "kind": "quiz"
+       "kind": "test"
       },
       {
        "id": "PYTHON-001.L47",
@@ -3574,7 +3574,7 @@
        "id": "SETUP-001.L25",
        "n": 25,
        "title": "Teste final – Criando seu setup para programação Python",
-       "kind": "quiz"
+       "kind": "test"
       }
      ]
     }
@@ -3610,7 +3610,7 @@
        "id": "PROMPT-001.L03",
        "n": 3,
        "title": "Atualização importante: o Playground da OpenAI mudou",
-       "kind": "other"
+       "kind": "guide"
       },
       {
        "id": "PROMPT-001.L04",
@@ -3749,7 +3749,7 @@
        "id": "PROMPT-001.L20",
        "n": 20,
        "title": "Teste Final – Engenharia de Prompts",
-       "kind": "quiz"
+       "kind": "test"
       }
      ]
     }
@@ -3784,7 +3784,7 @@
        "id": "AGNO-001.L02",
        "n": 2,
        "title": "Aviso de versão",
-       "kind": "other"
+       "kind": "guide"
       },
       {
        "id": "AGNO-001.L03",
@@ -3830,7 +3830,7 @@
        "id": "AGNO-001.L08",
        "n": 8,
        "title": "Guia de Instalação e Configuração do Agno",
-       "kind": "other"
+       "kind": "guide"
       },
       {
        "id": "AGNO-001.L09",
@@ -3925,7 +3925,7 @@
        "id": "AGNO-001.L21",
        "n": 21,
        "title": "Guia de Instalação e Configuração de Deploy com Agno",
-       "kind": "other"
+       "kind": "guide"
       },
       {
        "id": "AGNO-001.L22",
@@ -3966,7 +3966,7 @@
        "id": "AGNO-001.L27",
        "n": 27,
        "title": "GitHub e Deploy no Render",
-       "kind": "other"
+       "kind": "guide"
       },
       {
        "id": "AGNO-001.L28",
@@ -3985,7 +3985,7 @@
        "id": "AGNO-001.L30",
        "n": 30,
        "title": "Teste Final – Criando Agentes com Agno",
-       "kind": "quiz"
+       "kind": "test"
       }
      ]
     }
@@ -4498,7 +4498,7 @@
        "id": "GIT-001.L20",
        "n": 20,
        "title": "Teste Final – Git e GitHub",
-       "kind": "quiz"
+       "kind": "test"
       }
      ]
     }

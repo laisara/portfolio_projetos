@@ -1,4 +1,4 @@
-import { $, api, esc, icon, ring, toast } from "./core.js";
+import { $, api, closeLayer, esc, icon, openLayer, ring, toast } from "./core.js";
 import { openFocusPicker, resumeFocusIfAny } from "./focus.js";
 import dashboard from "./views/dashboard.js";
 import calendar from "./views/calendar.js";
@@ -9,19 +9,23 @@ import achievements from "./views/achievements.js";
 import sessions from "./views/sessions.js";
 import plan from "./views/plan.js";
 import settings from "./views/settings.js";
+import reviews from "./views/reviews.js";
+import projects from "./views/projects.js";
+import lab from "./views/lab.js";
 
 const NAV = [
-  { group: "Estudo" },
-  { path: "/", label: "Painel", icon: "layout-dashboard", view: dashboard, key: "1" },
-  { path: "/calendar", label: "Calendário", icon: "calendar-days", view: calendar, key: "2" },
-  { path: "/catalog", label: "Formação", icon: "book-open", view: catalog, key: "3" },
-  { path: "/sessions", label: "Sessões", icon: "history", view: sessions, key: "4" },
-  { group: "Evolução" },
-  { path: "/skills", label: "Competências", icon: "radar", view: skills, key: "5" },
-  { path: "/achievements", label: "Conquistas", icon: "trophy", view: achievements, key: "6" },
-  { group: "Sistema" },
-  { path: "/plan", label: "Planejamento", icon: "target", view: plan, key: "7" },
-  { path: "/settings", label: "Ajustes", icon: "settings", view: settings, key: "8" },
+  { path: "/", label: "Hoje", icon: "layout-dashboard", view: dashboard, key: "1", tab: true },
+  { path: "/calendar", label: "Cronograma", icon: "calendar-days", view: calendar, key: "2", tab: true },
+  { path: "/catalog", label: "Trilhas", icon: "book-open", view: catalog, key: "3", tab: true },
+  { path: "/projects", label: "Projetos", icon: "hammer", view: projects, key: "4" },
+  { path: "/reviews", label: "Revisões", icon: "repeat", view: reviews, key: "5", tab: true },
+  { path: "/lab", label: "AI Agent Lab", icon: "flask-conical", view: lab, key: "6" },
+  { path: "/achievements", label: "Progresso", icon: "trophy", view: achievements, key: "7" },
+  { group: "Mais" },
+  { path: "/sessions", label: "Sessões", icon: "history", view: sessions, key: "8", more: true },
+  { path: "/skills", label: "Competências", icon: "radar", view: skills, key: "9", more: true },
+  { path: "/plan", label: "Planejamento", icon: "target", view: plan, more: true },
+  { path: "/settings", label: "Ajustes e dados", icon: "settings", view: settings, more: true },
 ];
 const ROUTES = [
   ...NAV.filter((n) => n.path),
@@ -31,13 +35,22 @@ const ROUTES = [
 function renderNav(active) {
   $("#nav").innerHTML = NAV.map((n) => n.group
     ? `<div class="nav-label">${n.group}</div>`
-    : `<a href="#${n.path}" title="${n.label}" ${n.path === active ? 'aria-current="page"' : ""}>${icon(n.icon)}<span>${n.label}</span><span class="kbd">${n.key}</span></a>`).join("");
+    : `<a href="#${n.path}" title="${n.label}" ${n.path === active ? 'aria-current="page"' : ""}>${icon(n.icon)}<span>${n.label}</span>${n.key ? `<span class="kbd">${n.key}</span>` : ""}</a>`).join("");
+  const tabs = NAV.filter((n) => n.tab);
+  $("#tabbar").innerHTML = tabs.map((n) => `<a href="#${n.path}" ${n.path === active ? 'aria-current="page"' : ""}>${icon(n.icon)}<span>${n.label}</span></a>`).join("")
+    + `<button id="tab-more" aria-label="Mais opções">${icon("menu")}<span>Mais</span></button>`;
+  $("#tab-more").onclick = () => {
+    const box = openLayer(`<div class="drawer-head"><h2>Mais</h2><button class="btn ghost icon-only" data-close aria-label="Fechar">${icon("x")}</button></div>
+      <nav class="nav">${NAV.filter((n) => n.path && !n.tab).map((n) => `<a href="#${n.path}">${icon(n.icon)}<span>${n.label}</span></a>`).join("")}</nav>`, { kind: "drawer", label: "Mais" });
+    box.querySelectorAll("a").forEach((a) => a.addEventListener("click", closeLayer));
+  };
 }
 
 export async function refreshChrome() {
   try {
     const g = await api("/dashboard");
     $("#sidebar-foot").innerHTML = `<a class="level-mini" href="#/achievements">${ring(g.level_pct)}<div><b>${esc(g.level.name)}</b><span>${g.xp.toLocaleString("pt-BR")} XP · ${g.streak.current}d seguidos</span></div></a>`;
+    const ml = $("#mobile-level"); if (ml) ml.innerHTML = `${icon("zap", "icon icon-sm")} ${g.xp.toLocaleString("pt-BR")} XP`;
   } catch { /* offline */ }
 }
 
@@ -73,7 +86,7 @@ export const rerender = () => route();
 window.addEventListener("hashchange", route);
 document.addEventListener("keydown", (e) => {
   if (e.target.closest("input, textarea, select") || e.metaKey || e.ctrlKey || e.altKey || $("#overlay").innerHTML) return;
-  const n = NAV.find((x) => x.key === e.key);
+  const n = NAV.find((x) => x.key && x.key === e.key);
   if (n) location.hash = `#${n.path}`;
   if (e.key === "f") openFocusPicker();
 });

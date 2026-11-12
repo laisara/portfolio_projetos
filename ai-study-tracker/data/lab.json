@@ -1,0 +1,13 @@
+{
+  "stages": [
+    {"id": "LAB-1", "title": "LLM", "description": "Entender como um LLM responde: tokens, contexto, temperatura e limites.", "practice": "Testar o mesmo problema em 2 modelos e anotar as diferenças."},
+    {"id": "LAB-2", "title": "Prompt Engineering", "description": "Escrever prompts claros, com exemplos e saída estruturada.", "practice": "Criar 5 prompts reutilizáveis para tarefas reais do seu trabalho."},
+    {"id": "LAB-3", "title": "APIs", "description": "Chamar um LLM por código com chave segura, tratamento de erro e custo.", "practice": "Script Python que chama a API e registra tokens e custo em SQLite."},
+    {"id": "LAB-4", "title": "Tool Calling", "description": "Dar ferramentas ao modelo: schema, execução e retorno.", "practice": "Duas ferramentas: consulta SQL somente leitura e chamada HTTP/webhook do n8n."},
+    {"id": "LAB-5", "title": "Agents", "description": "Agente com loop de raciocínio, memória, ferramentas e limites.", "practice": "Agente que responde perguntas sobre seus dados usando as ferramentas do LAB-4."},
+    {"id": "LAB-6", "title": "RAG", "description": "Responder com base em documentos próprios, citando as fontes.", "practice": "Indexar 20 documentos seus e responder com citação."},
+    {"id": "LAB-7", "title": "Multi-Agent", "description": "Orquestrar agentes especializados com handoff claro.", "practice": "Orquestrador com 3 agentes (pesquisa, análise, redação)."},
+    {"id": "LAB-8", "title": "AI Applications", "description": "Juntar agente, dados e interface em uma aplicação utilizável.", "practice": "Interface simples + API + agente + tratamento de falhas."},
+    {"id": "LAB-9", "title": "Projeto Final", "description": "Sistema de agentes que resolve um problema real seu.", "practice": "Publicar no portfólio com README, demo e lições aprendidas."}
+  ]
+}

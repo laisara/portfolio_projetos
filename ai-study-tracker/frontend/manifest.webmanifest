@@ -1,7 +1,7 @@
 {
   "name": "AI Engineer Study Tracker",
   "short_name": "Study Tracker",
-  "description": "Controle pessoal de estudos da formação: trilhas, módulos, aulas, cronograma e revisões.",
+  "description": "Ambiente pessoal de estudos de IA: aulas, prática, projetos e revisão.",
   "id": "/",
   "start_url": "/#/",
   "scope": "/",
@@ -10,7 +10,7 @@
     "window-controls-overlay",
     "standalone"
   ],
-  "orientation": "landscape-primary",
+  "orientation": "any",
   "background_color": "#0a0d0c",
   "theme_color": "#0a0d0c",
   "lang": "pt-BR",
@@ -32,6 +32,12 @@
       "purpose": "any"
     },
     {
+      "src": "/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
       "src": "/icons/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml"
@@ -39,8 +45,8 @@
   ],
   "shortcuts": [
     {
-      "name": "Iniciar sessão",
-      "url": "/#/focus",
+      "name": "Estudar agora",
+      "url": "/#/",
       "icons": [
         {
           "src": "/icons/icon-192.png",
@@ -49,12 +55,12 @@
       ]
     },
     {
-      "name": "Calendário",
-      "url": "/#/calendar"
+      "name": "Revisões",
+      "url": "/#/reviews"
     },
     {
-      "name": "Formação",
-      "url": "/#/catalog"
+      "name": "Cronograma",
+      "url": "/#/calendar"
     }
   ]
 }

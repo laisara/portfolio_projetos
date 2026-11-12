@@ -22,19 +22,20 @@ def test_bootstrap_dashboard_and_numbers(client):
 
 def test_dashboard_separates_formation_from_total_time(client):
     L = client.get("/api/dashboard").json()["load"]["planned"]
-    assert L["formation"] == pytest.approx(3981.6, abs=3)          # só o conteúdo único
-    assert L["total"] == pytest.approx(L["formation"] + L["review"])
-    assert L["total"] > L["formation"]
+    assert L["formation"] == pytest.approx(3981.62, abs=0.01)       # só a soma das aulas (66h21m37s)
+    assert L["practice"] > 0 and L["project"] == 18 * 60 and L["review"] > 0
+    assert L["total"] == pytest.approx(L["formation"] + L["practice"] + L["project"] + L["review"])
+    assert L["total"] > L["formation"] + 30 * 60
 
 
 def test_plan_covers_all_unique_content_with_lessons_and_reviews_only(client):
     s = client.get("/api/plan/summary").json()
-    assert s["start"] == "2026-11-13" and "2026-12-10" < s["lessons_end"] < "2027-01-05"
-    assert "2027-01-10" < s["end"] < "2027-02-01"          # D+30 da última aula
-    assert abs(s["totals"]["video"] - 3981.6) < 3 and set(s["totals"]) == {"video", "review"}
+    assert s["start"] == "2026-11-13" and "2026-12-20" < s["lessons_end"] < "2027-01-20"
+    assert "2027-01-10" < s["work_end"] < "2027-01-31" and "2027-01-25" < s["end"] < "2027-02-20"   # revisões D+30 depois
+    assert abs(s["totals"]["video"] - 3981.6) < 3 and set(s["totals"]) == {"video", "practice", "project", "review"}
     assert s["rest_days"] >= 5 and 100 <= s["avg_per_study_day"] <= 160 and s["review_only_days"] > 5
     cal = client.get("/api/calendar?start=2026-11-13&end=2027-01-31").json()["days"]
-    assert {i["kind"] for d in cal for i in d["items"]} == {"video", "review"}
+    assert {i["kind"] for d in cal for i in d["items"]} == {"video", "practice", "project", "review"}
 
 
 def test_rest_day_and_holidays_have_nothing(client):
@@ -95,7 +96,7 @@ def test_shared_course_counts_once_in_totals_xp_and_plan(client):
 def test_course_with_quizzes_requires_every_lesson_including_quizzes(client):
     ls = lessons_of(client, "LOGIC-001")
     quizzes = [l for l in ls if not l["has_duration"]]
-    assert quizzes and all(l["kind"] == "quiz" for l in quizzes)
+    assert quizzes and all(l["kind"] in ("quiz", "test") for l in quizzes)
     for l in ls:
         if l["has_duration"]:
             client.post(f"/api/lessons/{l['id']}/toggle", json={"completed": True})
@@ -225,10 +226,13 @@ def test_competencies_grow_with_completed_courses(client):
 
 
 # ---------------------------------------------------------------- escopo, dados e PWA
-def test_lab_and_lan_are_gone(client):
-    assert client.get("/api/lab").status_code in (404, 405)
-    assert "lan" not in client.get("/api/health").json()
-    assert client.get("/js/views/lab.js").status_code == 404
+def test_lab_has_nine_simple_stages(client):
+    st = client.get("/api/lab").json()["stages"]
+    assert [s["title"] for s in st] == ["LLM", "Prompt Engineering", "APIs", "Tool Calling", "Agents", "RAG", "Multi-Agent", "AI Applications", "Projeto Final"]
+    assert all(s["status"] == "todo" and s["practice"] for s in st)
+    assert client.patch("/api/lab/stages/LAB-1", json={"status": "doing"}).status_code == 200
+    assert client.patch("/api/lab/stages/LAB-1", json={"status": "xx"}).status_code == 422
+    assert client.get("/api/lab").json()["stages"][0]["status"] == "doing"
 
 
 def test_export_import_backup_restore(client, tmp_path):
@@ -255,13 +259,16 @@ def test_catalog_import_endpoint_validates_and_marks_customized(client):
 def test_static_pwa_assets_desktop_only(client):
     assert client.get("/").status_code == 200
     m = client.get("/manifest.webmanifest").json()
-    assert m["display"] == "standalone" and not any("maskable" in i["src"] for i in m["icons"]) and "screenshots" not in m
+    assert m["display"] == "standalone" and any("maskable" in i["src"] for i in m["icons"])
+    assert all(client.get(i["src"]).status_code == 200 for i in m["icons"])
     sw = client.get("/sw.js")
-    assert sw.status_code == 200 and "no-cache" in sw.headers["cache-control"] and "lab.js" not in sw.text
+    assert sw.status_code == 200 and "no-cache" in sw.headers["cache-control"]
+    for f in ("/js/views/reviews.js", "/js/views/projects.js", "/js/views/lab.js"):
+        assert f in sw.text and client.get(f).status_code == 200
     html = client.get("/").text
-    assert "tabbar" not in html and "apple-touch" not in html
+    assert "tabbar" in html and "viewport-fit=cover" in html and "apple-touch-icon" in html
     css = client.get("/css/app.css").text
-    assert ".tabbar" not in css and "max-width: 820px" not in css
+    assert "backdrop-filter" in css and ".tabbar" in css and "max-width: 820px" in css
 
 
 # ---------------------------------------------------------------- curso opcional (Git e GitHub)
@@ -291,3 +298,77 @@ def test_studying_optional_course_keeps_progress_without_touching_overall(client
     assert len([e for e in g["ledger"] if e["kind"] == "LESSON"]) == 20  # mas as aulas rendem XP
     client.post("/api/contents/GIT-001/complete", json={"completed": False})
     assert client.get("/api/contents/GIT-001").json()["progress"]["lessons_done"] == 0
+
+
+# ---------------------------------------------------------------- MVP: fluxo de uso, revisões, projetos, prática
+def test_mvp_flow_study_now_complete_progress_xp_next_review_persistence(client, set_today):
+    d0 = client.get("/api/dashboard").json()
+    sn = d0["study_now"]
+    assert sn["today"] and sn["kind"] == "video" and sn["title"]
+    item = sn["item"]
+    r = client.post("/api/sessions", json={"date": "2026-11-13", "type": "VIDEO", "target_kind": "lesson", "target_id": item["ref"], "title": item["title"],
+                                           "planned_min": item["minutes"], "actual_min": max(1, item["minutes"]), "complete_lessons": [item["ref"]], "focus": True}).json()
+    assert r["xp_gained"] > 0
+    d1 = client.get("/api/dashboard").json()
+    assert d1["overall"] > d0["overall"] and d1["xp"] > d0["xp"] and d1["lessons"]["done"] == d0["lessons"]["done"] + 1
+    assert d1["study_now"]["item"]["ref"] != item["ref"]                       # a aula deixa de ser pendente; aparece a próxima
+    pend = [i["ref"] for i in client.get("/api/today").json()["items"] if i["kind"] == "video"]
+    assert item["ref"] not in pend
+    set_today("2026-11-14")                                                       # revisão D+1 criada
+    rv = client.get("/api/reviews/today").json()
+    assert rv["due"] and rv["due"][0]["interval"] == 1 and rv["due"][0]["courses"]
+    assert client.post(f"/api/reviews/{rv['due'][0]['key']}/done").json()["xp_gained"] >= 15
+    assert client.get("/api/reviews/today").json()["done_today"] == 1
+    assert client.get("/api/dashboard").json()["lessons"]["done"] == d1["lessons"]["done"]    # persistência (novo request = "reabrir")
+
+
+def test_zero_duration_item_completes_without_session(client):
+    lid = next(l["id"] for l in lessons_of(client, "LOGIC-001") if not l["has_duration"])
+    r = client.post(f"/api/lessons/{lid}/toggle", json={"completed": True})
+    assert r.status_code == 200 and r.json()["xp_gained"] == 15
+
+
+def test_practice_is_estimated_separately_and_credited_by_sessions(client):
+    c = client.get("/api/contents/AGNO-001").json()
+    est = c["practice_estimate"]
+    assert est["ratio"] == 0.30 and est["minutes"] > 100 and est["activities"] == 8       # 30% do vídeo + atividades sem duração
+    assert client.get("/api/contents/LOGIC-001").json()["practice_estimate"]["ratio"] == 0.05      # você já domina lógica/Python
+    assert client.get("/api/contents/START-GPT").json()["practice_estimate"]["minutes"] == 0
+    assert client.get("/api/catalog").json()["analysis"]["unique_min"] == pytest.approx(3981.62, abs=0.01)   # oficial não muda
+    before = sum(i["minutes"] for d in client.get("/api/calendar?start=2026-11-13&end=2027-03-01").json()["days"] for i in d["items"] if i["kind"] == "practice" and i["ref"] == "AGNO-001")
+    client.post("/api/sessions", json={"date": "2026-11-13", "type": "PRACTICE", "target_kind": "content", "target_id": "AGNO-001", "title": "Prática Agno", "actual_min": 60})
+    after = sum(i["minutes"] for d in client.get("/api/calendar?start=2026-11-13&end=2027-03-01").json()["days"] for i in d["items"] if i["kind"] == "practice" and i["ref"] == "AGNO-001")
+    assert before - after == pytest.approx(60, abs=5)
+
+
+def test_projects_checklist_progress_status_and_xp(client):
+    ps = client.get("/api/projects").json()["projects"]
+    assert [p["id"] for p in ps] == ["PROJ-1", "PROJ-2", "PROJ-3", "PROJ-FINAL"] and all(p["status"] == "todo" for p in ps)
+    assert sum(p["planned_hours"] for p in ps) == 18 and not ps[0]["unlocked"]
+    items = ps[0]["items"]
+    r = client.post(f"/api/projects/items/{items[0]['id']}/toggle").json()
+    assert r["xp_gained"] == 20
+    p1 = client.get("/api/projects").json()["projects"][0]
+    assert p1["status"] == "doing" and p1["progress"] == 1 / len(items)
+    for it in items[1:]:
+        client.post(f"/api/projects/items/{it['id']}/toggle")
+    assert client.get("/api/projects").json()["projects"][0]["status"] == "done"
+    g = client.get("/api/gamification").json()
+    assert any(e["kind"] == "PROJECT_DONE" for e in g["ledger"]) and {a["id"]: a for a in g["achievements"]}["first_project"]["unlocked"]
+
+
+def test_week_summary_and_greeting(client):
+    d = client.get("/api/dashboard").json()
+    assert d["week"]["start"] == "2026-11-09" and d["week"]["planned_min"] > 0 and d["greeting"] in ("Bom dia", "Boa tarde", "Boa noite")
+    client.post("/api/sessions", json={"date": "2026-11-13", "type": "VIDEO", "title": "x", "actual_min": 30})
+    w = client.get("/api/dashboard").json()["week"]
+    assert w["sessions"] == 1 and w["studied_min"] == 30 and 0 < w["pct"] < 1
+
+
+def test_lesson_kinds_quiz_test_guide_other(client):
+    kinds = {}
+    for cid in ("PY-001", "PY-002", "GPT-001"):
+        for l in lessons_of(client, cid):
+            if not l["has_duration"]:
+                kinds.setdefault(cid, set()).add(l["kind"])
+    assert kinds["PY-001"] == {"quiz", "test"} and kinds["PY-002"] == {"guide"} and kinds["GPT-001"] == {"other"}
