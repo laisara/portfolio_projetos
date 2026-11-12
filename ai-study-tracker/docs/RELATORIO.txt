@@ -35,7 +35,8 @@ Data: 12/11/2026 · Branch: ccr-97dc7c3e-vbe1hb · Pasta: ai-study-tracker/
     * duração do curso = soma das aulas;
     * aula sem duração = "-" (56 itens: quizzes, testes, guias), conta 0 min;
     * módulo sem título = "Módulo N";
-    * eletivos FORA: Projetos para Professores, Para se aprofundar, Git e GitHub;
+    * eletivos FORA: Projetos para Professores, Para se aprofundar; Git e GitHub cadastrado como
+      OPCIONAL (GIT-001: 20 aulas, 3h08m34s), fora do progresso, das trilhas e do cronograma;
     * curso repetido = 1 cadastro; concluir aula/módulo/curso vale em todas as trilhas.
 - AUDITORIA DE DURAÇÕES (scripts/audit_durations.py, também em teste): nos 42 cursos a soma das
   aulas, truncada em minutos, é IGUAL ao card do site; contagens de aulas batem; o plano agenda
@@ -71,7 +72,7 @@ Ajustes · backup/restore (.db) · export/import (JSON) · PWA.
 
 5. QUALIDADE E VALIDAÇÃO (o que foi realmente verificado)
 --------------------------------------------------------------------------------
-- 69 testes pytest passando (inclui a auditoria de durações): catálogo, duplicidades, números oficiais, planner,
+- 72 testes pytest passando (inclui a auditoria de durações): catálogo, duplicidades, números oficiais, planner,
   aula sem duração, progresso compartilhado entre trilhas (concluir/desmarcar),
   placeholder, sessões, XP, revisão, adaptação (atraso/adiantamento), backup,
   restore (inclui arquivo corrompido), import, PWA e checagem estática dos .bat.
@@ -129,8 +130,7 @@ D4. Competências: a classificação de cada curso por competência é minha (in
     os pontos de partida (ex.: Python 70%) são estimativas. Quer revisar?
 D5. XP/níveis: os limiares (1.000 / 3.500 / 7.500 / 12.500 / 18.000 XP) são
     palpites meus. Ajustar após as primeiras semanas de uso real?
-D6. Git e GitHub (eletivo, 3h08): quer que fique cadastrado como "opcional", fora
-    do progresso, para você poder estudar depois? Hoje não está no sistema.
+D6. (RESOLVIDA) Git e GitHub cadastrado como opcional.
 
 9. ARQUIVOS
 --------------------------------------------------------------------------------

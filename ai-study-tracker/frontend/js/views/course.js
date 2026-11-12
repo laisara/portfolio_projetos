@@ -10,7 +10,7 @@ export default async function course(el, id) {
   el.innerHTML = `
   <a class="btn ghost sm" href="#/catalog" style="margin-bottom:12px">${icon("chevron-left")} Formação</a>
   <div class="page-head"><div>
-      <div class="row wrap" style="margin-bottom:8px"><span class="id-tag">${esc(c.id)}</span>${c.type === "projeto" ? '<span class="chip warn">projeto</span>' : ""}
+      <div class="row wrap" style="margin-bottom:8px"><span class="id-tag">${esc(c.id)}</span>${c.type === "projeto" ? '<span class="chip warn">projeto</span>' : ""}${c.optional ? '<span class="chip accent">opcional</span>' : ""}
         ${c.tracks.map((t) => `<span class="chip">${esc(t.title)} · #${t.position}</span>`).join("")}</div>
       <h1>${esc(c.title)}</h1>
       <p class="muted" style="margin:6px 0 0">${hm(c.duration_min)} (soma das ${c.lesson_count} aulas) · ${p.lessons_done}/${p.lessons} concluídas · <b class="num">${pct(p.pct)}</b></p>
@@ -18,8 +18,9 @@ export default async function course(el, id) {
     <div class="row"><button class="btn" id="mark-all">${icon("circle-check")} ${p.complete ? "Desmarcar curso" : "Concluir curso"}</button>
       <button class="btn primary" id="start-next" ${next ? "" : "disabled"}>${icon("play")} Estudar próxima aula</button></div></div>
 
+  ${c.optional ? `<div class="notice info" style="margin-bottom:16px">${icon("star")}<div><b>Curso opcional</b> (eletivo). Seu progresso é guardado e gera XP e revisões, mas <b>não conta</b> no progresso geral, nas trilhas nem no cronograma.</div></div>` : ""}
   ${shared ? `<div class="notice info" style="margin-bottom:16px">${icon("git-branch")}<div>Este curso aparece em <b>${c.tracks.length} trilhas</b> (${c.tracks.map((t) => esc(t.title)).join(", ")}). Ele existe uma vez: concluir aulas, módulos ou o curso aqui vale em todas elas.</div></div>` : ""}
-  ${c.note ? `<div class="notice" style="margin-bottom:16px">${icon("triangle-alert")}<div>${esc(c.note)}</div></div>` : ""}
+  ${c.note && !c.optional ? `<div class="notice" style="margin-bottom:16px">${icon("triangle-alert")}<div>${esc(c.note)}</div></div>` : ""}
 
   <div class="grid grid-2">
     <section class="panel">

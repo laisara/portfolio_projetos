@@ -43,8 +43,8 @@ def parse_module(title: str, block: str):
 C = {}
 
 
-def course(cid, title, card_min, type_, comp, modules, note=None):
-    C[cid] = {"title": title, "type": type_, "card_min": card_min, "competencies": comp, "note": note,
+def course(cid, title, card_min, type_, comp, modules, note=None, optional=None):
+    C[cid] = {"title": title, "type": type_, "card_min": card_min, "competencies": comp, "note": note, "optional": optional,
               "modules": [parse_module(t, b) for t, b in modules]}
 
 
@@ -618,6 +618,37 @@ course("AGENT-004", "Auto Retoucher - Criando uma AI para fotógrafos", 105, "pr
 10|Criando nossa API usando AI|9:24
 11|Criando o Frontend|20:05""")])
 
+# ------------------------------------------------------------------ OPCIONAL (eletivo) — fora do progresso, trilhas e cronograma
+course("GIT-001", "Git e GitHub - Controle de Versão e Colaboração", 188, "curso", ["aicoding"], [
+    ("Boas vindas", "1|O que vamos aprender nesse curso|3:22"),
+    ("Introdução ao Git e controle de versão", """
+2|O que é Git e por que usá-lo?|6:25
+3|Instalação do Git|5:45"""),
+    ("Utilizando Git no terminal e no VSCode", """
+4|Criando o Primeiro Repositório Local|15:15
+5|Git no VSCode|15:00"""),
+    ("Introdução ao GitHub", """
+6|O que é o GitHub e sua importância?|19:20
+7|O que é o .gitignore e como utilizá-lo|-
+8|Conectando um repositório no GitHub|28:58
+9|Autenticação com SSH: Uma Alternativa ao Token PAT|-
+10|Clonando e colaborando com repositórios existentes|17:24
+11|Quiz – Introdução ao Git e ao Controle de versão|-"""),
+    ("Trabalhando com branches e resolvendo conflitos", """
+12|Branches no Git: A árvore do seu projeto|14:56
+13|Combinando branches e lidando com conflitos|14:51"""),
+    ("Trabalhando em equipe com GitHub e pull requests", """
+14|Trabalhando em equipe com GitHub|8:32
+15|Criando e Gerenciando Pull Requests no GitHub|12:41
+16|Colaborando com Projetos Abertos: Entendendo o Fork|-"""),
+    ("Criando e personalizando o perfil no GitHub", """
+17|Como o GitHub pode ser um portfólio para seus projetos?|13:34
+18|Criando um Repositório para seu Perfil|12:31
+19|Quiz – Trabalhando com Git e GitHub|-"""),
+    ("Teste final", "20|Teste Final – Git e GitHub|-")],
+    note="Curso eletivo (Webapps) da trilha Aplicações AI com Python. OPCIONAL: não entra no progresso geral, nas trilhas nem no cronograma.",
+    optional="T8")
+
 G1, G2 = "Produtividade pessoal com IA", "Criando sistemas profissionais de inteligência artificial"
 TRACKS = [
     ("T1", 1, "Dominando o ecossistema Claude", G1, 410, ["START-CLAUDE", "GENAI-001", "CLAUDE-001", "CODE-001", "CLAUDE-002"]),
@@ -648,11 +679,14 @@ def build():
             mods.append({"id": f"{cid}.M{mi}", "title": m["title"], "lessons": lessons})
         contents[cid] = {"title": c["title"], "type": c["type"], "card_min": c["card_min"],
                          "competencies": c["competencies"], "modules": mods}
+        if c["optional"]:
+            contents[cid]["optional"] = True
+            contents[cid]["elective_of"] = c["optional"]
         if c["note"]:
             contents[cid]["note"] = c["note"]
     data = {
         "meta": {
-            "catalog_version": 3,
+            "catalog_version": 4,
             "name": "Formação Engenheiro de Agentes de IA",
             "provider": "Asimov Academy",
             "declared_video": "62:34:00",
@@ -662,8 +696,8 @@ def build():
             "excluded": [
                 "Projetos para Professores (eletivo da trilha Dominando o ecossistema Claude) — fora do programa",
                 "Para se aprofundar (eletivo da trilha Aplicações Inteligentes com IA) — fora do programa",
-                "Git e GitHub – Controle de Versão e Colaboração (eletivo Webapps: 20 aulas, 3h08m34s) — fora do cronograma",
             ],
+            "optional": ["Git e GitHub – Controle de Versão e Colaboração (eletivo Webapps): cadastrado como OPCIONAL (GIT-001), fora do progresso, das trilhas e do cronograma"],
             "competencies_note": "Classificação de competências por curso feita pelo sistema (INFERIDO), editável no JSON.",
         },
         "tracks": [{"id": t[0], "order": t[1], "title": t[2], "group": t[3], "header_min": t[4], "courses": t[5]} for t in TRACKS],
@@ -677,6 +711,8 @@ def report(data):
     print(f"{'curso':14} {'aulas':>5} {'soma':>10} {'card':>7} {'dif':>6}")
     tot_sec, tot_lessons, nodur = 0, 0, 0
     for cid, c in data["contents"].items():
+        if c.get("optional"):
+            continue
         secs = sum(sum(dur(l["duration"]) if "duration" in l else 0 for l in m["lessons"]) for m in c["modules"])
         n = sum(len(m["lessons"]) for m in c["modules"])
         nd = sum(1 for m in c["modules"] for l in m["lessons"] if "duration" not in l)

@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS tracks (
 CREATE TABLE IF NOT EXISTS contents (
   id TEXT PRIMARY KEY, title TEXT NOT NULL, type TEXT NOT NULL DEFAULT 'curso',
   study_ord INTEGER NOT NULL, competencies TEXT NOT NULL DEFAULT '[]',
-  card_min REAL, duration_min REAL NOT NULL, lesson_count INTEGER NOT NULL, note TEXT
+  card_min REAL, duration_min REAL NOT NULL, lesson_count INTEGER NOT NULL, note TEXT,
+  optional INTEGER NOT NULL DEFAULT 0, elective_of TEXT
 );
 -- Um curso pode aparecer em várias trilhas; o cadastro e o progresso são únicos.
 CREATE TABLE IF NOT EXISTS appearances (

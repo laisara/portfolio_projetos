@@ -44,6 +44,15 @@ export default async function catalog(el) {
           <div class="row wrap faint" style="font-size:12.5px;margin-top:8px;gap:14px"><span>${hm(t.video_total)} de aulas</span><span>${t.courses_done}/${t.courses.length} cursos</span><span>${t.lessons_done}/${t.lessons} aulas</span>
             ${t.header_min ? `<span title="Duração mostrada no cabeçalho da trilha no site">cabeçalho do site: ${hm(t.header_min)}</span>` : ""}</div>
         </section>`).join("")}`).join("");
+      if (d.optional?.length) body.insertAdjacentHTML("beforeend", `<section id="optionals" style="margin-top:12px">
+        <div class="section-head"><span class="label">Opcionais · fora do progresso, das trilhas e do cronograma</span></div>
+        <div class="panel flush">${d.optional.map((c, i) => `<a class="slot" href="#/course/${encodeURIComponent(c.id)}" style="grid-template-columns:32px 1fr auto">
+          <span class="track-num" style="border-style:dashed">${icon("star", "icon icon-sm")}</span>
+          <div style="min-width:0"><div style="font-weight:500">${esc(c.title)}${c.complete ? ` <span style="color:var(--good)">${icon("circle-check", "icon icon-sm")}</span>` : ""}</div>
+            <div class="row wrap" style="gap:8px;margin-top:5px"><span class="id-tag">${c.id}</span><span class="chip">opcional</span><span class="faint" style="font-size:12px">eletivo · Webapps</span></div></div>
+          <div style="text-align:right;min-width:150px"><div class="num" style="font-weight:600">${hm(c.duration_min, { compact: true })}</div>
+            <div class="faint num" style="font-size:12px">${c.lessons_done}/${c.lessons} aulas · ${pct(c.pct)}</div></div></a>`).join("")}</div>
+        <p class="faint" style="font-size:12.5px;margin:8px 0 0">Estude quando quiser: o progresso do curso é guardado, mas não conta no progresso geral nem entra no cronograma.</p></section>`);
       if (focusTrack) document.getElementById(`trk-${focusTrack}`)?.scrollIntoView({ behavior: "smooth" });
     } else if (tab === "courses") {
       body.innerHTML = `<div class="notice info" style="margin-bottom:16px">${icon("info")}<div>Cada curso existe <b>uma vez</b>, na ordem da plataforma (trilhas na ordem, cursos na ordem de cada trilha; um curso repetido aparece na primeira trilha em que surge). Concluir um curso conclui em todas as trilhas.</div></div>
@@ -55,6 +64,7 @@ export default async function catalog(el) {
           <dt>Aula sem duração</dt><dd><span class="dash">-</span> conta 0 min (${a.lessons_without_duration} aulas: quizzes, testes e guias)</dd>
           <dt>Aviso "em breve"</dt><dd>${a.placeholders} item não é aula e não bloqueia a conclusão</dd>
           <dt>Curso repetido</dt><dd>1 cadastro, progresso único, vale em todas as trilhas</dd>
+          <dt>Opcional</dt><dd>${(a.optional || []).map((x) => `${esc(x.title)} (${x.lessons} aulas, ${hm(x.duration_min)}): fora dos totais`).join("<br>") || "—"}</dd>
           <dt>Fora do programa</dt><dd>${(a.excluded || []).map((x) => esc(x)).join("<br>")}</dd></dl></section>
         <section class="panel"><h2 style="margin-bottom:12px">Cursos repetidos entre trilhas</h2>
           <div class="mini-list">${a.duplicates.map((x) => `<div><span class="id-tag">${x.content_id}</span><span>${esc(x.title)}</span><span class="spacer"></span><span class="faint">${x.tracks.join(" · ")} · ${hm(x.duration_min)}</span></div>`).join("")}</div>

@@ -30,7 +30,7 @@ EXPECTED_LESSONS = {
     "IDE-001": 17, "IDE-002": 10, "IDE-003": 11, "CODE-002": 13, "START-N8N": 1, "N8N-001": 23, "N8N-002": 5,
     "N8N-003": 9, "N8N-004": 17, "N8N-005": 4, "N8N-006": 5, "N8N-007": 7, "START-PYTHON": 2, "LLM-001": 14,
     "LOGIC-001": 17, "PYTHON-001": 47, "SETUP-001": 25, "PROMPT-001": 20, "AGNO-001": 30, "AGENT-001": 6,
-    "AGENT-002": 9, "AGENT-003": 8, "AGENT-004": 11,
+    "AGENT-002": 9, "AGENT-003": 8, "AGENT-004": 11, "GIT-001": 20,
 }
 
 
@@ -59,11 +59,12 @@ def main() -> int:
     cat = json.loads((ROOT / "data" / "catalog.json").read_text(encoding="utf-8"))
     problems, notes = [], []
     totals = {}
+    optional_ids = {k for k, v in cat["contents"].items() if v.get("optional")}
     print(f"{'curso':15}{'aulas':>6}{'soma':>10}{'card':>7}  floor==card  contagem")
     for cid, c in cat["contents"].items():
         lessons = [l for m in c["modules"] for l in m["lessons"]]
         total = sum(secs(l["duration"]) for l in lessons if "duration" in l)
-        totals[cid] = total
+        totals[cid] = total   # opcionais ficam em `totals`, mas são excluídos das somas únicas abaixo
         nums = [l["n"] for l in lessons]
         ok_floor = total // 60 == c["card_min"]
         ok_count = len(lessons) == EXPECTED_LESSONS[cid]
@@ -102,8 +103,8 @@ def main() -> int:
             if alts_ok:
                 flagged += 1
                 notes.append(f"{cid} aula {l['n']} «{l['title'][:38]}» {l['duration']}: alternativas que também fecham com o card: {sorted(alts_ok)} (impacto ≤ {max(abs(secs(a) - secs(l['duration'])) for a in alts_ok)}s)")
-    lo = sum(c["card_min"] * 60 for c in cat["contents"].values())
-    print(f"  Cada curso fica em [card, card+1 min): o ÚNICO total está entre {fmt(lo)} e {fmt(lo + 60 * len(cat['contents']))}.")
+    lo = sum(c["card_min"] * 60 for k, c in cat["contents"].items() if k not in optional_ids)
+    print(f"  Cada curso fica em [card, card+1 min): o ÚNICO total está entre {fmt(lo)} e {fmt(lo + 60 * len([1 for k in cat['contents'] if k not in optional_ids]))}.")
     print(f"  {flagged} aulas têm alternativa de leitura que também fecharia com o card (impacto em segundos, cursos já conferem ao minuto).")
 
     # 5) trilhas e carga
@@ -119,13 +120,16 @@ def main() -> int:
         print(f"  {t['id']} {t['title'][:44]:44} {fmt(s):>9}  cabeçalho {t['header_min'] // 60}h{t['header_min'] % 60:02d}  dif {diff:+.1f} min")
         if abs(diff) > 5:
             notes.append(f"{t['id']} {t['title']}: soma {fmt(s)} difere {diff:+.1f} min do cabeçalho do site (cards individuais conferem)")
-    unique = sum(totals.values())
+    unique = sum(v for k, v in totals.items() if k not in optional_ids)
     dup_total = sum(totals[c] * (n - 1) for c, n in seen.items() if n > 1)
     print(f"\nBruta {fmt(gross)} · duplicado {fmt(dup_total)} · ÚNICO {fmt(unique)}  ({unique / 3600:.2f} h)")
     assert gross - dup_total == unique
-    n_lessons = sum(len([l for m in c['modules'] for l in m['lessons']]) for c in cat["contents"].values())
-    nodur = sum(1 for c in cat["contents"].values() for m in c["modules"] for l in m["lessons"] if "duration" not in l)
-    print(f"Cursos {len(cat['contents'])} · aulas {n_lessons} · sem duração {nodur}")
+    core = {k: c for k, c in cat["contents"].items() if k not in optional_ids}
+    n_lessons = sum(len([l for m in c['modules'] for l in m['lessons']]) for c in core.values())
+    nodur = sum(1 for c in core.values() for m in c["modules"] for l in m["lessons"] if "duration" not in l)
+    for k in sorted(optional_ids):
+        print(f"Opcional (fora dos totais): {k} · {fmt(totals[k])}")
+    print(f"Cursos {len(core)} · aulas {n_lessons} · sem duração {nodur}")
 
     # 6) banco × catálogo
     os.environ["AST_DB"] = str(Path(tempfile.mkdtemp()) / "audit.db")
@@ -136,6 +140,8 @@ def main() -> int:
     a = catalog.analysis(conn)
     db_unique = round(a["unique_min"] * 60)
     db_gross = round(a["gross_min"] * 60)
+    if a["optional"] and a["courses"] != 42:
+        problems.append("opcional entrou na contagem de cursos")
     print(f"\nBanco: único {fmt(db_unique)} · bruto {fmt(db_gross)} · aulas {a['lessons']}")
     if db_unique != unique:
         problems.append(f"banco ({fmt(db_unique)}) ≠ catálogo ({fmt(unique)})")

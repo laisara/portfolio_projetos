@@ -24,8 +24,8 @@ App pessoal e **local-first**, só para desktop (Windows), para **controlar os e
 | Declarado pela plataforma | 62h34 (só informativo; diferença +3h47) |
 
 Regras: a duração de um curso é a **soma das aulas**; aula sem duração no player aparece como **"-"** e conta 0 min
-(56 itens: quizzes, testes e guias); módulo sem título vira "Módulo N"; **eletivos ficam de fora**
-(Projetos para Professores, Para se aprofundar, *Git e GitHub*). **Curso repetido tem um cadastro só:** concluir
+(56 itens: quizzes, testes e guias); módulo sem título vira "Módulo N"; **eletivos ficam de fora**, exceto o opcional
+(Projetos para Professores e Para se aprofundar). O eletivo *Git e GitHub* (20 aulas, 3h08m34s) está cadastrado como **opcional**: estudável e com progresso próprio, mas fora do progresso geral, das trilhas e do cronograma. **Curso repetido tem um cadastro só:** concluir
 uma aula, um módulo ou o curso vale em todas as trilhas.
 
 ## Cronograma (só aulas + revisão)
@@ -79,7 +79,7 @@ ai-study-tracker/
 ├── database/      study_tracker.db e backups/ (não versionados)
 ├── docs/          ANALISE.md · CRONOGRAMA.md · RELATORIO.txt · screenshots/
 ├── scripts/       run.py · build_catalog.py · audit_durations.py · backup.py · restore.py · export_schedule.py · demo_seed.py · audit_*.js
-├── tests/         pytest (69 casos)
+├── tests/         pytest (72 casos)
 └── install.bat · start.bat · backup.bat · restore.bat
 ```
 

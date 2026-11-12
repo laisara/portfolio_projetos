@@ -81,14 +81,14 @@ def get_catalog(conn: sqlite3.Connection = Depends(get_conn)):
     shared: dict[str, list[str]] = {}
     for a in db.rows(conn, "SELECT content_id, track_id FROM appearances ORDER BY track_id"):
         shared.setdefault(a["content_id"], []).append(a["track_id"])
-    courses = []
+    courses, optional = [], []
     for c in snap["cat"]["contents"].values():
         pc = snap["prog"]["per_content"][c["id"]]
-        courses.append({"id": c["id"], "title": c["title"], "type": c["type"], "duration_min": c["duration_min"],
+        (optional if c["optional"] else courses).append({"id": c["id"], "title": c["title"], "type": c["type"], "duration_min": c["duration_min"],
                         "card_min": c["card_min"], "lessons": pc["lessons"], "lessons_done": pc["lessons_done"],
                         "durationless": pc["durationless"], "pct": pc["pct"], "complete": pc["complete"],
-                        "tracks": shared.get(c["id"], []), "study_ord": c["study_ord"]})
-    return {"analysis": catalog_mod.analysis(conn), "tracks": snap["tracks"], "courses": courses}
+                        "tracks": shared.get(c["id"], []), "study_ord": c["study_ord"], "elective_of": c["elective_of"]})
+    return {"analysis": catalog_mod.analysis(conn), "tracks": snap["tracks"], "courses": courses, "optional": optional}
 
 
 @app.get("/api/contents/{content_id}")

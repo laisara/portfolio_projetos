@@ -129,7 +129,12 @@ Ambíguas (ambas fecham com o card; mantida a leitura original; lista completa a
 --------------------------------------------------------------------------------
   - Projetos para Professores (eletivo da trilha Dominando o ecossistema Claude) — fora do programa
   - Para se aprofundar (eletivo da trilha Aplicações Inteligentes com IA) — fora do programa
-  - Git e GitHub – Controle de Versão e Colaboração (eletivo Webapps: 20 aulas, 3h08m34s) — fora do cronograma
+  (Git e GitHub: ver item 7-B, cadastrado como OPCIONAL)
+
+7-B. OPCIONAL (cadastrado, fora de todos os totais)
+--------------------------------------------------------------------------------
+  GIT-001 Git e GitHub - Controle de Versão e Colaboração: 20 aulas, soma 3:08:34, card 3h08 (floor OK),
+  6 aulas sem duração (.gitignore, SSH, Fork, 2 quizzes, teste final). Não entra no único (66:21:37).
 
 8. OBSERVAÇÕES
 --------------------------------------------------------------------------------

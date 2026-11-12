@@ -91,11 +91,22 @@ def test_untitled_modules_are_numbered():
     assert [m["title"] for m in db.rows(conn, "SELECT title FROM modules WHERE content_id='LANG-001' ORDER BY ord")] == ["Módulo 1", "Módulo 2"]
 
 
-def test_excluded_electives_are_not_in_catalog():
-    conn, data, _ = load_real()
-    titles = " ".join(c["title"] for c in data["contents"].values()).lower()
+def test_excluded_electives_are_not_in_catalog_and_git_is_optional():
+    conn, data, a = load_real()
+    titles = " ".join(c["title"] for k, c in data["contents"].items() if not c.get("optional")).lower()
     assert "git e github" not in titles and "professores" not in titles and "aprofundar" not in titles
-    assert len(data["meta"]["excluded"]) == 3
+    assert len(data["meta"]["excluded"]) == 2
+    g = data["contents"]["GIT-001"]
+    assert g["optional"] is True and g["elective_of"] == "T8" and "Git e GitHub" in g["title"]
+    assert [o["id"] for o in a["optional"]] == ["GIT-001"] and a["optional"][0]["lessons"] == 20
+    assert round(a["optional"][0]["duration_min"] * 60) == 3 * 3600 + 8 * 60 + 34
+    assert not conn.execute("SELECT 1 FROM appearances WHERE content_id='GIT-001'").fetchall()   # em nenhuma trilha
+
+
+def test_optional_course_is_outside_every_total():
+    _, _, a = load_real()
+    assert a["courses"] == 42 and a["lessons"] == 463 and a["lessons_without_duration"] == 56
+    assert round(a["unique_min"] * 60) == 66 * 3600 + 21 * 60 + 37 and a["appearances"] == 48
 
 
 def test_placeholder_is_not_a_lesson_to_finish():
@@ -106,7 +117,7 @@ def test_placeholder_is_not_a_lesson_to_finish():
 
 def test_study_sequence_follows_platform_order_once():
     conn, _, _ = load_real()
-    order = [r["id"] for r in db.rows(conn, "SELECT id FROM contents ORDER BY study_ord")]
+    order = [r["id"] for r in db.rows(conn, "SELECT id FROM contents WHERE optional=0 ORDER BY study_ord")]
     assert len(order) == len(set(order)) == 42
     assert order[:3] == ["START-CLAUDE", "GENAI-001", "CLAUDE-001"]
 

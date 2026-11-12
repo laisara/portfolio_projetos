@@ -102,13 +102,14 @@ def dashboard(conn: sqlite3.Connection) -> dict:
     for it in db.rows(conn, "SELECT date, detail FROM plan_items WHERE kind='review' AND date>=? ORDER BY date LIMIT 6", (iso,)):
         for r in db.loads(it["detail"], {}).get("reviews", []):
             upcoming.append({**r, "planned_for": it["date"]})
-    courses_done = len([1 for pc in prog["per_content"].values() if pc["complete"]])
+    core = {k: v for k, v in prog["per_content"].items() if not v["optional"]}
+    courses_done = len([1 for pc in core.values() if pc["complete"]])
     return {
         "today": today_view(conn, snap),
         "overall": prog["overall"],
         "video": {"done": prog["video_done"], "total": prog["video_total"]},
         "lessons": {"done": prog["lessons_done"], "total": prog["lessons"]},
-        "courses": {"done": courses_done, "total": len(prog["per_content"])},
+        "courses": {"done": courses_done, "total": len(core)},
         "minutes_by_type": mt,
         "xp": game["xp"], "level": game["level"], "next_level": game["next_level"], "level_pct": game["level_pct"],
         "streak": snap["streak"],

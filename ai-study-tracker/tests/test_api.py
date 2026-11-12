@@ -262,3 +262,32 @@ def test_static_pwa_assets_desktop_only(client):
     assert "tabbar" not in html and "apple-touch" not in html
     css = client.get("/css/app.css").text
     assert ".tabbar" not in css and "max-width: 820px" not in css
+
+
+# ---------------------------------------------------------------- curso opcional (Git e GitHub)
+def test_optional_course_is_registered_but_outside_progress_tracks_and_plan(client):
+    cat = client.get("/api/catalog").json()
+    assert [c["id"] for c in cat["optional"]] == ["GIT-001"] and len(cat["courses"]) == 42
+    assert all("GIT-001" not in [c["id"] for c in t["courses"]] for t in cat["tracks"])
+    d = client.get("/api/dashboard").json()
+    assert d["courses"]["total"] == 42 and d["lessons"]["total"] == 462
+    refs = [i["ref"] or "" for x in client.get("/api/calendar?start=2026-11-13&end=2027-03-01").json()["days"] for i in x["items"]]
+    assert not any(r.startswith("GIT-001") for r in refs)
+    c = client.get("/api/contents/GIT-001").json()
+    assert c["optional"] == 1 and c["lesson_count"] == 20 and c["tracks"] == []
+    assert sum(1 for m in c["modules"] for l in m["lessons"] if not l["has_duration"]) == 6
+
+
+def test_studying_optional_course_keeps_progress_without_touching_overall(client):
+    before = client.get("/api/dashboard").json()
+    client.post("/api/contents/GIT-001/complete", json={"completed": True})
+    c = client.get("/api/contents/GIT-001").json()
+    assert c["progress"]["complete"] is True and c["progress"]["lessons_done"] == 20
+    after = client.get("/api/dashboard").json()
+    assert after["overall"] == before["overall"] == 0 and after["courses"]["done"] == 0
+    assert after["lessons"]["done"] == 0
+    g = client.get("/api/gamification").json()
+    assert not [e for e in g["ledger"] if e["kind"] == "CONTENT"]      # curso opcional não gera "curso concluído"
+    assert len([e for e in g["ledger"] if e["kind"] == "LESSON"]) == 20  # mas as aulas rendem XP
+    client.post("/api/contents/GIT-001/complete", json={"completed": False})
+    assert client.get("/api/contents/GIT-001").json()["progress"]["lessons_done"] == 0

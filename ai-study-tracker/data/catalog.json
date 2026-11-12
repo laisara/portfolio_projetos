@@ -1,6 +1,6 @@
 {
  "meta": {
-  "catalog_version": 3,
+  "catalog_version": 4,
   "name": "Formação Engenheiro de Agentes de IA",
   "provider": "Asimov Academy",
   "declared_video": "62:34:00",
@@ -9,8 +9,10 @@
   "duration_rule": "Duração do curso = soma das durações das aulas. Aula sem duração = '-' (0 min).",
   "excluded": [
    "Projetos para Professores (eletivo da trilha Dominando o ecossistema Claude) — fora do programa",
-   "Para se aprofundar (eletivo da trilha Aplicações Inteligentes com IA) — fora do programa",
-   "Git e GitHub – Controle de Versão e Colaboração (eletivo Webapps: 20 aulas, 3h08m34s) — fora do cronograma"
+   "Para se aprofundar (eletivo da trilha Aplicações Inteligentes com IA) — fora do programa"
+  ],
+  "optional": [
+   "Git e GitHub – Controle de Versão e Colaboração (eletivo Webapps): cadastrado como OPCIONAL (GIT-001), fora do progresso, das trilhas e do cronograma"
   ],
   "competencies_note": "Classificação de competências por curso feita pelo sistema (INFERIDO), editável no JSON."
  },
@@ -4309,6 +4311,201 @@
      ]
     }
    ]
+  },
+  "GIT-001": {
+   "title": "Git e GitHub - Controle de Versão e Colaboração",
+   "type": "curso",
+   "card_min": 188,
+   "competencies": [
+    "aicoding"
+   ],
+   "modules": [
+    {
+     "id": "GIT-001.M1",
+     "title": "Boas vindas",
+     "lessons": [
+      {
+       "id": "GIT-001.L01",
+       "n": 1,
+       "title": "O que vamos aprender nesse curso",
+       "kind": "video",
+       "duration": "3:22"
+      }
+     ]
+    },
+    {
+     "id": "GIT-001.M2",
+     "title": "Introdução ao Git e controle de versão",
+     "lessons": [
+      {
+       "id": "GIT-001.L02",
+       "n": 2,
+       "title": "O que é Git e por que usá-lo?",
+       "kind": "video",
+       "duration": "6:25"
+      },
+      {
+       "id": "GIT-001.L03",
+       "n": 3,
+       "title": "Instalação do Git",
+       "kind": "video",
+       "duration": "5:45"
+      }
+     ]
+    },
+    {
+     "id": "GIT-001.M3",
+     "title": "Utilizando Git no terminal e no VSCode",
+     "lessons": [
+      {
+       "id": "GIT-001.L04",
+       "n": 4,
+       "title": "Criando o Primeiro Repositório Local",
+       "kind": "video",
+       "duration": "15:15"
+      },
+      {
+       "id": "GIT-001.L05",
+       "n": 5,
+       "title": "Git no VSCode",
+       "kind": "video",
+       "duration": "15:00"
+      }
+     ]
+    },
+    {
+     "id": "GIT-001.M4",
+     "title": "Introdução ao GitHub",
+     "lessons": [
+      {
+       "id": "GIT-001.L06",
+       "n": 6,
+       "title": "O que é o GitHub e sua importância?",
+       "kind": "video",
+       "duration": "19:20"
+      },
+      {
+       "id": "GIT-001.L07",
+       "n": 7,
+       "title": "O que é o .gitignore e como utilizá-lo",
+       "kind": "other"
+      },
+      {
+       "id": "GIT-001.L08",
+       "n": 8,
+       "title": "Conectando um repositório no GitHub",
+       "kind": "video",
+       "duration": "28:58"
+      },
+      {
+       "id": "GIT-001.L09",
+       "n": 9,
+       "title": "Autenticação com SSH: Uma Alternativa ao Token PAT",
+       "kind": "other"
+      },
+      {
+       "id": "GIT-001.L10",
+       "n": 10,
+       "title": "Clonando e colaborando com repositórios existentes",
+       "kind": "video",
+       "duration": "17:24"
+      },
+      {
+       "id": "GIT-001.L11",
+       "n": 11,
+       "title": "Quiz – Introdução ao Git e ao Controle de versão",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "GIT-001.M5",
+     "title": "Trabalhando com branches e resolvendo conflitos",
+     "lessons": [
+      {
+       "id": "GIT-001.L12",
+       "n": 12,
+       "title": "Branches no Git: A árvore do seu projeto",
+       "kind": "video",
+       "duration": "14:56"
+      },
+      {
+       "id": "GIT-001.L13",
+       "n": 13,
+       "title": "Combinando branches e lidando com conflitos",
+       "kind": "video",
+       "duration": "14:51"
+      }
+     ]
+    },
+    {
+     "id": "GIT-001.M6",
+     "title": "Trabalhando em equipe com GitHub e pull requests",
+     "lessons": [
+      {
+       "id": "GIT-001.L14",
+       "n": 14,
+       "title": "Trabalhando em equipe com GitHub",
+       "kind": "video",
+       "duration": "8:32"
+      },
+      {
+       "id": "GIT-001.L15",
+       "n": 15,
+       "title": "Criando e Gerenciando Pull Requests no GitHub",
+       "kind": "video",
+       "duration": "12:41"
+      },
+      {
+       "id": "GIT-001.L16",
+       "n": 16,
+       "title": "Colaborando com Projetos Abertos: Entendendo o Fork",
+       "kind": "other"
+      }
+     ]
+    },
+    {
+     "id": "GIT-001.M7",
+     "title": "Criando e personalizando o perfil no GitHub",
+     "lessons": [
+      {
+       "id": "GIT-001.L17",
+       "n": 17,
+       "title": "Como o GitHub pode ser um portfólio para seus projetos?",
+       "kind": "video",
+       "duration": "13:34"
+      },
+      {
+       "id": "GIT-001.L18",
+       "n": 18,
+       "title": "Criando um Repositório para seu Perfil",
+       "kind": "video",
+       "duration": "12:31"
+      },
+      {
+       "id": "GIT-001.L19",
+       "n": 19,
+       "title": "Quiz – Trabalhando com Git e GitHub",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "GIT-001.M8",
+     "title": "Teste final",
+     "lessons": [
+      {
+       "id": "GIT-001.L20",
+       "n": 20,
+       "title": "Teste Final – Git e GitHub",
+       "kind": "quiz"
+      }
+     ]
+    }
+   ],
+   "optional": true,
+   "elective_of": "T8",
+   "note": "Curso eletivo (Webapps) da trilha Aplicações AI com Python. OPCIONAL: não entra no progresso geral, nas trilhas nem no cronograma."
   }
  }
 }

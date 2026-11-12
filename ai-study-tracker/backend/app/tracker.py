@@ -83,10 +83,12 @@ def make_units(cat: dict, lp: dict) -> list[Unit]:
     for l in cat["lessons"]:
         if not is_required(l):
             continue
+        c = cat["contents"][l["content_id"]]
+        if c["optional"]:           # opcionais não entram no cronograma
+            continue
         st = lp.get(l["id"])
         if st and st["completed_on"]:
             continue
-        c = cat["contents"][l["content_id"]]
         if l["has_duration"]:
             remaining = max(0.01, round(l["duration_min"] - (st["watched_min"] if st else 0), 3))
         else:
@@ -173,13 +175,14 @@ def progress(conn: sqlite3.Connection) -> dict:
                 p["video_done"] += min(st["watched_min"], l["duration_min"] * 0.95)
         if not l["has_duration"]:
             pc["durationless"] += 1
-    for pc in per.values():
+    for cid, pc in per.items():
+        pc["optional"] = bool(cat["contents"][cid]["optional"])
         pc["complete"] = pc["lessons"] > 0 and pc["lessons_done"] == pc["lessons"]
         frac = pc["video_done"] / pc["video_total"] if pc["video_total"] else (pc["lessons_done"] / pc["lessons"] if pc["lessons"] else 0.0)
         pc["pct"] = 1.0 if pc["complete"] else min(0.99, frac)
     for pm in per_module.values():
         pm["complete"] = pm["lessons"] > 0 and pm["lessons_done"] == pm["lessons"]
-    sums = {k: sum(pc[k] for pc in per.values()) for k in ("video_total", "video_done", "lessons", "lessons_done")}
+    sums = {k: sum(pc[k] for pc in per.values() if not pc["optional"]) for k in ("video_total", "video_done", "lessons", "lessons_done")}
     hours = {r["type"]: r["m"] for r in db.rows(conn, "SELECT type, SUM(actual_min) AS m FROM sessions WHERE status!='missed' GROUP BY type")}
     overall = sums["video_done"] / sums["video_total"] if sums["video_total"] else 0.0
     return {"per_content": per, "per_module": per_module, "overall": overall,

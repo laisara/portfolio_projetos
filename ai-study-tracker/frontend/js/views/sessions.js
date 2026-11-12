@@ -5,7 +5,7 @@ const STATUS = { done: "Concluída", partial: "Parcial", missed: "Não realizada
 
 async function sessionForm(session) {
   const [health, cat] = await Promise.all([api("/health"), api("/catalog")]);
-  const seq = cat.courses.sort((a, b) => a.study_ord - b.study_ord);
+  const seq = [...cat.courses.sort((a, b) => a.study_ord - b.study_ord), ...(cat.optional || []).map((c) => ({ ...c, title: `${c.title} (opcional)` }))];
   const box = openLayer(`
     <div class="modal-head"><div><p class="eyebrow">${session ? "Editar" : "Registrar"} sessão</p><h2>${session ? esc(session.title) : "Sessão de estudo"}</h2></div>
       <button class="btn ghost icon-only" data-close aria-label="Fechar">${icon("x")}</button></div>

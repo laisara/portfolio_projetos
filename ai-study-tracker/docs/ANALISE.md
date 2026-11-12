@@ -27,7 +27,11 @@ batem com a soma das aulas (≤ 1 min cada), então a diferença está no cabeç
 - Duplicados: *Fundamentos da IA Generativa* (6 trilhas), *Masterclass Claude Code* (2).
 
 ## Fora do programa (decisão da usuária)
-Projetos para Professores · Para se aprofundar · *Git e GitHub – Controle de Versão e Colaboração* (20 aulas, 3h08m34s).
+Projetos para Professores · Para se aprofundar.
+
+## Opcional (cadastrado, fora dos totais)
+*Git e GitHub – Controle de Versão e Colaboração* (`GIT-001`, eletivo Webapps): 20 aulas, 3h08m34s (card 3h08), 6 aulas sem duração. Fica fora do progresso geral,
+das trilhas, do cronograma e das cargas bruta/única; o progresso próprio, o XP das aulas e as revisões continuam funcionando. Não conta como "curso concluído" para conquistas.
 
 ## Marcado para conferência (leitura por foto, zero riscado)
 - *Conectando MCPs* (Antigravity): 0:01 adotado; poderia ser 8:01 (só 0:01 fecha com o card).

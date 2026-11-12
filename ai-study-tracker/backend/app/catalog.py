@@ -73,6 +73,8 @@ class ContentIn(BaseModel):
     card_min: Optional[float] = None   # duração mostrada no card (só conferência)
     competencies: list[str] = []
     note: Optional[str] = None
+    optional: bool = False             # eletivo: fora do progresso, das trilhas e do cronograma
+    elective_of: Optional[str] = None
     modules: list[ModuleIn] = Field(min_length=1)
 
     @field_validator("type")
@@ -121,7 +123,7 @@ class CatalogIn(BaseModel):
                 if cid not in self.contents:
                     raise ValueError(f"{t.id}: curso {cid} não está em 'contents'")
                 used.add(cid)
-        orphan = set(self.contents) - used
+        orphan = {c for c in set(self.contents) - used if not self.contents[c].optional}
         if orphan:
             raise ValueError(f"cursos sem trilha: {sorted(orphan)}")
         return self
@@ -134,7 +136,7 @@ def study_sequence(cat: CatalogIn) -> list[str]:
         for cid in t.courses:
             if cid not in seq:
                 seq.append(cid)
-    return seq
+    return seq + [c for c, v in cat.contents.items() if v.optional and c not in seq]
 
 
 def import_catalog(conn: sqlite3.Connection, data: dict) -> dict:
@@ -148,8 +150,8 @@ def import_catalog(conn: sqlite3.Connection, data: dict) -> dict:
         durations = [parse_duration(l.duration) or 0.0 for m in c.modules for l in m.lessons]
         total, count = sum(durations), len(durations)
         conn.execute(
-            "INSERT INTO contents(id, title, type, study_ord, competencies, card_min, duration_min, lesson_count, note) VALUES (?,?,?,?,?,?,?,?,?)",
-            (cid, c.title, c.type, study_ord, json.dumps(c.competencies), c.card_min, total, count, c.note))
+            "INSERT INTO contents(id, title, type, study_ord, competencies, card_min, duration_min, lesson_count, note, optional, elective_of) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+            (cid, c.title, c.type, study_ord, json.dumps(c.competencies), c.card_min, total, count, c.note, int(c.optional), c.elective_of))
         for mi, m in enumerate(c.modules, start=1):
             mid = m.id or f"{cid}.M{mi}"
             conn.execute("INSERT INTO modules(id, content_id, ord, title) VALUES (?,?,?,?)",
@@ -178,7 +180,8 @@ def catalog_meta(conn: sqlite3.Connection) -> dict:
 def analysis(conn: sqlite3.Connection) -> dict:
     """Carga bruta × duplicada × única × declarada (auditoria)."""
     meta = catalog_meta(conn)
-    contents = {c["id"]: c for c in db.rows(conn, "SELECT * FROM contents")}
+    all_contents = {c["id"]: c for c in db.rows(conn, "SELECT * FROM contents")}
+    contents = {k: v for k, v in all_contents.items() if not v["optional"]}   # opcionais ficam fora dos totais
     apps = db.rows(conn, "SELECT * FROM appearances ORDER BY track_id, position")
     gross = sum(contents[a["content_id"]]["duration_min"] for a in apps)
     unique = sum(c["duration_min"] for c in contents.values())
@@ -192,7 +195,10 @@ def analysis(conn: sqlite3.Connection) -> dict:
     ]
     declared = parse_duration(meta.get("declared_video"))
     lessons = db.row(conn, """SELECT COUNT(*) AS n, SUM(CASE WHEN has_duration=0 THEN 1 ELSE 0 END) AS nodur,
-                              SUM(CASE WHEN kind='placeholder' THEN 1 ELSE 0 END) AS ph FROM lessons""") or {}
+                              SUM(CASE WHEN kind='placeholder' THEN 1 ELSE 0 END) AS ph FROM lessons
+                              WHERE content_id IN (SELECT id FROM contents WHERE optional=0)""") or {}
+    optional = [{"id": c["id"], "title": c["title"], "duration_min": c["duration_min"], "lessons": c["lesson_count"],
+                 "elective_of": c["elective_of"]} for c in all_contents.values() if c["optional"]]
     tracks = db.rows(conn, "SELECT * FROM tracks ORDER BY ord")
     return {
         "name": meta.get("name"), "version": meta.get("catalog_version", 0),
@@ -203,7 +209,7 @@ def analysis(conn: sqlite3.Connection) -> dict:
         "placeholders": lessons.get("ph") or 0,
         "projects": len([c for c in contents.values() if c["type"] == "projeto"]),
         "project_min": sum(c["duration_min"] for c in contents.values() if c["type"] == "projeto"),
-        "duplicates": duplicates, "excluded": meta.get("excluded", []), "duration_rule": meta.get("duration_rule"),
+        "duplicates": duplicates, "excluded": meta.get("excluded", []), "optional": optional, "duration_rule": meta.get("duration_rule"),
         "tracks_check": [{"id": t["id"], "title": t["title"], "header_min": t["header_min"],
                           "sum_min": sum(contents[a["content_id"]]["duration_min"] for a in apps if a["track_id"] == t["id"])}
                          for t in tracks],

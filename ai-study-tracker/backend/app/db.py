@@ -10,7 +10,7 @@ from typing import Any, Iterator
 from . import config
 
 SCHEMA = (Path(__file__).parent / "schema.sql").read_text(encoding="utf-8")
-SCHEMA_VERSION = "3"
+SCHEMA_VERSION = "4"
 
 
 def connect(path: Path | None = None) -> sqlite3.Connection:
@@ -47,7 +47,8 @@ def init_schema(conn: sqlite3.Connection) -> None:
     # antigas são recriadas; sessões, revisões e conquistas (tabelas do usuário) são preservadas.
     track_cols = {r[1] for r in conn.execute("PRAGMA table_info(tracks)")}
     lesson_cols = {r[1] for r in conn.execute("PRAGMA table_info(lessons)")}
-    if (track_cols and "group_name" not in track_cols) or (lesson_cols and "has_duration" not in lesson_cols):
+    content_cols = {r[1] for r in conn.execute("PRAGMA table_info(contents)")}
+    if (track_cols and "group_name" not in track_cols) or (lesson_cols and "has_duration" not in lesson_cols) or (content_cols and "optional" not in content_cols):
         for t in ("appearances", "track_slots", "lessons", "modules", "contents", "tracks"):
             conn.execute(f"DROP TABLE IF EXISTS {t}")
         conn.execute("DELETE FROM meta WHERE key IN ('catalog_meta','catalog_customized')")

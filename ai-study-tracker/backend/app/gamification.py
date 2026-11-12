@@ -54,7 +54,7 @@ def compute(conn: sqlite3.Connection, prog: dict, reviews: list[dict], streak: d
         if r["status"] == "done":
             ledger.append({"date": r["done_on"], "xp": D.XP_REVIEW_ON_TIME if r["on_time"] else D.XP_REVIEW_LATE,
                            "label": f"Revisão D+{r['interval']} ({'no prazo' if r['on_time'] else 'atrasada'})", "kind": "REVIEW_DONE"})
-    contents_done = [cid for cid, pc in prog["per_content"].items() if pc["complete"]]
+    contents_done = [cid for cid, pc in prog["per_content"].items() if pc["complete"] and not pc["optional"]]
     for cid in contents_done:
         ledger.append({"date": None, "xp": D.XP_CONTENT_DONE, "label": f"Curso concluído · {cid}", "kind": "CONTENT"})
     tracks_done = [t for t in tracks if t["complete"]]
@@ -109,7 +109,7 @@ def competencies(prog: dict, contents: dict, reviews: list[dict], learned: dict[
     learned: data → conteúdos estudados naquele dia (base das revisões)."""
     out = []
     for comp in D.COMPETENCIES:
-        cids = [cid for cid, c in contents.items() if comp["id"] in c["competencies"]]
+        cids = [cid for cid, c in contents.items() if comp["id"] in c["competencies"] and not c["optional"]]
         vt = sum(prog["per_content"][c]["video_total"] for c in cids)
         vd = sum(prog["per_content"][c]["video_done"] for c in cids)
         parts: dict[str, float] = {}
