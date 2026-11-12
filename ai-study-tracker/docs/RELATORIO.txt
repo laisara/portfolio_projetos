@@ -37,7 +37,10 @@ Data: 12/11/2026 · Branch: ccr-97dc7c3e-vbe1hb · Pasta: ai-study-tracker/
     * módulo sem título = "Módulo N";
     * eletivos FORA: Projetos para Professores, Para se aprofundar, Git e GitHub;
     * curso repetido = 1 cadastro; concluir aula/módulo/curso vale em todas as trilhas.
-- Cada um dos 42 cursos confere com o card do site em até 2 minutos.
+- AUDITORIA DE DURAÇÕES (scripts/audit_durations.py, também em teste): nos 42 cursos a soma das
+  aulas, truncada em minutos, é IGUAL ao card do site; contagens de aulas batem; o plano agenda
+  as 462 aulas obrigatórias uma vez cada (66h21m37s exatos); banco = catálogo ao segundo.
+  Nenhuma duração precisou ser alterada. Total único possível: entre 66:03 e 66:45 (adotado 66:21:37).
   Só a trilha 8 difere do cabeçalho do site (+29 min), apesar de os cards baterem.
 - Correção feita durante o recebimento: Dominando Automações com n8n soma 2h47m26s
   (um erro de aritmética meu havia indicado 3h35; não havia aulas repetidas).
@@ -68,7 +71,7 @@ Ajustes · backup/restore (.db) · export/import (JSON) · PWA.
 
 5. QUALIDADE E VALIDAÇÃO (o que foi realmente verificado)
 --------------------------------------------------------------------------------
-- 66 testes pytest passando: catálogo, duplicidades, números oficiais, planner,
+- 69 testes pytest passando (inclui a auditoria de durações): catálogo, duplicidades, números oficiais, planner,
   aula sem duração, progresso compartilhado entre trilhas (concluir/desmarcar),
   placeholder, sessões, XP, revisão, adaptação (atraso/adiantamento), backup,
   restore (inclui arquivo corrompido), import, PWA e checagem estática dos .bat.
@@ -93,10 +96,11 @@ Ajustes · backup/restore (.db) · export/import (JSON) · PWA.
 7. PENDÊNCIAS
 --------------------------------------------------------------------------------
 7.1 Você precisa rodar no Windows e me dizer se install.bat/start.bat funcionam.
-7.2 Trilha 8: o cabeçalho do site (26h51) é 29 min menor que a soma das aulas
-    (27h20); os cards de cada curso batem com as aulas. Provável cabeçalho
-    desatualizado; mantido como informativo.
-7.3 Leituras com zero riscado (poucos segundos de erro cada), a conferir se quiser:
+7.2 Cabeçalhos do site: trilhas 2-7 batem exatamente (truncados); trilha 1 (-3 min) e trilha 8
+    (-29 min) divergem, embora cada card de curso bata com as aulas. Hipótese: cabeçalho
+    desatualizado (cursos "AULAS NOVAS"). Mantido como informativo; vale a soma das aulas.
+7.3 Leituras com zero riscado: mantidas como as mais coerentes (resolvidas pelo card quando possível);
+    impacto máximo de segundos por aula. Lista, se quiser conferir no player:
     - Antigravity "Conectando MCPs": 0:01 adotado (poderia ser 8:01; só 0:01 fecha
       com o card); ordem das aulas 10/11 do mesmo curso.
     - Conceitos Gerais de LLMs 19:03 · Os princípios de um bom prompt 10:03 ·

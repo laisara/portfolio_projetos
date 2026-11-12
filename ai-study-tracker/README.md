@@ -78,8 +78,8 @@ ai-study-tracker/
 ├── data/          catalog.json
 ├── database/      study_tracker.db e backups/ (não versionados)
 ├── docs/          ANALISE.md · CRONOGRAMA.md · RELATORIO.txt · screenshots/
-├── scripts/       run.py · build_catalog.py · backup.py · restore.py · export_schedule.py · demo_seed.py · audit_*.js
-├── tests/         pytest (66 casos)
+├── scripts/       run.py · build_catalog.py · audit_durations.py · backup.py · restore.py · export_schedule.py · demo_seed.py · audit_*.js
+├── tests/         pytest (69 casos)
 └── install.bat · start.bat · backup.bat · restore.bat
 ```
 
@@ -88,7 +88,7 @@ ai-study-tracker/
 ```bash
 python -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 .venv/bin/python -m pytest
-python scripts/build_catalog.py && python scripts/export_schedule.py
+python scripts/build_catalog.py && python scripts/audit_durations.py && python scripts/export_schedule.py
 ```
 
 Variáveis: `AST_DB`, `AST_TODAY` (simula a data), `AST_CATALOG`, `AST_BACKUP_DIR`.

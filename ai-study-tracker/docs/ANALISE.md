@@ -39,3 +39,20 @@ O erro máximo é de segundos por aula; cada curso fecha com o card em até 2 mi
 ## Estimativas do sistema (não vêm da plataforma)
 Classificação de competências por curso, pontos de partida das competências (editáveis), capacidade diária e
 percentuais da revisão espaçada.
+
+## Auditoria das durações (12/11/2026) — `scripts/audit_durations.py` + `tests/test_durations.py`
+Verificação independente, repetível e agora permanente nos testes:
+1. **Soma das aulas × card:** o card do site **trunca para minutos**. Nos 42 cursos, `floor(soma das aulas) == card`, sem exceção
+   (ex.: Hermes Agent 1:59:55 → card 119 min; arredondar daria 120). Isso valida cada leitura ao minuto.
+2. **Contagem de aulas:** os 42 cursos têm exatamente as aulas anunciadas; numeração 1..N contínua; IDs únicos.
+3. **Leituras incertas (zero riscado 0↔8):** o erro de cada curso fica dentro de [card, card+1 min). Logo, o total único está
+   entre 66:03:00 e 66:45:00, e o valor adotado (66:21:37) está dentro desse intervalo. Onde duas leituras fecham com o card,
+   foi mantida a leitura original; onde só uma fecha, ela é a correta (ex.: *Conectando MCPs* = 0:01, pois 8:01 daria 2:24:50 ≠ 2:16 do card;
+   Hermes aula 6 = 30:50, pois 30:58 daria 2:00:03 ≠ 1:59).
+4. **Trilhas × cabeçalho:** nas trilhas 2 a 7 o cabeçalho também é o truncamento exato da soma das aulas. As trilhas 1 (−3 min) e 8 (−29 min)
+   divergem; cada curso dessas trilhas confere com o card. Hipótese (não confirmada): o cabeçalho ficou desatualizado, pois os cursos
+   marcados "AULAS NOVAS"/"NOVO" (Claude Desktop, Claude Avançado e os projetos da trilha 8) cresceram depois.
+5. **Plano × catálogo:** o cronograma agenda as 462 aulas obrigatórias, cada uma uma vez, somando exatamente 66h21m37s.
+6. **Banco × catálogo:** importação real confere ao segundo (único 66:21:37, bruto 74:30:39, duplicado 8:09:02).
+Nenhum erro de dados foi encontrado; nenhuma duração precisou ser alterada. (Na fase de coleta, um erro meu de soma no
+*Dominando Automações com n8n* já havia sido corrigido: 2h47m26s.)
