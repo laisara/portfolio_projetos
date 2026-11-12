@@ -10,7 +10,7 @@ from typing import Any, Iterator
 from . import config
 
 SCHEMA = (Path(__file__).parent / "schema.sql").read_text(encoding="utf-8")
-SCHEMA_VERSION = "1"
+SCHEMA_VERSION = "3"
 
 
 def connect(path: Path | None = None) -> sqlite3.Connection:
@@ -43,13 +43,16 @@ def get_conn() -> Iterator[sqlite3.Connection]:
 
 
 def init_schema(conn: sqlite3.Connection) -> None:
-    # v1 → v2: o catálogo mudou de formato (sem reserva/blocos sintéticos). Tabelas de catálogo são
-    # recriadas; progresso/sessões (tabelas de usuário) são preservados.
-    cols = {r[1] for r in conn.execute("PRAGMA table_info(tracks)")}
-    if cols and "confirmed" not in cols:
-        for t in ("appearances", "track_slots", "lessons", "modules", "track_slots", "contents", "tracks"):
+    # Migração: catálogo v3 (trilhas reais, aulas com duração, sem Lab). Tabelas de catálogo e do Lab
+    # antigas são recriadas; sessões, revisões e conquistas (tabelas do usuário) são preservadas.
+    track_cols = {r[1] for r in conn.execute("PRAGMA table_info(tracks)")}
+    lesson_cols = {r[1] for r in conn.execute("PRAGMA table_info(lessons)")}
+    if (track_cols and "group_name" not in track_cols) or (lesson_cols and "has_duration" not in lesson_cols):
+        for t in ("appearances", "track_slots", "lessons", "modules", "contents", "tracks"):
             conn.execute(f"DROP TABLE IF EXISTS {t}")
-        conn.execute("DELETE FROM meta WHERE key='catalog_meta'")
+        conn.execute("DELETE FROM meta WHERE key IN ('catalog_meta','catalog_customized')")
+    for t in ("lab_tasks", "lab_milestones", "lab_stages"):
+        conn.execute(f"DROP TABLE IF EXISTS {t}")
     conn.executescript(SCHEMA)
     conn.execute("INSERT OR IGNORE INTO meta(key, value) VALUES ('schema_version', ?)", (SCHEMA_VERSION,))
 

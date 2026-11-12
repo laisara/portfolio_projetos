@@ -6,7 +6,7 @@ const { chromium } = require("playwright");
 
 const ICONS = path.join(__dirname, "..", "frontend", "icons");
 const svg = fs.readFileSync(path.join(ICONS, "favicon.svg"), "utf8");
-const targets = [["icon-192.png", 192, 0], ["icon-512.png", 512, 0], ["apple-touch-icon.png", 180, 0], ["maskable-512.png", 512, 0.2]];
+const targets = [["icon-192.png", 192, 0], ["icon-512.png", 512, 0]];
 
 (async () => {
   const b = await chromium.launch();

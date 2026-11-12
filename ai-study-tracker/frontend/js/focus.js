@@ -17,8 +17,6 @@ export function itemToSession(item) {
   const k = item.kind;
   const base = { kind: k, title: item.title, planned_min: Math.round(item.minutes || 0), phase: item.phase, detail: item.detail || {} };
   if (k === "video") return { ...base, type: "VIDEO", target_kind: "lesson", target_id: item.ref };
-  if (k === "practice") return { ...base, type: "PRACTICE", target_kind: "module", target_id: item.ref };
-  if (k === "project") return { ...base, type: "PROJECT", target_kind: "stage", target_id: item.ref };
   if (k === "review") return { ...base, type: "REVIEW", target_kind: "review", target_id: null, review_keys: (item.detail?.reviews || []).map((r) => r.key) };
   return { ...base, type: item.type || "OTHER", target_kind: "free", target_id: null };
 }
@@ -27,12 +25,12 @@ export async function openFocusPicker(preselect) {
   if (load()) { renderFocus(); return; }
   let data;
   try { data = await api("/today"); } catch (e) { toast(e.message, { type: "error" }); return; }
-  const items = data.items.length ? data.items : data.next_day?.items || [];
+  const items = (data.items.length ? data.items : data.next_day?.items || []).filter((it) => it.kind === "review" || it.minutes > 0);
   const cfg = await api("/settings").catch(() => ({ focus_minutes: 25 }));
   const box = openLayer(`
     <div class="modal-head"><div><p class="eyebrow">Iniciar sessão</p><h2>O que você vai fazer agora?</h2></div>
       <button class="btn ghost icon-only" data-close aria-label="Fechar">${icon("x")}</button></div>
-    ${items.length ? `<div class="stack" style="gap:8px">${items.map((it, i) => `
+    ${items.length ? `<div class="stack" style="gap:8px;max-height:46vh;overflow:auto">${items.map((it, i) => `
       <button class="task ${KIND[it.kind]?.cls}" data-i="${i}" style="all:unset;display:grid;grid-template-columns:4px 1fr auto;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:10px;cursor:pointer" aria-label="Focar em ${esc(it.title)}">
         <span class="rail" style="align-self:stretch;border-radius:3px;background:var(--k)"></span>
         <span><span class="t-title" style="display:block;font-weight:500">${esc(it.title)}</span>
@@ -174,8 +172,7 @@ function finishDialog() {
       <div class="field"><label for="fd-min">Tempo realizado (min)</label><input id="fd-min" class="input num" type="number" min="1" max="720" value="${mins}" required></div>
       <div class="field"><label for="fd-status">Status</label><select id="fd-status" class="input"><option value="done">Concluída</option><option value="partial">Parcial (continuar depois)</option></select></div>
     </div>
-    ${s.kind === "video" && !s.detail?.course_level ? `<label class="row" style="margin-bottom:14px;cursor:pointer"><input type="checkbox" id="fd-lesson" checked> Marcar aula como concluída</label>` : ""}
-    ${s.kind === "video" && s.detail?.course_level ? `<p class="faint" style="font-size:12.5px">O tempo entra no progresso do curso; ele é concluído sozinho ao chegar a 95% assistido.</p>` : ""}
+    ${s.kind === "video" ? `<label class="row" style="margin-bottom:14px;cursor:pointer"><input type="checkbox" id="fd-lesson" checked> Marcar aula como concluída (vale em todas as trilhas)</label>` : ""}
     ${s.kind === "review" ? `<p class="faint" style="font-size:12.5px">${(s.review_keys || []).length} revisão(ões) serão marcadas como feitas.</p>` : ""}
     <div class="field"><label for="fd-notes">Observações / o que aprendi</label><textarea id="fd-notes" class="input" maxlength="4000" placeholder="Uma frase sobre o que ficou claro e o que ainda está confuso."></textarea></div>
     <div class="row" style="justify-content:flex-end"><button class="btn" id="fd-back">Voltar ao timer</button><button class="btn primary" id="fd-save">${icon("check")} Registrar sessão</button></div>`,

@@ -9,24 +9,19 @@ from typing import Any
 DEFAULTS: dict[str, Any] = {
     "start_date": "2026-11-13",
     "rest_weekday": 6,          # 0=segunda … 6=domingo
-    "project_weekday": 5,       # sábado = dia de projeto
-    # minutos de estudo efetivo por dia da semana (segunda=0)
+    # minutos de estudo (aulas + revisão) por dia da semana (segunda=0)
     "capacity": {"0": 135, "1": 135, "2": 120, "3": 135, "4": 105, "5": 210, "6": 0},
     # multiplicador de capacidade em datas especiais (0 = descanso)
     "holidays": {"2026-12-24": 0.5, "2026-12-25": 0, "2026-12-31": 0.5, "2027-01-01": 0},
-    "block_minutes": 45,        # tamanho máximo de uma sessão de vídeo no cronograma (artefato do plano, não do catálogo)
-    "practice_overrides": {},   # {content_id: razão prática/vídeo} — sobrescreve a estimativa padrão do catálogo
-    "competency_baselines": {},  # {competência: 0..1} — ponto de partida editável (estimativa, não fato)
     "review": {
         "intervals": [1, 7, 30],
-        "pct": {"1": 0.08, "7": 0.06, "30": 0.05},
+        "pct": {"1": 0.07, "7": 0.05, "30": 0.04},
         "min": 3,
-        "max": {"1": 10, "7": 10, "30": 10},
-        "daily_cap": 30,
+        "max": {"1": 8, "7": 6, "30": 5},
+        "daily_cap": 25,
         "grace": {"1": 2, "7": 5, "30": 10},
     },
-    "weekday_project_threshold": 240,
-    "weekday_project_block": 45,
+    "competency_baselines": {},  # {competência: 0..1} — ponto de partida editável (estimativa, não fato)
     "focus_minutes": 25,
 }
 

@@ -1,556 +1,4314 @@
 {
  "meta": {
-  "catalog_version": 2,
+  "catalog_version": 3,
   "name": "Formação Engenheiro de Agentes de IA",
   "provider": "Asimov Academy",
   "declared_video": "62:34:00",
   "declared_tracks": 8,
-  "source": "20 prints enviados em 12/11/2026",
-  "note": "Somente o que aparece nos prints. Trilha de cada curso, nomes das trilhas, módulos e aulas: NÃO IDENTIFICADOS. O conteúdo que falta para completar 62h34 NÃO é cadastrado nem agendado.",
-  "study_sequence": [
-   "GENAI-001",
-   "CLAUDE-001",
-   "PY-001",
-   "PY-002",
-   "CODE-001",
-   "CODE-002",
-   "CLAUDE-002",
-   "IDE-002",
-   "IDE-003",
-   "GPT-001",
-   "LANG-001",
-   "LANG-002",
-   "HERMES-001",
-   "OPENCLAW-001",
-   "OPENCLAW-002",
-   "IDE-001",
-   "UI-001"
+  "source": "Player da plataforma (aulas com duração individual), enviado em 12/11/2026",
+  "duration_rule": "Duração do curso = soma das durações das aulas. Aula sem duração = '-' (0 min).",
+  "excluded": [
+   "Projetos para Professores (eletivo da trilha Dominando o ecossistema Claude) — fora do programa",
+   "Para se aprofundar (eletivo da trilha Aplicações Inteligentes com IA) — fora do programa",
+   "Git e GitHub – Controle de Versão e Colaboração (eletivo Webapps: 20 aulas, 3h08m34s) — fora do cronograma"
   ],
-  "study_sequence_confidence": "SUGESTÃO DO SISTEMA (não vem dos prints)"
+  "competencies_note": "Classificação de competências por curso feita pelo sistema (INFERIDO), editável no JSON."
  },
  "tracks": [
   {
    "id": "T1",
    "order": 1,
-   "title": "Trilha 1",
-   "name": null,
-   "confirmed": false
+   "title": "Dominando o ecossistema Claude",
+   "group": "Produtividade pessoal com IA",
+   "header_min": 410,
+   "courses": [
+    "START-CLAUDE",
+    "GENAI-001",
+    "CLAUDE-001",
+    "CODE-001",
+    "CLAUDE-002"
+   ]
   },
   {
    "id": "T2",
    "order": 2,
-   "title": "Trilha 2",
-   "name": null,
-   "confirmed": false
+   "title": "Dominando Openclaw",
+   "group": "Produtividade pessoal com IA",
+   "header_min": 324,
+   "courses": [
+    "START-OPENCLAW",
+    "GENAI-001",
+    "OPENCLAW-001",
+    "OPENCLAW-002"
+   ]
   },
   {
    "id": "T3",
    "order": 3,
-   "title": "Trilha 3",
-   "name": null,
-   "confirmed": false
+   "title": "Criando Agentes Pessoais com Hermes Agent",
+   "group": "Produtividade pessoal com IA",
+   "header_min": 215,
+   "courses": [
+    "START-HERMES",
+    "GENAI-001",
+    "HERMES-001"
+   ]
   },
   {
    "id": "T4",
    "order": 4,
-   "title": "Trilha 4",
-   "name": null,
-   "confirmed": false
+   "title": "Agentes com GPT",
+   "group": "Produtividade pessoal com IA",
+   "header_min": 143,
+   "courses": [
+    "START-GPT",
+    "GENAI-001",
+    "GPT-001"
+   ]
   },
   {
    "id": "T5",
    "order": 5,
-   "title": "Trilha 5",
-   "name": null,
-   "confirmed": false
+   "title": "Aplicações Inteligentes com IA",
+   "group": "Criando sistemas profissionais de inteligência artificial",
+   "header_min": 587,
+   "courses": [
+    "START-APPS",
+    "GENAI-001",
+    "PY-001",
+    "PY-002",
+    "UI-001",
+    "LANG-001",
+    "LANG-002"
+   ]
   },
   {
    "id": "T6",
    "order": 6,
-   "title": "Trilha 6",
-   "name": null,
-   "confirmed": false
+   "title": "Ferramentas de AI para Desenvolvedores",
+   "group": "Criando sistemas profissionais de inteligência artificial",
+   "header_min": 531,
+   "courses": [
+    "START-TOOLS",
+    "IDE-001",
+    "IDE-002",
+    "IDE-003",
+    "CODE-001",
+    "CODE-002"
+   ]
   },
   {
    "id": "T7",
    "order": 7,
-   "title": "Trilha 7",
-   "name": null,
-   "confirmed": false
+   "title": "Criando agentes de atendimento no N8N",
+   "group": "Criando sistemas profissionais de inteligência artificial",
+   "header_min": 615,
+   "courses": [
+    "START-N8N",
+    "N8N-001",
+    "N8N-002",
+    "N8N-003",
+    "N8N-004",
+    "N8N-005",
+    "N8N-006",
+    "N8N-007"
+   ]
   },
   {
    "id": "T8",
    "order": 8,
-   "title": "Trilha 8",
-   "name": null,
-   "confirmed": false
+   "title": "Aplicações AI com Python",
+   "group": "Criando sistemas profissionais de inteligência artificial",
+   "header_min": 1611,
+   "courses": [
+    "START-PYTHON",
+    "GENAI-001",
+    "LLM-001",
+    "LOGIC-001",
+    "PYTHON-001",
+    "SETUP-001",
+    "PROMPT-001",
+    "AGNO-001",
+    "AGENT-001",
+    "AGENT-002",
+    "AGENT-003",
+    "AGENT-004"
+   ]
   }
  ],
  "contents": {
+  "START-CLAUDE": {
+   "title": "Comece por aqui - Dominando o ecossistema Claude",
+   "type": "curso",
+   "card_min": 1,
+   "competencies": [],
+   "modules": [
+    {
+     "id": "START-CLAUDE.M1",
+     "title": "Curso completo",
+     "lessons": [
+      {
+       "id": "START-CLAUDE.L01",
+       "n": 1,
+       "title": "Comece por aqui – Dominando o Ecossistema do Claude",
+       "kind": "video",
+       "duration": "1:24"
+      }
+     ]
+    }
+   ]
+  },
   "GENAI-001": {
    "title": "Fundamentos da IA Generativa",
-   "instructor": "Rodri…",
-   "duration": "1:32:00",
-   "nature": "conceitual",
-   "practice_ratio": 0.3,
+   "type": "curso",
+   "card_min": 92,
    "competencies": [
     "fundamentals",
     "prompt"
    ],
-   "appearances": [
+   "modules": [
     {
-     "track": null,
-     "position": 2,
-     "inferred_group": "A"
+     "id": "GENAI-001.M1",
+     "title": "Módulo 1 (Curso completo)",
+     "lessons": [
+      {
+       "id": "GENAI-001.L01",
+       "n": 1,
+       "title": "Apresentação",
+       "kind": "video",
+       "duration": "2:08"
+      },
+      {
+       "id": "GENAI-001.L02",
+       "n": 2,
+       "title": "Um pouco de história",
+       "kind": "video",
+       "duration": "20:32"
+      },
+      {
+       "id": "GENAI-001.L03",
+       "n": 3,
+       "title": "Entendendo a lógica das LLMs",
+       "kind": "video",
+       "duration": "11:33"
+      },
+      {
+       "id": "GENAI-001.L04",
+       "n": 4,
+       "title": "Engenharia de Prompts",
+       "kind": "video",
+       "duration": "11:45"
+      },
+      {
+       "id": "GENAI-001.L05",
+       "n": 5,
+       "title": "Explorando diferentes modelos",
+       "kind": "video",
+       "duration": "9:43"
+      },
+      {
+       "id": "GENAI-001.L06",
+       "n": 6,
+       "title": "Conectando ferramentas",
+       "kind": "video",
+       "duration": "8:16"
+      },
+      {
+       "id": "GENAI-001.L07",
+       "n": 7,
+       "title": "Janela de contexto",
+       "kind": "video",
+       "duration": "4:27"
+      },
+      {
+       "id": "GENAI-001.L08",
+       "n": 8,
+       "title": "Alucinação (e como evitá-las?)",
+       "kind": "video",
+       "duration": "9:48"
+      },
+      {
+       "id": "GENAI-001.L09",
+       "n": 9,
+       "title": "Skills, MCPs e nosso primeiro agente",
+       "kind": "video",
+       "duration": "14:20"
+      }
+     ]
     }
-   ],
-   "confidence": {
-    "title": "CONFIRMADO",
-    "duration": "CONFIRMADO",
-    "instructor": "CONFIRMADO (truncado no print)",
-    "position": "CONFIRMADO",
-    "track": "A VERIFICAR",
-    "lessons": "NÃO IDENTIFICADO",
-    "practice_ratio": "ESTIMATIVA DO SISTEMA"
-   },
-   "intro": true
+   ]
   },
   "CLAUDE-001": {
    "title": "Claude Desktop",
-   "instructor": "Marc…",
-   "duration": "2:56:00",
-   "nature": "ferramenta",
-   "practice_ratio": 0.4,
+   "type": "curso",
+   "card_min": 176,
    "competencies": [
     "prompt",
-    "fundamentals"
+    "aicoding"
    ],
-   "appearances": [
+   "modules": [
     {
-     "track": null,
-     "position": 3,
-     "inferred_group": "A"
+     "id": "CLAUDE-001.M1",
+     "title": "Instalação e Configuração",
+     "lessons": [
+      {
+       "id": "CLAUDE-001.L01",
+       "n": 1,
+       "title": "Introdução – Claude Desktop",
+       "kind": "video",
+       "duration": "2:21"
+      },
+      {
+       "id": "CLAUDE-001.L02",
+       "n": 2,
+       "title": "Instalação Claude Desktop – Windows",
+       "kind": "video",
+       "duration": "2:15"
+      },
+      {
+       "id": "CLAUDE-001.L03",
+       "n": 3,
+       "title": "Instalação Claude Desktop – MacOS",
+       "kind": "video",
+       "duration": "1:24"
+      },
+      {
+       "id": "CLAUDE-001.L04",
+       "n": 4,
+       "title": "Interface do Claude Desktop",
+       "kind": "video",
+       "duration": "12:54"
+      }
+     ]
+    },
+    {
+     "id": "CLAUDE-001.M2",
+     "title": "Modo Chat - Uso Completo",
+     "lessons": [
+      {
+       "id": "CLAUDE-001.L05",
+       "n": 5,
+       "title": "Utilizações práticas do Claude Desktop",
+       "kind": "video",
+       "duration": "14:03"
+      },
+      {
+       "id": "CLAUDE-001.L06",
+       "n": 6,
+       "title": "Criando conexões externas com Claude Desktop",
+       "kind": "video",
+       "duration": "11:49"
+      },
+      {
+       "id": "CLAUDE-001.L07",
+       "n": 7,
+       "title": "Manipulando imagens com Claude Desktop",
+       "kind": "video",
+       "duration": "3:46"
+      },
+      {
+       "id": "CLAUDE-001.L08",
+       "n": 8,
+       "title": "Criando prompts mais produtivos",
+       "kind": "video",
+       "duration": "7:30"
+      },
+      {
+       "id": "CLAUDE-001.L09",
+       "n": 9,
+       "title": "Avaliador de Currículos – Criando uma skill",
+       "kind": "video",
+       "duration": "5:31"
+      },
+      {
+       "id": "CLAUDE-001.L10",
+       "n": 10,
+       "title": "Como trabalhar com projetos no Claude Desktop",
+       "kind": "video",
+       "duration": "3:52"
+      }
+     ]
+    },
+    {
+     "id": "CLAUDE-001.M3",
+     "title": "Dominando o Claude Cowork",
+     "lessons": [
+      {
+       "id": "CLAUDE-001.L11",
+       "n": 11,
+       "title": "O que é o Claude Cowork?",
+       "kind": "video",
+       "duration": "6:57"
+      },
+      {
+       "id": "CLAUDE-001.L12",
+       "n": 12,
+       "title": "Definindo pasta de trabalho no Claude Cowork",
+       "kind": "video",
+       "duration": "4:04"
+      },
+      {
+       "id": "CLAUDE-001.L13",
+       "n": 13,
+       "title": "Criando um projeto no Claude Cowork",
+       "kind": "video",
+       "duration": "4:36"
+      },
+      {
+       "id": "CLAUDE-001.L14",
+       "n": 14,
+       "title": "Criando uma skill no Claude Cowork",
+       "kind": "video",
+       "duration": "9:04"
+      },
+      {
+       "id": "CLAUDE-001.L15",
+       "n": 15,
+       "title": "Conectando o Claude Cowork com ferramentas externas",
+       "kind": "video",
+       "duration": "5:47"
+      },
+      {
+       "id": "CLAUDE-001.L16",
+       "n": 16,
+       "title": "Realizando agendamentos no Claude Cowork",
+       "kind": "video",
+       "duration": "6:08"
+      },
+      {
+       "id": "CLAUDE-001.L17",
+       "n": 17,
+       "title": "Criando uma skill e agendamento no Claude Cowork",
+       "kind": "video",
+       "duration": "9:11"
+      },
+      {
+       "id": "CLAUDE-001.L18",
+       "n": 18,
+       "title": "Criando um assistente de RH no Claude Cowork",
+       "kind": "video",
+       "duration": "7:02"
+      }
+     ]
+    },
+    {
+     "id": "CLAUDE-001.M4",
+     "title": "Claude nas Profissões",
+     "lessons": [
+      {
+       "id": "CLAUDE-001.L19",
+       "n": 19,
+       "title": "O desafio do professor em suas tarefas",
+       "kind": "video",
+       "duration": "10:43"
+      },
+      {
+       "id": "CLAUDE-001.L20",
+       "n": 20,
+       "title": "Usando o Claude como apoio pedagógico",
+       "kind": "video",
+       "duration": "13:30"
+      },
+      {
+       "id": "CLAUDE-001.L21",
+       "n": 21,
+       "title": "Criando formulários com Claude",
+       "kind": "video",
+       "duration": "3:08"
+      },
+      {
+       "id": "CLAUDE-001.L22",
+       "n": 22,
+       "title": "Feedback automatizado",
+       "kind": "video",
+       "duration": "5:21"
+      },
+      {
+       "id": "CLAUDE-001.L23",
+       "n": 23,
+       "title": "Criando animações com Remotion",
+       "kind": "video",
+       "duration": "5:37"
+      },
+      {
+       "id": "CLAUDE-001.L24",
+       "n": 24,
+       "title": "O desafio do nutricionista em suas tarefas",
+       "kind": "video",
+       "duration": "3:45"
+      },
+      {
+       "id": "CLAUDE-001.L25",
+       "n": 25,
+       "title": "O uso responsável do Claude na Nutrição",
+       "kind": "video",
+       "duration": "2:36"
+      },
+      {
+       "id": "CLAUDE-001.L26",
+       "n": 26,
+       "title": "O desafio do profissional de RH",
+       "kind": "video",
+       "duration": "3:24"
+      },
+      {
+       "id": "CLAUDE-001.L27",
+       "n": 27,
+       "title": "O uso responsável do Claude no recrutamento",
+       "kind": "video",
+       "duration": "3:24"
+      },
+      {
+       "id": "CLAUDE-001.L28",
+       "n": 28,
+       "title": "Ranqueamento de currículos",
+       "kind": "video",
+       "duration": "6:56"
+      }
+     ]
     }
    ],
-   "confidence": {
-    "title": "CONFIRMADO",
-    "duration": "CONFIRMADO",
-    "instructor": "CONFIRMADO (truncado no print)",
-    "position": "CONFIRMADO",
-    "track": "A VERIFICAR",
-    "lessons": "NÃO IDENTIFICADO",
-    "practice_ratio": "ESTIMATIVA DO SISTEMA"
-   }
+   "note": "Aula 8 (7:30): leitura com zero riscado [VERIFICAR]; aula 20 (13:30) idem."
   },
   "CODE-001": {
    "title": "Masterclass Claude Code",
-   "instructor": "Rodrigo…",
-   "duration": "0:26:00",
-   "nature": "ferramenta",
-   "practice_ratio": 0.6,
+   "type": "curso",
+   "card_min": 26,
    "competencies": [
     "aicoding"
    ],
-   "appearances": [
+   "modules": [
     {
-     "track": null,
-     "position": 4,
-     "inferred_group": "A"
-    },
-    {
-     "track": null,
-     "position": 5,
-     "inferred_group": "F"
+     "id": "CODE-001.M1",
+     "title": "Assista a Masterclass Claude Code",
+     "lessons": [
+      {
+       "id": "CODE-001.L01",
+       "n": 1,
+       "title": "Masterclass Claude Code",
+       "kind": "video",
+       "duration": "26:22"
+      }
+     ]
     }
-   ],
-   "confidence": {
-    "title": "CONFIRMADO",
-    "duration": "CONFIRMADO",
-    "instructor": "CONFIRMADO (truncado no print)",
-    "position": "CONFIRMADO",
-    "track": "A VERIFICAR",
-    "lessons": "NÃO IDENTIFICADO",
-    "practice_ratio": "ESTIMATIVA DO SISTEMA"
-   }
+   ]
   },
   "CLAUDE-002": {
    "title": "Claude Avançado: Skills, Conectores, Artefatos e SubAgents",
-   "instructor": "Marcel…",
-   "duration": "1:56:00",
-   "nature": "agentes",
-   "practice_ratio": 0.65,
+   "type": "curso",
+   "card_min": 116,
    "competencies": [
     "tools",
     "multiagent",
     "apis"
    ],
-   "appearances": [
+   "modules": [
     {
-     "track": null,
-     "position": 5,
-     "inferred_group": "A"
+     "id": "CLAUDE-002.M1",
+     "title": "Curso Completo",
+     "lessons": [
+      {
+       "id": "CLAUDE-002.L01",
+       "n": 1,
+       "title": "Anatomia de uma Skill",
+       "kind": "video",
+       "duration": "16:48"
+      },
+      {
+       "id": "CLAUDE-002.L02",
+       "n": 2,
+       "title": "Criando sua Primeira Skill",
+       "kind": "video",
+       "duration": "18:14"
+      },
+      {
+       "id": "CLAUDE-002.L03",
+       "n": 3,
+       "title": "A Description e o Gatilho de Acionamento",
+       "kind": "video",
+       "duration": "15:00"
+      },
+      {
+       "id": "CLAUDE-002.L04",
+       "n": 4,
+       "title": "Skills com Templates e Arquivos de Apoio",
+       "kind": "video",
+       "duration": "15:41"
+      },
+      {
+       "id": "CLAUDE-002.L05",
+       "n": 5,
+       "title": "Empacotamento e Distribuição de Skills",
+       "kind": "video",
+       "duration": "10:49"
+      },
+      {
+       "id": "CLAUDE-002.L06",
+       "n": 6,
+       "title": "Claude na Prática: Visão Geral dos Recursos",
+       "kind": "video",
+       "duration": "8:58"
+      },
+      {
+       "id": "CLAUDE-002.L07",
+       "n": 7,
+       "title": "Artefatos Interativos",
+       "kind": "video",
+       "duration": "5:11"
+      },
+      {
+       "id": "CLAUDE-002.L08",
+       "n": 8,
+       "title": "Projetos: Contexto e Instruções Persistentes",
+       "kind": "video",
+       "duration": "3:40"
+      },
+      {
+       "id": "CLAUDE-002.L09",
+       "n": 9,
+       "title": "Instalação e Uso de Extensões",
+       "kind": "video",
+       "duration": "4:13"
+      },
+      {
+       "id": "CLAUDE-002.L10",
+       "n": 10,
+       "title": "Conectores: Integrando o Claude a Ferramentas Externas",
+       "kind": "video",
+       "duration": "3:44"
+      },
+      {
+       "id": "CLAUDE-002.L11",
+       "n": 11,
+       "title": "Tarefas Agendadas e Automação de Rotinas",
+       "kind": "video",
+       "duration": "5:12"
+      },
+      {
+       "id": "CLAUDE-002.L12",
+       "n": 12,
+       "title": "Instalação e Uso de Plugins",
+       "kind": "video",
+       "duration": "3:19"
+      },
+      {
+       "id": "CLAUDE-002.L13",
+       "n": 13,
+       "title": "Projeto Multiagentes: Orquestração de Agentes Especializados",
+       "kind": "video",
+       "duration": "5:18"
+      }
+     ]
     }
    ],
-   "confidence": {
-    "title": "CONFIRMADO",
-    "duration": "CONFIRMADO",
-    "instructor": "CONFIRMADO (truncado no print)",
-    "position": "CONFIRMADO",
-    "track": "A VERIFICAR",
-    "lessons": "NÃO IDENTIFICADO",
-    "practice_ratio": "ESTIMATIVA DO SISTEMA"
-   }
+   "note": "Aulas 3, 5 e 8: zero riscado [VERIFICAR]."
+  },
+  "START-OPENCLAW": {
+   "title": "Comece por aqui - Trilha Dominando OpenClaw",
+   "type": "curso",
+   "card_min": 5,
+   "competencies": [],
+   "modules": [
+    {
+     "id": "START-OPENCLAW.M1",
+     "title": "Curso completo",
+     "lessons": [
+      {
+       "id": "START-OPENCLAW.L01",
+       "n": 1,
+       "title": "Comece por aqui – Trilha Dominando OpenClaw",
+       "kind": "video",
+       "duration": "3:07"
+      },
+      {
+       "id": "START-OPENCLAW.L02",
+       "n": 2,
+       "title": "Como a trilha está estruturada – Trilha Dominando OpenClaw",
+       "kind": "video",
+       "duration": "2:12"
+      }
+     ]
+    }
+   ]
   },
   "OPENCLAW-001": {
    "title": "Dominando o OpenClaw",
-   "instructor": "Samu…",
-   "duration": "2:14:00",
-   "nature": "agentes",
-   "practice_ratio": 0.5,
+   "type": "curso",
+   "card_min": 134,
    "competencies": [
     "agents",
-    "multiagent"
+    "multiagent",
+    "tools"
    ],
-   "appearances": [
+   "modules": [
     {
-     "track": null,
-     "position": 3,
-     "inferred_group": "B"
+     "id": "OPENCLAW-001.M1",
+     "title": "Curso completo",
+     "lessons": [
+      {
+       "id": "OPENCLAW-001.L01",
+       "n": 1,
+       "title": "Introdução – Dominando o OpenClaw",
+       "kind": "video",
+       "duration": "3:20"
+      },
+      {
+       "id": "OPENCLAW-001.L02",
+       "n": 2,
+       "title": "Introdução ao OpenClaw",
+       "kind": "video",
+       "duration": "12:17"
+      },
+      {
+       "id": "OPENCLAW-001.L03",
+       "n": 3,
+       "title": "Instalação do OpenClaw",
+       "kind": "video",
+       "duration": "18:28"
+      },
+      {
+       "id": "OPENCLAW-001.L04",
+       "n": 4,
+       "title": "Como OpenClaw funciona",
+       "kind": "video",
+       "duration": "26:38"
+      },
+      {
+       "id": "OPENCLAW-001.L05",
+       "n": 5,
+       "title": "Workspace em profundidade",
+       "kind": "video",
+       "duration": "25:03"
+      },
+      {
+       "id": "OPENCLAW-001.L06",
+       "n": 6,
+       "title": "Canais",
+       "kind": "video",
+       "duration": "31:04"
+      },
+      {
+       "id": "OPENCLAW-001.L07",
+       "n": 7,
+       "title": "Tools, skills e automações",
+       "kind": "video",
+       "duration": "15:07"
+      },
+      {
+       "id": "OPENCLAW-001.L08",
+       "n": 8,
+       "title": "Conclusão",
+       "kind": "video",
+       "duration": "2:21"
+      }
+     ]
     }
-   ],
-   "confidence": {
-    "title": "CONFIRMADO",
-    "duration": "CONFIRMADO",
-    "instructor": "CONFIRMADO (truncado no print)",
-    "position": "CONFIRMADO",
-    "track": "A VERIFICAR",
-    "lessons": "NÃO IDENTIFICADO",
-    "practice_ratio": "ESTIMATIVA DO SISTEMA"
-   }
+   ]
   },
   "OPENCLAW-002": {
    "title": "Criando um assistente pessoal com OpenClaw",
-   "instructor": "Rodri…",
-   "duration": "1:32:00",
-   "nature": "projeto",
-   "practice_ratio": 0.7,
+   "type": "projeto",
+   "card_min": 92,
    "competencies": [
     "agents",
     "systems"
    ],
-   "appearances": [
+   "modules": [
     {
-     "track": null,
-     "position": 4,
-     "inferred_group": "B"
+     "id": "OPENCLAW-002.M1",
+     "title": "Projeto completo",
+     "lessons": [
+      {
+       "id": "OPENCLAW-002.L01",
+       "n": 1,
+       "title": "Criando nosso assistente pessoal",
+       "kind": "video",
+       "duration": "5:21"
+      },
+      {
+       "id": "OPENCLAW-002.L02",
+       "n": 2,
+       "title": "Configurando o Discord",
+       "kind": "video",
+       "duration": "16:05"
+      },
+      {
+       "id": "OPENCLAW-002.L03",
+       "n": 3,
+       "title": "O primeiro projeto – Morning Brief",
+       "kind": "video",
+       "duration": "11:44"
+      },
+      {
+       "id": "OPENCLAW-002.L04",
+       "n": 4,
+       "title": "MCPs (Gmail, Agenda e outros)",
+       "kind": "video",
+       "duration": "9:47"
+      },
+      {
+       "id": "OPENCLAW-002.L05",
+       "n": 5,
+       "title": "Gestão de custos e OpenRouter",
+       "kind": "video",
+       "duration": "10:14"
+      },
+      {
+       "id": "OPENCLAW-002.L06",
+       "n": 6,
+       "title": "Como eu escolho modelos de AI",
+       "kind": "video",
+       "duration": "9:00"
+      },
+      {
+       "id": "OPENCLAW-002.L07",
+       "n": 7,
+       "title": "Mission Control (criando um Dashboard Pessoal)",
+       "kind": "video",
+       "duration": "6:33"
+      },
+      {
+       "id": "OPENCLAW-002.L08",
+       "n": 8,
+       "title": "Um agente ou múltiplos agentes",
+       "kind": "video",
+       "duration": "5:42"
+      },
+      {
+       "id": "OPENCLAW-002.L09",
+       "n": 9,
+       "title": "ClawHub",
+       "kind": "video",
+       "duration": "3:39"
+      },
+      {
+       "id": "OPENCLAW-002.L10",
+       "n": 10,
+       "title": "Segurança",
+       "kind": "video",
+       "duration": "14:16"
+      }
+     ]
     }
-   ],
-   "confidence": {
-    "title": "CONFIRMADO",
-    "duration": "CONFIRMADO",
-    "instructor": "CONFIRMADO (truncado no print)",
-    "position": "CONFIRMADO",
-    "track": "A VERIFICAR",
-    "lessons": "NÃO IDENTIFICADO",
-    "practice_ratio": "ESTIMATIVA DO SISTEMA"
-   }
+   ]
+  },
+  "START-HERMES": {
+   "title": "Comece por aqui - Criando Agentes Pessoais com Hermes Agent",
+   "type": "curso",
+   "card_min": 3,
+   "competencies": [],
+   "modules": [
+    {
+     "id": "START-HERMES.M1",
+     "title": "Curso completo",
+     "lessons": [
+      {
+       "id": "START-HERMES.L01",
+       "n": 1,
+       "title": "Comece por aqui – Criando Agentes Pessoais com Hermes Agent",
+       "kind": "video",
+       "duration": "3:13"
+      }
+     ]
+    }
+   ]
   },
   "HERMES-001": {
    "title": "Hermes Agent",
-   "instructor": "Samu…",
-   "duration": "1:59:00",
-   "nature": "agentes",
-   "practice_ratio": 0.6,
+   "type": "curso",
+   "card_min": 119,
    "competencies": [
     "agents",
     "tools"
    ],
-   "appearances": [
+   "modules": [
     {
-     "track": null,
-     "position": 3,
-     "inferred_group": "C"
+     "id": "HERMES-001.M1",
+     "title": "Módulo 1",
+     "lessons": [
+      {
+       "id": "HERMES-001.L01",
+       "n": 1,
+       "title": "Introdução: seja bem-vindo",
+       "kind": "video",
+       "duration": "2:57"
+      },
+      {
+       "id": "HERMES-001.L02",
+       "n": 2,
+       "title": "Entendendo a estrutura do Hermes Agent",
+       "kind": "video",
+       "duration": "11:06"
+      },
+      {
+       "id": "HERMES-001.L03",
+       "n": 3,
+       "title": "Instalando e configurando o seu agente",
+       "kind": "video",
+       "duration": "31:33"
+      },
+      {
+       "id": "HERMES-001.L04",
+       "n": 4,
+       "title": "Conversando com o Hermes em diferentes canais",
+       "kind": "video",
+       "duration": "21:38"
+      },
+      {
+       "id": "HERMES-001.L05",
+       "n": 5,
+       "title": "Skills e Cron: ensinando o Hermes a agir",
+       "kind": "video",
+       "duration": "14:20"
+      },
+      {
+       "id": "HERMES-001.L06",
+       "n": 6,
+       "title": "MCPs: conectando o Hermes ao mundo",
+       "kind": "video",
+       "duration": "30:50"
+      },
+      {
+       "id": "HERMES-001.L07",
+       "n": 7,
+       "title": "Finalização: boas práticas",
+       "kind": "video",
+       "duration": "7:31"
+      }
+     ]
     }
    ],
-   "confidence": {
-    "title": "CONFIRMADO",
-    "duration": "CONFIRMADO",
-    "instructor": "CONFIRMADO (truncado no print)",
-    "position": "CONFIRMADO",
-    "track": "A VERIFICAR",
-    "lessons": "NÃO IDENTIFICADO",
-    "practice_ratio": "ESTIMATIVA DO SISTEMA"
-   }
+   "note": "Módulo sem título no player. Aula 6 (30:50) e aula 2 (11:06): zero riscado [VERIFICAR]."
+  },
+  "START-GPT": {
+   "title": "Comece por aqui - Agentes com GPT",
+   "type": "curso",
+   "card_min": 3,
+   "competencies": [],
+   "modules": [
+    {
+     "id": "START-GPT.M1",
+     "title": "Curso completo",
+     "lessons": [
+      {
+       "id": "START-GPT.L01",
+       "n": 1,
+       "title": "Comece por aqui – Agentes com GPT",
+       "kind": "video",
+       "duration": "3:19"
+      }
+     ]
+    }
+   ]
   },
   "GPT-001": {
    "title": "Criando agentes com GPT",
-   "instructor": "Rodrigo…",
-   "duration": "0:47:00",
-   "nature": "agentes",
-   "practice_ratio": 0.6,
+   "type": "curso",
+   "card_min": 47,
    "competencies": [
     "agents",
     "prompt"
    ],
-   "appearances": [
+   "modules": [
     {
-     "track": null,
-     "position": 3,
-     "inferred_group": "D"
+     "id": "GPT-001.M1",
+     "title": "Curso Completo",
+     "lessons": [
+      {
+       "id": "GPT-001.L01",
+       "n": 1,
+       "title": "Conhecendo os GPTs",
+       "kind": "video",
+       "duration": "6:23"
+      },
+      {
+       "id": "GPT-001.L02",
+       "n": 2,
+       "title": "Criando nosso primeiro Agente",
+       "kind": "video",
+       "duration": "10:16"
+      },
+      {
+       "id": "GPT-001.L03",
+       "n": 3,
+       "title": "Engenharia de Prompt (e nosso segundo Agente)",
+       "kind": "video",
+       "duration": "22:01"
+      },
+      {
+       "id": "GPT-001.L04",
+       "n": 4,
+       "title": "Criando prompts usando outras IAs (e nosso terceiro Agente)",
+       "kind": "video",
+       "duration": "8:36"
+      },
+      {
+       "id": "GPT-001.L05",
+       "n": 5,
+       "title": "Indo além: engenharia de prompts",
+       "kind": "other"
+      }
+     ]
     }
-   ],
-   "confidence": {
-    "title": "CONFIRMADO",
-    "duration": "CONFIRMADO",
-    "instructor": "CONFIRMADO (truncado no print)",
-    "position": "CONFIRMADO",
-    "track": "A VERIFICAR",
-    "lessons": "NÃO IDENTIFICADO",
-    "practice_ratio": "ESTIMATIVA DO SISTEMA"
-   }
+   ]
+  },
+  "START-APPS": {
+   "title": "Comece por aqui - Trilha Aplicações Inteligentes com IA",
+   "type": "curso",
+   "card_min": 6,
+   "competencies": [],
+   "modules": [
+    {
+     "id": "START-APPS.M1",
+     "title": "Curso completo",
+     "lessons": [
+      {
+       "id": "START-APPS.L01",
+       "n": 1,
+       "title": "Apresentação – Trilha Aplicações Inteligentes com IA",
+       "kind": "video",
+       "duration": "1:27"
+      },
+      {
+       "id": "START-APPS.L02",
+       "n": 2,
+       "title": "O que é a Trilha Aplicações Inteligentes com IA?",
+       "kind": "video",
+       "duration": "2:38"
+      },
+      {
+       "id": "START-APPS.L03",
+       "n": 3,
+       "title": "Como a Trilha Aplicações Inteligentes com IA está organizada?",
+       "kind": "video",
+       "duration": "2:28"
+      }
+     ]
+    }
+   ]
   },
   "PY-001": {
    "title": "Pensando como um Programador (usando Python e IA)",
-   "instructor": "Rodrig…",
-   "duration": "2:16:00",
-   "nature": "tecnico",
-   "practice_ratio": 0.15,
+   "type": "curso",
+   "card_min": 136,
    "competencies": [
-    "python"
+    "python",
+    "aicoding"
    ],
-   "appearances": [
+   "modules": [
     {
-     "track": null,
-     "position": 3,
-     "inferred_group": "E"
+     "id": "PY-001.M1",
+     "title": "Pensando como um Programador (usando Python e IA)",
+     "lessons": [
+      {
+       "id": "PY-001.L01",
+       "n": 1,
+       "title": "Uma nova abordagem para aprender programação",
+       "kind": "video",
+       "duration": "3:20"
+      },
+      {
+       "id": "PY-001.L02",
+       "n": 2,
+       "title": "Como este curso está estruturado",
+       "kind": "video",
+       "duration": "5:18"
+      }
+     ]
+    },
+    {
+     "id": "PY-001.M2",
+     "title": "Aprendendo os elementos da programação através do Python",
+     "lessons": [
+      {
+       "id": "PY-001.L03",
+       "n": 3,
+       "title": "Variáveis",
+       "kind": "video",
+       "duration": "9:18"
+      },
+      {
+       "id": "PY-001.L04",
+       "n": 4,
+       "title": "Quiz – Variáveis",
+       "kind": "quiz"
+      },
+      {
+       "id": "PY-001.L05",
+       "n": 5,
+       "title": "Operadores",
+       "kind": "video",
+       "duration": "9:53"
+      },
+      {
+       "id": "PY-001.L06",
+       "n": 6,
+       "title": "Quiz Operadores",
+       "kind": "quiz"
+      },
+      {
+       "id": "PY-001.L07",
+       "n": 7,
+       "title": "If Else",
+       "kind": "video",
+       "duration": "7:34"
+      },
+      {
+       "id": "PY-001.L08",
+       "n": 8,
+       "title": "Quiz if/else",
+       "kind": "quiz"
+      },
+      {
+       "id": "PY-001.L09",
+       "n": 9,
+       "title": "Listas",
+       "kind": "video",
+       "duration": "8:37"
+      },
+      {
+       "id": "PY-001.L10",
+       "n": 10,
+       "title": "Quiz Listas",
+       "kind": "quiz"
+      },
+      {
+       "id": "PY-001.L11",
+       "n": 11,
+       "title": "Dicionários (JSON)",
+       "kind": "video",
+       "duration": "5:36"
+      },
+      {
+       "id": "PY-001.L12",
+       "n": 12,
+       "title": "Quiz Dicionários (JSON)",
+       "kind": "quiz"
+      },
+      {
+       "id": "PY-001.L13",
+       "n": 13,
+       "title": "For Loops",
+       "kind": "video",
+       "duration": "14:29"
+      },
+      {
+       "id": "PY-001.L14",
+       "n": 14,
+       "title": "Quiz for Loops",
+       "kind": "quiz"
+      },
+      {
+       "id": "PY-001.L15",
+       "n": 15,
+       "title": "While",
+       "kind": "video",
+       "duration": "3:35"
+      },
+      {
+       "id": "PY-001.L16",
+       "n": 16,
+       "title": "Quiz while",
+       "kind": "quiz"
+      },
+      {
+       "id": "PY-001.L17",
+       "n": 17,
+       "title": "Funções",
+       "kind": "video",
+       "duration": "12:48"
+      },
+      {
+       "id": "PY-001.L18",
+       "n": 18,
+       "title": "Quiz Funções",
+       "kind": "quiz"
+      },
+      {
+       "id": "PY-001.L19",
+       "n": 19,
+       "title": "Programação Orientada a Objetos",
+       "kind": "video",
+       "duration": "16:22"
+      },
+      {
+       "id": "PY-001.L20",
+       "n": 20,
+       "title": "Quiz Programação Orientada a Objetos",
+       "kind": "quiz"
+      },
+      {
+       "id": "PY-001.L21",
+       "n": 21,
+       "title": "Teste Final",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "PY-001.M3",
+     "title": "Primeiros projetos usando IA",
+     "lessons": [
+      {
+       "id": "PY-001.L22",
+       "n": 22,
+       "title": "Primeiros projetos usando IA",
+       "kind": "video",
+       "duration": "1:55"
+      },
+      {
+       "id": "PY-001.L23",
+       "n": 23,
+       "title": "O primeiro projeto com AI – Números primos",
+       "kind": "video",
+       "duration": "14:49"
+      },
+      {
+       "id": "PY-001.L24",
+       "n": 24,
+       "title": "Trabalhando com bibliotecas",
+       "kind": "video",
+       "duration": "13:16"
+      },
+      {
+       "id": "PY-001.L25",
+       "n": 25,
+       "title": "Acessando e modificando arquivos por nós",
+       "kind": "video",
+       "duration": "8:48"
+      },
+      {
+       "id": "PY-001.L26",
+       "n": 26,
+       "title": "E os próximos passos?",
+       "kind": "video",
+       "duration": "1:07"
+      }
+     ]
     }
-   ],
-   "confidence": {
-    "title": "CONFIRMADO",
-    "duration": "CONFIRMADO",
-    "instructor": "CONFIRMADO (truncado no print)",
-    "position": "CONFIRMADO",
-    "track": "A VERIFICAR",
-    "lessons": "NÃO IDENTIFICADO",
-    "practice_ratio": "ESTIMATIVA DO SISTEMA"
-   }
+   ]
   },
   "PY-002": {
    "title": "Coder Toolbox - Conceitos essenciais para programar com IA",
-   "instructor": "Rodri…",
-   "duration": "2:37:00",
-   "nature": "tecnico",
-   "practice_ratio": 0.25,
+   "type": "curso",
+   "card_min": 157,
    "competencies": [
     "python",
-    "apis"
+    "apis",
+    "aicoding"
    ],
-   "appearances": [
+   "modules": [
     {
-     "track": null,
-     "position": 4,
-     "inferred_group": "E"
+     "id": "PY-002.M1",
+     "title": "Preparando sua máquina para programar com IA",
+     "lessons": [
+      {
+       "id": "PY-002.L01",
+       "n": 1,
+       "title": "Apresentação do Curso",
+       "kind": "video",
+       "duration": "4:05"
+      },
+      {
+       "id": "PY-002.L02",
+       "n": 2,
+       "title": "Setup inicial do Cursor e rodando nosso primeiro script",
+       "kind": "video",
+       "duration": "13:22"
+      },
+      {
+       "id": "PY-002.L03",
+       "n": 3,
+       "title": "Guia de Instalação – Python",
+       "kind": "other"
+      },
+      {
+       "id": "PY-002.L04",
+       "n": 4,
+       "title": "Guia de Instalação – Cursor",
+       "kind": "other"
+      },
+      {
+       "id": "PY-002.L05",
+       "n": 5,
+       "title": "Bibliotecas e Ambientes virtuais",
+       "kind": "video",
+       "duration": "14:05"
+      },
+      {
+       "id": "PY-002.L06",
+       "n": 6,
+       "title": "Gerenciamento de erros (stack trace e erros invisíveis)",
+       "kind": "video",
+       "duration": "22:01"
+      },
+      {
+       "id": "PY-002.L07",
+       "n": 7,
+       "title": "Versionamento de projetos com Git",
+       "kind": "video",
+       "duration": "20:37"
+      },
+      {
+       "id": "PY-002.L08",
+       "n": 8,
+       "title": "Guia de Instalação – Git",
+       "kind": "other"
+      },
+      {
+       "id": "PY-002.L09",
+       "n": 9,
+       "title": "APIs (conectando nosso app com o mundo)",
+       "kind": "video",
+       "duration": "13:24"
+      }
+     ]
+    },
+    {
+     "id": "PY-002.M2",
+     "title": "Criando seu próprio ChatGPT",
+     "lessons": [
+      {
+       "id": "PY-002.L10",
+       "n": 10,
+       "title": "Apresentação do módulo",
+       "kind": "video",
+       "duration": "1:02"
+      },
+      {
+       "id": "PY-002.L11",
+       "n": 11,
+       "title": "Configurando o Cursor com OpenRouter",
+       "kind": "video",
+       "duration": "7:38"
+      },
+      {
+       "id": "PY-002.L12",
+       "n": 12,
+       "title": "Adicionando inteligência ao nosso App",
+       "kind": "video",
+       "duration": "8:12"
+      },
+      {
+       "id": "PY-002.L13",
+       "n": 13,
+       "title": "Criando nossa primeira API (backend)",
+       "kind": "video",
+       "duration": "10:44"
+      },
+      {
+       "id": "PY-002.L14",
+       "n": 14,
+       "title": "Criando o Frontend",
+       "kind": "video",
+       "duration": "11:56"
+      },
+      {
+       "id": "PY-002.L15",
+       "n": 15,
+       "title": "Banco de dados e autenticação",
+       "kind": "video",
+       "duration": "10:42"
+      },
+      {
+       "id": "PY-002.L16",
+       "n": 16,
+       "title": "Deploy (compartilhando nosso projeto com o mundo)",
+       "kind": "video",
+       "duration": "19:26"
+      }
+     ]
     }
    ],
-   "confidence": {
-    "title": "CONFIRMADO",
-    "duration": "CONFIRMADO",
-    "instructor": "CONFIRMADO (truncado no print)",
-    "position": "CONFIRMADO",
-    "track": "A VERIFICAR",
-    "lessons": "NÃO IDENTIFICADO",
-    "practice_ratio": "ESTIMATIVA DO SISTEMA"
-   }
+   "note": "Posição dos guias de instalação entre as aulas: ordem lida na primeira rodada [VERIFICAR]."
   },
   "UI-001": {
    "title": "Masterclass - Criando Interfaces Absurdas com IA",
-   "instructor": "Lucas Pe…",
-   "duration": "0:25:00",
-   "nature": "ferramenta",
-   "practice_ratio": 0.6,
+   "type": "curso",
+   "card_min": 25,
    "competencies": [
     "systems",
     "aicoding"
    ],
-   "appearances": [
+   "modules": [
     {
-     "track": null,
-     "position": 5,
-     "inferred_group": "E"
+     "id": "UI-001.M1",
+     "title": "Curso completo",
+     "lessons": [
+      {
+       "id": "UI-001.L01",
+       "n": 1,
+       "title": "Masterclass – Criando Interfaces Absurdas com IA",
+       "kind": "video",
+       "duration": "25:32"
+      },
+      {
+       "id": "UI-001.L02",
+       "n": 2,
+       "title": "Guia de Instalação – Antigravity",
+       "kind": "other"
+      }
+     ]
     }
-   ],
-   "confidence": {
-    "title": "CONFIRMADO",
-    "duration": "CONFIRMADO",
-    "instructor": "CONFIRMADO (truncado no print)",
-    "position": "CONFIRMADO",
-    "track": "A VERIFICAR",
-    "lessons": "NÃO IDENTIFICADO",
-    "practice_ratio": "ESTIMATIVA DO SISTEMA"
-   }
+   ]
   },
   "LANG-001": {
    "title": "Criando Sistemas Agenticos com Langchain",
-   "instructor": "Rodrig…",
-   "duration": "1:51:00",
-   "nature": "agentes",
-   "practice_ratio": 0.8,
+   "type": "curso",
+   "card_min": 111,
    "competencies": [
     "agents",
     "tools",
     "python"
    ],
-   "appearances": [
+   "modules": [
     {
-     "track": null,
-     "position": 6,
-     "inferred_group": "E"
+     "id": "LANG-001.M1",
+     "title": "Módulo 1",
+     "lessons": [
+      {
+       "id": "LANG-001.L01",
+       "n": 1,
+       "title": "Apresentação",
+       "kind": "video",
+       "duration": "2:20"
+      },
+      {
+       "id": "LANG-001.L02",
+       "n": 2,
+       "title": "Agente Modelo + Harness",
+       "kind": "video",
+       "duration": "9:06"
+      },
+      {
+       "id": "LANG-001.L03",
+       "n": 3,
+       "title": "Primeiros passos trabalhando com LLMs",
+       "kind": "video",
+       "duration": "18:01"
+      },
+      {
+       "id": "LANG-001.L04",
+       "n": 4,
+       "title": "Adicionando memória na LLM",
+       "kind": "video",
+       "duration": "4:27"
+      },
+      {
+       "id": "LANG-001.L05",
+       "n": 5,
+       "title": "Como fazer a LLM usar ferramentas",
+       "kind": "video",
+       "duration": "11:43"
+      },
+      {
+       "id": "LANG-001.L06",
+       "n": 6,
+       "title": "O System Prompt",
+       "kind": "video",
+       "duration": "4:02"
+      },
+      {
+       "id": "LANG-001.L07",
+       "n": 7,
+       "title": "Usar ou não frameworks de AI? Porque Langchain?",
+       "kind": "video",
+       "duration": "11:17"
+      },
+      {
+       "id": "LANG-001.L08",
+       "n": 8,
+       "title": "Custo dos modelos",
+       "kind": "video",
+       "duration": "6:42"
+      }
+     ]
+    },
+    {
+     "id": "LANG-001.M2",
+     "title": "Módulo 2",
+     "lessons": [
+      {
+       "id": "LANG-001.L09",
+       "n": 9,
+       "title": "Trabalhando com Modelos",
+       "kind": "video",
+       "duration": "11:57"
+      },
+      {
+       "id": "LANG-001.L10",
+       "n": 10,
+       "title": "Mensagens e Ferramentas",
+       "kind": "video",
+       "duration": "9:25"
+      },
+      {
+       "id": "LANG-001.L11",
+       "n": 11,
+       "title": "Implementando nosso primeiro agente com ReAct",
+       "kind": "video",
+       "duration": "12:45"
+      },
+      {
+       "id": "LANG-001.L12",
+       "n": 12,
+       "title": "A Classe Agent",
+       "kind": "video",
+       "duration": "10:01"
+      }
+     ]
     }
    ],
-   "confidence": {
-    "title": "CONFIRMADO",
-    "duration": "CONFIRMADO",
-    "instructor": "CONFIRMADO (truncado no print)",
-    "position": "CONFIRMADO",
-    "track": "A VERIFICAR",
-    "lessons": "NÃO IDENTIFICADO",
-    "practice_ratio": "ESTIMATIVA DO SISTEMA"
-   }
+   "note": "Módulos sem título no player. Aula 1 (2:20): zero riscado [VERIFICAR]."
   },
   "LANG-002": {
    "title": "Langclean - Um agente de limpeza do computador",
-   "instructor": "Rodrigo Ta…",
-   "duration": "0:57:00",
-   "nature": "projeto",
-   "practice_ratio": 0.7,
+   "type": "projeto",
+   "card_min": 57,
    "competencies": [
     "agents",
     "systems"
    ],
-   "appearances": [
+   "modules": [
     {
-     "track": null,
-     "position": 7,
-     "inferred_group": "E"
+     "id": "LANG-002.M1",
+     "title": "Projeto completo",
+     "lessons": [
+      {
+       "id": "LANG-002.L01",
+       "n": 1,
+       "title": "Apresentação",
+       "kind": "video",
+       "duration": "2:29"
+      },
+      {
+       "id": "LANG-002.L02",
+       "n": 2,
+       "title": "O processo de construção que eu utilizei",
+       "kind": "video",
+       "duration": "9:23"
+      },
+      {
+       "id": "LANG-002.L03",
+       "n": 3,
+       "title": "Criando mocks da tela",
+       "kind": "video",
+       "duration": "15:51"
+      },
+      {
+       "id": "LANG-002.L04",
+       "n": 4,
+       "title": "Criando o frontend do nosso app",
+       "kind": "video",
+       "duration": "9:20"
+      },
+      {
+       "id": "LANG-002.L05",
+       "n": 5,
+       "title": "Desenvolvendo o agente no backend",
+       "kind": "video",
+       "duration": "6:04"
+      },
+      {
+       "id": "LANG-002.L06",
+       "n": 6,
+       "title": "Integrando o agente ao frontend",
+       "kind": "video",
+       "duration": "13:57"
+      }
+     ]
     }
-   ],
-   "confidence": {
-    "title": "CONFIRMADO",
-    "duration": "CONFIRMADO",
-    "instructor": "CONFIRMADO (truncado no print)",
-    "position": "CONFIRMADO",
-    "track": "A VERIFICAR",
-    "lessons": "NÃO IDENTIFICADO",
-    "practice_ratio": "ESTIMATIVA DO SISTEMA"
-   }
+   ]
+  },
+  "START-TOOLS": {
+   "title": "Comece por aqui - Ferramentas de AI para Desenvolvedores",
+   "type": "curso",
+   "card_min": 1,
+   "competencies": [],
+   "modules": [
+    {
+     "id": "START-TOOLS.M1",
+     "title": "Curso completo",
+     "lessons": [
+      {
+       "id": "START-TOOLS.L01",
+       "n": 1,
+       "title": "Comece por aqui – Ferramentas com AI para desenvolvedores",
+       "kind": "video",
+       "duration": "1:12"
+      }
+     ]
+    }
+   ]
   },
   "IDE-001": {
    "title": "Dominando o Antigravity",
-   "instructor": "Myka…",
-   "duration": "2:16:00",
-   "nature": "ferramenta",
-   "practice_ratio": 0.4,
+   "type": "curso",
+   "card_min": 136,
    "competencies": [
     "aicoding",
     "systems"
    ],
-   "appearances": [
+   "modules": [
     {
-     "track": null,
-     "position": 2,
-     "inferred_group": "F"
+     "id": "IDE-001.M1",
+     "title": "Primeiros passos com Antigravity",
+     "lessons": [
+      {
+       "id": "IDE-001.L01",
+       "n": 1,
+       "title": "Abertura",
+       "kind": "video",
+       "duration": "0:48"
+      },
+      {
+       "id": "IDE-001.L02",
+       "n": 2,
+       "title": "Como o AntiGravity funciona?",
+       "kind": "video",
+       "duration": "7:53"
+      },
+      {
+       "id": "IDE-001.L03",
+       "n": 3,
+       "title": "Instalando o AntiGravity",
+       "kind": "video",
+       "duration": "11:21"
+      },
+      {
+       "id": "IDE-001.L04",
+       "n": 4,
+       "title": "Tour pelo AntiGravity",
+       "kind": "video",
+       "duration": "10:23"
+      },
+      {
+       "id": "IDE-001.L05",
+       "n": 5,
+       "title": "Errata: Instalação",
+       "kind": "video",
+       "duration": "3:21"
+      }
+     ]
+    },
+    {
+     "id": "IDE-001.M2",
+     "title": "Conceitos fundamentais do Antigravity",
+     "lessons": [
+      {
+       "id": "IDE-001.L06",
+       "n": 6,
+       "title": "Plan Mode",
+       "kind": "video",
+       "duration": "14:20"
+      },
+      {
+       "id": "IDE-001.L07",
+       "n": 7,
+       "title": "Errata: Plan Mode",
+       "kind": "video",
+       "duration": "2:58"
+      },
+      {
+       "id": "IDE-001.L08",
+       "n": 8,
+       "title": "Rules",
+       "kind": "video",
+       "duration": "10:19"
+      },
+      {
+       "id": "IDE-001.L09",
+       "n": 9,
+       "title": "Workflows",
+       "kind": "video",
+       "duration": "6:00"
+      },
+      {
+       "id": "IDE-001.L10",
+       "n": 10,
+       "title": "Nova Localização das Skills no Antigravity IDE",
+       "kind": "other"
+      },
+      {
+       "id": "IDE-001.L11",
+       "n": 11,
+       "title": "Skills",
+       "kind": "video",
+       "duration": "13:02"
+      }
+     ]
+    },
+    {
+     "id": "IDE-001.M3",
+     "title": "Expandindo o Antigravity com Node",
+     "lessons": [
+      {
+       "id": "IDE-001.L12",
+       "n": 12,
+       "title": "Instalando o Node.JS",
+       "kind": "video",
+       "duration": "7:04"
+      },
+      {
+       "id": "IDE-001.L13",
+       "n": 13,
+       "title": "Site com React",
+       "kind": "video",
+       "duration": "7:48"
+      },
+      {
+       "id": "IDE-001.L14",
+       "n": 14,
+       "title": "Conectando MCPs",
+       "kind": "video",
+       "duration": "0:01"
+      }
+     ]
+    },
+    {
+     "id": "IDE-001.M4",
+     "title": "Antigravity IDE e 2.0",
+     "lessons": [
+      {
+       "id": "IDE-001.L15",
+       "n": 15,
+       "title": "Mudanças no Antigravity IDE",
+       "kind": "video",
+       "duration": "10:19"
+      },
+      {
+       "id": "IDE-001.L16",
+       "n": 16,
+       "title": "Apresentando o Antigravity 2.0",
+       "kind": "video",
+       "duration": "19:37"
+      },
+      {
+       "id": "IDE-001.L17",
+       "n": 17,
+       "title": "Mudanças e novas funcionalidades",
+       "kind": "video",
+       "duration": "11:36"
+      }
+     ]
     }
    ],
-   "confidence": {
-    "title": "CONFIRMADO",
-    "duration": "CONFIRMADO",
-    "instructor": "CONFIRMADO (truncado no print)",
-    "position": "CONFIRMADO",
-    "track": "A VERIFICAR",
-    "lessons": "NÃO IDENTIFICADO",
-    "practice_ratio": "ESTIMATIVA DO SISTEMA"
-   },
-   "lesson_count": 17
+   "note": "Aula 14 (Conectando MCPs): leitura 0:01 ou 8:01 [VERIFICAR]; adotado 0:01 porque só assim a soma fecha com o card. Ordem das aulas 10/11 [VERIFICAR]."
   },
   "IDE-002": {
    "title": "Cursor 3 - Desenvolvimento Assistido por IA",
-   "instructor": "Daniel…",
-   "duration": "1:51:00",
-   "nature": "ferramenta",
-   "practice_ratio": 0.4,
+   "type": "curso",
+   "card_min": 111,
    "competencies": [
     "aicoding"
    ],
-   "appearances": [
+   "modules": [
     {
-     "track": null,
-     "position": 3,
-     "inferred_group": "F"
+     "id": "IDE-002.M1",
+     "title": "Conceitos básicos do Cursor 3",
+     "lessons": [
+      {
+       "id": "IDE-002.L01",
+       "n": 1,
+       "title": "Introdução",
+       "kind": "video",
+       "duration": "3:11"
+      },
+      {
+       "id": "IDE-002.L02",
+       "n": 2,
+       "title": "Conhecendo o Cursor e conversando com a IA",
+       "kind": "video",
+       "duration": "9:00"
+      },
+      {
+       "id": "IDE-002.L03",
+       "n": 3,
+       "title": "Colocando o Agent para trabalhar",
+       "kind": "video",
+       "duration": "8:37"
+      },
+      {
+       "id": "IDE-002.L04",
+       "n": 4,
+       "title": "Desenvolvendo uma aplicação estática com IA",
+       "kind": "video",
+       "duration": "16:00"
+      }
+     ]
+    },
+    {
+     "id": "IDE-002.M2",
+     "title": "Subagents do Cursor 3",
+     "lessons": [
+      {
+       "id": "IDE-002.L05",
+       "n": 5,
+       "title": "Subagents – Entendendo o Básico",
+       "kind": "video",
+       "duration": "7:40"
+      },
+      {
+       "id": "IDE-002.L06",
+       "n": 6,
+       "title": "Múltiplos Subagents",
+       "kind": "video",
+       "duration": "14:55"
+      },
+      {
+       "id": "IDE-002.L07",
+       "n": 7,
+       "title": "Agente Coordenador de Projeto",
+       "kind": "video",
+       "duration": "13:16"
+      }
+     ]
+    },
+    {
+     "id": "IDE-002.M3",
+     "title": "Criando Skills para especializar agentes",
+     "lessons": [
+      {
+       "id": "IDE-002.L08",
+       "n": 8,
+       "title": "Criando Skills para Especializar Agentes",
+       "kind": "video",
+       "duration": "15:36"
+      },
+      {
+       "id": "IDE-002.L09",
+       "n": 9,
+       "title": "Criando uma Rule para Projetos Python",
+       "kind": "video",
+       "duration": "8:58"
+      },
+      {
+       "id": "IDE-002.L10",
+       "n": 10,
+       "title": "MCP com Context7",
+       "kind": "video",
+       "duration": "14:39"
+      }
+     ]
     }
-   ],
-   "confidence": {
-    "title": "CONFIRMADO",
-    "duration": "CONFIRMADO",
-    "instructor": "CONFIRMADO (truncado no print)",
-    "position": "CONFIRMADO",
-    "track": "A VERIFICAR",
-    "lessons": "NÃO IDENTIFICADO",
-    "practice_ratio": "ESTIMATIVA DO SISTEMA"
-   }
+   ]
   },
   "IDE-003": {
    "title": "CursorAI - ganhe 10x mais produtividade com a IDE de IA",
-   "instructor": "Vivian…",
-   "duration": "1:33:00",
-   "nature": "ferramenta",
-   "practice_ratio": 0.25,
+   "type": "curso",
+   "card_min": 93,
    "competencies": [
     "aicoding"
    ],
-   "appearances": [
+   "modules": [
     {
-     "track": null,
-     "position": 4,
-     "inferred_group": "F"
+     "id": "IDE-003.M1",
+     "title": "Introdução ao curso",
+     "lessons": [
+      {
+       "id": "IDE-003.L01",
+       "n": 1,
+       "title": "O que é o Cursor AI?",
+       "kind": "video",
+       "duration": "5:55"
+      },
+      {
+       "id": "IDE-003.L02",
+       "n": 2,
+       "title": "Por que aprender a usar o Cursor AI?",
+       "kind": "video",
+       "duration": "6:13"
+      }
+     ]
+    },
+    {
+     "id": "IDE-003.M2",
+     "title": "Instalação e configuração",
+     "lessons": [
+      {
+       "id": "IDE-003.L03",
+       "n": 3,
+       "title": "Instalando e Configurando o Cursor AI",
+       "kind": "video",
+       "duration": "12:46"
+      },
+      {
+       "id": "IDE-003.L04",
+       "n": 4,
+       "title": "Configuração Inicial e Ambiente de Uso",
+       "kind": "video",
+       "duration": "9:28"
+      }
+     ]
+    },
+    {
+     "id": "IDE-003.M3",
+     "title": "Interface e funcionalidades",
+     "lessons": [
+      {
+       "id": "IDE-003.L05",
+       "n": 5,
+       "title": "Explorando a Interface e Funcionalidades",
+       "kind": "video",
+       "duration": "9:56"
+      },
+      {
+       "id": "IDE-003.L06",
+       "n": 6,
+       "title": "Diferenciais e Recursos Avançados",
+       "kind": "other"
+      }
+     ]
+    },
+    {
+     "id": "IDE-003.M4",
+     "title": "Introdução a MCPs",
+     "lessons": [
+      {
+       "id": "IDE-003.L07",
+       "n": 7,
+       "title": "Introdução aos Modelos MCP",
+       "kind": "video",
+       "duration": "6:52"
+      },
+      {
+       "id": "IDE-003.L08",
+       "n": 8,
+       "title": "MCPs: Origem, Conceito e Aplicações no Cursor AI",
+       "kind": "other"
+      }
+     ]
+    },
+    {
+     "id": "IDE-003.M5",
+     "title": "Integração de MCP",
+     "lessons": [
+      {
+       "id": "IDE-003.L09",
+       "n": 9,
+       "title": "Integração com MCPs",
+       "kind": "video",
+       "duration": "18:11"
+      },
+      {
+       "id": "IDE-003.L10",
+       "n": 10,
+       "title": "Casos de Uso e Dicas de Aplicação",
+       "kind": "video",
+       "duration": "13:38"
+      },
+      {
+       "id": "IDE-003.L11",
+       "n": 11,
+       "title": "Convertendo Linguagem com MCP",
+       "kind": "video",
+       "duration": "10:10"
+      }
+     ]
     }
    ],
-   "confidence": {
-    "title": "CONFIRMADO",
-    "duration": "CONFIRMADO",
-    "instructor": "CONFIRMADO (truncado no print)",
-    "position": "CONFIRMADO",
-    "track": "A VERIFICAR",
-    "lessons": "NÃO IDENTIFICADO",
-    "practice_ratio": "ESTIMATIVA DO SISTEMA"
-   },
-   "overlap_note": "Tema sobreposto ao Cursor 3 (observação do sistema): foque no que for diferente."
+   "note": "Tema sobreposto ao Cursor 3. Aula 11 (10:10): zero riscado [VERIFICAR]."
   },
   "CODE-002": {
    "title": "Claude Code na prática: evoluindo um projeto com IA",
-   "instructor": "Danie…",
-   "duration": "2:42:00",
-   "nature": "ferramenta",
-   "practice_ratio": 0.55,
+   "type": "curso",
+   "card_min": 162,
    "competencies": [
     "aicoding",
     "systems"
    ],
-   "appearances": [
+   "modules": [
     {
-     "track": null,
-     "position": 6,
-     "inferred_group": "F"
+     "id": "CODE-002.M1",
+     "title": "Iniciando no Claude Code",
+     "lessons": [
+      {
+       "id": "CODE-002.L01",
+       "n": 1,
+       "title": "Introdução – Claude Code",
+       "kind": "video",
+       "duration": "1:25"
+      },
+      {
+       "id": "CODE-002.L02",
+       "n": 2,
+       "title": "Instalação do Claude Code – Terminal, VSCode e Cursor",
+       "kind": "video",
+       "duration": "6:08"
+      },
+      {
+       "id": "CODE-002.L03",
+       "n": 3,
+       "title": "Claude Code no Terminal e Repositório GIT Local",
+       "kind": "video",
+       "duration": "11:51"
+      },
+      {
+       "id": "CODE-002.L04",
+       "n": 4,
+       "title": "O que é um BFF?",
+       "kind": "video",
+       "duration": "5:31"
+      },
+      {
+       "id": "CODE-002.L05",
+       "n": 5,
+       "title": "Contexto com Claude.md",
+       "kind": "video",
+       "duration": "9:11"
+      },
+      {
+       "id": "CODE-002.L06",
+       "n": 6,
+       "title": "Gerenciando tamanho do Contexto",
+       "kind": "video",
+       "duration": "13:16"
+      },
+      {
+       "id": "CODE-002.L07",
+       "n": 7,
+       "title": "Permissões no Claude Code",
+       "kind": "video",
+       "duration": "21:54"
+      }
+     ]
+    },
+    {
+     "id": "CODE-002.M2",
+     "title": "Claude Code intermediário",
+     "lessons": [
+      {
+       "id": "CODE-002.L08",
+       "n": 8,
+       "title": "Comandos Personalizados",
+       "kind": "video",
+       "duration": "8:16"
+      },
+      {
+       "id": "CODE-002.L09",
+       "n": 9,
+       "title": "Gerando Testes Unitários com Slash-Commands",
+       "kind": "video",
+       "duration": "25:06"
+      },
+      {
+       "id": "CODE-002.L10",
+       "n": 10,
+       "title": "Claude Code Skill – Parte 1",
+       "kind": "video",
+       "duration": "10:14"
+      },
+      {
+       "id": "CODE-002.L11",
+       "n": 11,
+       "title": "Claude Code Skill – Parte 2",
+       "kind": "video",
+       "duration": "29:07"
+      },
+      {
+       "id": "CODE-002.L12",
+       "n": 12,
+       "title": "Claude Code Hooks",
+       "kind": "video",
+       "duration": "20:08"
+      }
+     ]
+    },
+    {
+     "id": "CODE-002.M3",
+     "title": "Boas práticas com Claude Code (EM BREVE)",
+     "lessons": [
+      {
+       "id": "CODE-002.L13",
+       "n": 13,
+       "title": "Esse curso ainda está em produção",
+       "kind": "placeholder"
+      }
+     ]
     }
    ],
-   "confidence": {
-    "title": "CONFIRMADO",
-    "duration": "CONFIRMADO",
-    "instructor": "CONFIRMADO (truncado no print)",
-    "position": "CONFIRMADO",
-    "track": "A VERIFICAR",
-    "lessons": "NÃO IDENTIFICADO",
-    "practice_ratio": "ESTIMATIVA DO SISTEMA"
-   }
+   "note": "Módulo 3 é um aviso de conteúdo futuro (não é aula): não conta para concluir o curso."
+  },
+  "START-N8N": {
+   "title": "Comece aqui - Nível intermediário Engenheiros de Agentes de IA",
+   "type": "curso",
+   "card_min": 1,
+   "competencies": [],
+   "modules": [
+    {
+     "id": "START-N8N.M1",
+     "title": "Curso completo",
+     "lessons": [
+      {
+       "id": "START-N8N.L01",
+       "n": 1,
+       "title": "Assista essa aula antes de começar o nível intermediário",
+       "kind": "video",
+       "duration": "1:46"
+      }
+     ]
+    }
+   ]
+  },
+  "N8N-001": {
+   "title": "Dominando Automações com n8n",
+   "type": "curso",
+   "card_min": 167,
+   "competencies": [
+    "apis",
+    "tools"
+   ],
+   "modules": [
+    {
+     "id": "N8N-001.M1",
+     "title": "Onboarding - Introdução ao N8N",
+     "lessons": [
+      {
+       "id": "N8N-001.L01",
+       "n": 1,
+       "title": "Sejam Bem-Vindos: O Que Você Vai Aprender",
+       "kind": "video",
+       "duration": "2:39"
+      },
+      {
+       "id": "N8N-001.L02",
+       "n": 2,
+       "title": "Por Que o N8N Se Tornou Tão Popular?",
+       "kind": "video",
+       "duration": "4:53"
+      },
+      {
+       "id": "N8N-001.L03",
+       "n": 3,
+       "title": "O Que Eu Serei Capaz de Construir?",
+       "kind": "video",
+       "duration": "6:27"
+      }
+     ]
+    },
+    {
+     "id": "N8N-001.M2",
+     "title": "Fundamentos do N8N na Prática",
+     "lessons": [
+      {
+       "id": "N8N-001.L04",
+       "n": 4,
+       "title": "O Que Vamos Construir Juntos",
+       "kind": "video",
+       "duration": "3:09"
+      },
+      {
+       "id": "N8N-001.L05",
+       "n": 5,
+       "title": "Preparando o Ambiente",
+       "kind": "video",
+       "duration": "3:45"
+      },
+      {
+       "id": "N8N-001.L06",
+       "n": 6,
+       "title": "Triggers: Como Tudo Começa",
+       "kind": "video",
+       "duration": "12:29"
+      },
+      {
+       "id": "N8N-001.L07",
+       "n": 7,
+       "title": "Quiz 1",
+       "kind": "quiz"
+      },
+      {
+       "id": "N8N-001.L08",
+       "n": 8,
+       "title": "Fluxo e Processamento dos Dados",
+       "kind": "video",
+       "duration": "24:48"
+      },
+      {
+       "id": "N8N-001.L09",
+       "n": 9,
+       "title": "Entendendo sobre Controles de Fluxo",
+       "kind": "video",
+       "duration": "12:04"
+      },
+      {
+       "id": "N8N-001.L10",
+       "n": 10,
+       "title": "Integrando N8N com o Google Sheets",
+       "kind": "video",
+       "duration": "12:16"
+      },
+      {
+       "id": "N8N-001.L11",
+       "n": 11,
+       "title": "Quiz 2",
+       "kind": "quiz"
+      },
+      {
+       "id": "N8N-001.L12",
+       "n": 12,
+       "title": "Aula de Encerramento",
+       "kind": "video",
+       "duration": "2:01"
+      },
+      {
+       "id": "N8N-001.L13",
+       "n": 13,
+       "title": "Teste final",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "N8N-001.M3",
+     "title": "O Modelo de Dados do N8N",
+     "lessons": [
+      {
+       "id": "N8N-001.L14",
+       "n": 14,
+       "title": "Introdução: O que você vai dominar nesse módulo",
+       "kind": "video",
+       "duration": "2:29"
+      },
+      {
+       "id": "N8N-001.L15",
+       "n": 15,
+       "title": "O objeto de dados: Criando dados, lendo, entendendo e moldando",
+       "kind": "video",
+       "duration": "11:42"
+      },
+      {
+       "id": "N8N-001.L16",
+       "n": 16,
+       "title": "Listas e itens: quebrando e juntando dados",
+       "kind": "video",
+       "duration": "9:51"
+      },
+      {
+       "id": "N8N-001.L17",
+       "n": 17,
+       "title": "Editando listas sem código: Filter, Sort e Limit",
+       "kind": "video",
+       "duration": "15:12"
+      },
+      {
+       "id": "N8N-001.L18",
+       "n": 18,
+       "title": "Ramificando e juntando o fluxo com Merge",
+       "kind": "video",
+       "duration": "8:04"
+      }
+     ]
+    },
+    {
+     "id": "N8N-001.M4",
+     "title": "Expressões e Dados",
+     "lessons": [
+      {
+       "id": "N8N-001.L19",
+       "n": 19,
+       "title": "Introdução: o que você vai dominar nesse módulo",
+       "kind": "video",
+       "duration": "1:48"
+      },
+      {
+       "id": "N8N-001.L20",
+       "n": 20,
+       "title": "O que é uma expression",
+       "kind": "video",
+       "duration": "6:19"
+      },
+      {
+       "id": "N8N-001.L21",
+       "n": 21,
+       "title": "Transformando texto",
+       "kind": "video",
+       "duration": "8:56"
+      },
+      {
+       "id": "N8N-001.L22",
+       "n": 22,
+       "title": "Formatando datas e números",
+       "kind": "video",
+       "duration": "5:45"
+      },
+      {
+       "id": "N8N-001.L23",
+       "n": 23,
+       "title": "Condicionais e fallbacks e finalização",
+       "kind": "video",
+       "duration": "12:49"
+      }
+     ]
+    }
+   ]
+  },
+  "N8N-002": {
+   "title": "N8N Open-Source: Use a ferramenta de forma gratuita",
+   "type": "curso",
+   "card_min": 48,
+   "competencies": [
+    "tools"
+   ],
+   "modules": [
+    {
+     "id": "N8N-002.M1",
+     "title": "Curso completo",
+     "lessons": [
+      {
+       "id": "N8N-002.L01",
+       "n": 1,
+       "title": "Boas-vindas e visão geral",
+       "kind": "video",
+       "duration": "1:41"
+      },
+      {
+       "id": "N8N-002.L02",
+       "n": 2,
+       "title": "n8n.cloud vs Self-Hosting",
+       "kind": "video",
+       "duration": "13:33"
+      },
+      {
+       "id": "N8N-002.L03",
+       "n": 3,
+       "title": "Instalação rápida e seu primeiro fluxo",
+       "kind": "video",
+       "duration": "14:02"
+      },
+      {
+       "id": "N8N-002.L04",
+       "n": 4,
+       "title": "Hospedando o n8n na Hostinger VPS",
+       "kind": "video",
+       "duration": "18:06"
+      },
+      {
+       "id": "N8N-002.L05",
+       "n": 5,
+       "title": "Conclusão",
+       "kind": "video",
+       "duration": "1:14"
+      }
+     ]
+    }
+   ]
+  },
+  "N8N-003": {
+   "title": "Banco de Integrações com n8n",
+   "type": "curso",
+   "card_min": 47,
+   "competencies": [
+    "apis",
+    "tools"
+   ],
+   "modules": [
+    {
+     "id": "N8N-003.M1",
+     "title": "Apresentação",
+     "lessons": [
+      {
+       "id": "N8N-003.L01",
+       "n": 1,
+       "title": "O que você vai ver neste curso",
+       "kind": "video",
+       "duration": "1:37"
+      }
+     ]
+    },
+    {
+     "id": "N8N-003.M2",
+     "title": "Integrações na prática",
+     "lessons": [
+      {
+       "id": "N8N-003.L02",
+       "n": 2,
+       "title": "Gmail, Google Agenda, Drive, Google Sheets e Docs",
+       "kind": "video",
+       "duration": "7:05"
+      },
+      {
+       "id": "N8N-003.L03",
+       "n": 3,
+       "title": "Telegram",
+       "kind": "video",
+       "duration": "3:32"
+      },
+      {
+       "id": "N8N-003.L04",
+       "n": 4,
+       "title": "OpenAI",
+       "kind": "video",
+       "duration": "6:21"
+      },
+      {
+       "id": "N8N-003.L05",
+       "n": 5,
+       "title": "Z-API",
+       "kind": "video",
+       "duration": "5:39"
+      },
+      {
+       "id": "N8N-003.L06",
+       "n": 6,
+       "title": "Groq",
+       "kind": "video",
+       "duration": "5:31"
+      },
+      {
+       "id": "N8N-003.L07",
+       "n": 7,
+       "title": "ElevenLabs",
+       "kind": "video",
+       "duration": "5:48"
+      },
+      {
+       "id": "N8N-003.L08",
+       "n": 8,
+       "title": "Fal.ai",
+       "kind": "video",
+       "duration": "12:08"
+      },
+      {
+       "id": "N8N-003.L09",
+       "n": 9,
+       "title": "Quiz – Banco de Integrações",
+       "kind": "quiz"
+      }
+     ]
+    }
+   ]
+  },
+  "N8N-004": {
+   "title": "Criando agentes de atendimento profissionais no Whatsapp",
+   "type": "curso",
+   "card_min": 149,
+   "competencies": [
+    "agents",
+    "rag",
+    "apis",
+    "systems"
+   ],
+   "modules": [
+    {
+     "id": "N8N-004.M1",
+     "title": "Introdução",
+     "lessons": [
+      {
+       "id": "N8N-004.L01",
+       "n": 1,
+       "title": "Introdução à Trilha",
+       "kind": "video",
+       "duration": "0:56"
+      },
+      {
+       "id": "N8N-004.L02",
+       "n": 2,
+       "title": "Tech Stack da Trilha",
+       "kind": "video",
+       "duration": "3:07"
+      },
+      {
+       "id": "N8N-004.L03",
+       "n": 3,
+       "title": "Instalação da Infraestrutura na Railway",
+       "kind": "video",
+       "duration": "3:12"
+      },
+      {
+       "id": "N8N-004.L04",
+       "n": 4,
+       "title": "Pré-requisitos da API Oficial do WhatsApp",
+       "kind": "video",
+       "duration": "6:25"
+      }
+     ]
+    },
+    {
+     "id": "N8N-004.M2",
+     "title": "Configurando API Oficial do WhatsApp",
+     "lessons": [
+      {
+       "id": "N8N-004.L05",
+       "n": 5,
+       "title": "Criando o Aplicativo na Meta",
+       "kind": "video",
+       "duration": "8:42"
+      },
+      {
+       "id": "N8N-004.L06",
+       "n": 6,
+       "title": "Configurando e Registrando Número Virtual na Meta",
+       "kind": "video",
+       "duration": "2:50"
+      },
+      {
+       "id": "N8N-004.L07",
+       "n": 7,
+       "title": "Ativando Webhook da Meta no n8n",
+       "kind": "video",
+       "duration": "9:38"
+      },
+      {
+       "id": "N8N-004.L08",
+       "n": 8,
+       "title": "Conectando Número com API Oficial do WhatsApp no n8n",
+       "kind": "video",
+       "duration": "7:57"
+      },
+      {
+       "id": "N8N-004.L09",
+       "n": 9,
+       "title": "Criando a tabela de memória do agente no Supabase (n8n_chat_histories)",
+       "kind": "other"
+      },
+      {
+       "id": "N8N-004.L10",
+       "n": 10,
+       "title": "Quiz – Configurando a API Oficial do WhatsApp",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "N8N-004.M3",
+     "title": "Desenvolvimento do Agente de IA",
+     "lessons": [
+      {
+       "id": "N8N-004.L11",
+       "n": 11,
+       "title": "Criando e Conectando Bancos de Dados e OpenAI no n8n",
+       "kind": "video",
+       "duration": "40:17"
+      },
+      {
+       "id": "N8N-004.L12",
+       "n": 12,
+       "title": "Criando Fluxo e Estrutura do Prompt do Agente de IA",
+       "kind": "video",
+       "duration": "15:29"
+      },
+      {
+       "id": "N8N-004.L13",
+       "n": 13,
+       "title": "Escrevendo Prompt do Agente de IA",
+       "kind": "video",
+       "duration": "6:10"
+      },
+      {
+       "id": "N8N-004.L14",
+       "n": 14,
+       "title": "Criando Ferramentas do Agente de IA",
+       "kind": "video",
+       "duration": "14:19"
+      },
+      {
+       "id": "N8N-004.L15",
+       "n": 15,
+       "title": "Finalizando Tools e Pipeline RAG",
+       "kind": "video",
+       "duration": "29:09"
+      },
+      {
+       "id": "N8N-004.L16",
+       "n": 16,
+       "title": "Finalização",
+       "kind": "video",
+       "duration": "1:14"
+      },
+      {
+       "id": "N8N-004.L17",
+       "n": 17,
+       "title": "Quiz – Desenvolvimento do Agente de IA",
+       "kind": "quiz"
+      }
+     ]
+    }
+   ],
+   "note": "Aulas 11 (40:17) e 15 (29:09): zero riscado [VERIFICAR]."
+  },
+  "N8N-005": {
+   "title": "IA de Agendamento no Google Agenda",
+   "type": "projeto",
+   "card_min": 65,
+   "competencies": [
+    "agents",
+    "apis",
+    "systems"
+   ],
+   "modules": [
+    {
+     "id": "N8N-005.M1",
+     "title": "Projeto completo",
+     "lessons": [
+      {
+       "id": "N8N-005.L01",
+       "n": 1,
+       "title": "Boas Vindas e Apresentação",
+       "kind": "video",
+       "duration": "5:23"
+      },
+      {
+       "id": "N8N-005.L02",
+       "n": 2,
+       "title": "Construindo o Agente de IA e Conectando com Google Calendar",
+       "kind": "video",
+       "duration": "29:07"
+      },
+      {
+       "id": "N8N-005.L03",
+       "n": 3,
+       "title": "Conectando o Agente ao WhatsApp",
+       "kind": "video",
+       "duration": "15:34"
+      },
+      {
+       "id": "N8N-005.L04",
+       "n": 4,
+       "title": "Criando Funcionalidade de Notificação via WhatsApp",
+       "kind": "video",
+       "duration": "15:48"
+      }
+     ]
+    }
+   ]
+  },
+  "N8N-006": {
+   "title": "UGC Factory - Crie um fluxo para produzir vídeos UGC",
+   "type": "projeto",
+   "card_min": 40,
+   "competencies": [
+    "agents",
+    "systems"
+   ],
+   "modules": [
+    {
+     "id": "N8N-006.M1",
+     "title": "Projeto completo",
+     "lessons": [
+      {
+       "id": "N8N-006.L01",
+       "n": 1,
+       "title": "Introdução",
+       "kind": "video",
+       "duration": "3:07"
+      },
+      {
+       "id": "N8N-006.L02",
+       "n": 2,
+       "title": "Conhecendo o projeto",
+       "kind": "video",
+       "duration": "5:30"
+      },
+      {
+       "id": "N8N-006.L03",
+       "n": 3,
+       "title": "Construindo o agente de imagem",
+       "kind": "video",
+       "duration": "21:32"
+      },
+      {
+       "id": "N8N-006.L04",
+       "n": 4,
+       "title": "Construindo o agente de vídeo",
+       "kind": "video",
+       "duration": "9:02"
+      },
+      {
+       "id": "N8N-006.L05",
+       "n": 5,
+       "title": "Finalização",
+       "kind": "video",
+       "duration": "1:05"
+      }
+     ]
+    }
+   ]
+  },
+  "N8N-007": {
+   "title": "Consumindo API's com n8n",
+   "type": "curso",
+   "card_min": 94,
+   "competencies": [
+    "apis",
+    "tools"
+   ],
+   "modules": [
+    {
+     "id": "N8N-007.M1",
+     "title": "APIs no n8n",
+     "lessons": [
+      {
+       "id": "N8N-007.L01",
+       "n": 1,
+       "title": "Abertura",
+       "kind": "video",
+       "duration": "1:11"
+      },
+      {
+       "id": "N8N-007.L02",
+       "n": 2,
+       "title": "Conhecendo as apis no n8n",
+       "kind": "video",
+       "duration": "24:27"
+      },
+      {
+       "id": "N8N-007.L03",
+       "n": 3,
+       "title": "Autenticação",
+       "kind": "video",
+       "duration": "19:44"
+      },
+      {
+       "id": "N8N-007.L04",
+       "n": 4,
+       "title": "Paginação",
+       "kind": "video",
+       "duration": "16:21"
+      },
+      {
+       "id": "N8N-007.L05",
+       "n": 5,
+       "title": "Rate limit e tratamento de erros",
+       "kind": "video",
+       "duration": "16:16"
+      },
+      {
+       "id": "N8N-007.L06",
+       "n": 6,
+       "title": "Webhooks",
+       "kind": "video",
+       "duration": "13:09"
+      },
+      {
+       "id": "N8N-007.L07",
+       "n": 7,
+       "title": "Fechamento",
+       "kind": "video",
+       "duration": "3:00"
+      }
+     ]
+    }
+   ]
+  },
+  "START-PYTHON": {
+   "title": "Comece por aqui - Aplicações AI com Python",
+   "type": "curso",
+   "card_min": 6,
+   "competencies": [],
+   "modules": [
+    {
+     "id": "START-PYTHON.M1",
+     "title": "Curso completo",
+     "lessons": [
+      {
+       "id": "START-PYTHON.L01",
+       "n": 1,
+       "title": "Apresentação da Trilha – Aplicações AI com Python",
+       "kind": "video",
+       "duration": "3:09"
+      },
+      {
+       "id": "START-PYTHON.L02",
+       "n": 2,
+       "title": "Como esta trilha está organizada – Aplicações IA com Python",
+       "kind": "video",
+       "duration": "3:06"
+      }
+     ]
+    }
+   ]
+  },
+  "LLM-001": {
+   "title": "Por dentro das LLMs - como funcionam modelos como o ChatGPT?",
+   "type": "curso",
+   "card_min": 78,
+   "competencies": [
+    "fundamentals"
+   ],
+   "modules": [
+    {
+     "id": "LLM-001.M1",
+     "title": "Conhecendo as LLMs",
+     "lessons": [
+      {
+       "id": "LLM-001.L01",
+       "n": 1,
+       "title": "O que você vai aprender neste curso?",
+       "kind": "video",
+       "duration": "3:11"
+      },
+      {
+       "id": "LLM-001.L02",
+       "n": 2,
+       "title": "Transformers e LLMs",
+       "kind": "video",
+       "duration": "2:49"
+      }
+     ]
+    },
+    {
+     "id": "LLM-001.M2",
+     "title": "Como treinar uma LLM?",
+     "lessons": [
+      {
+       "id": "LLM-001.L03",
+       "n": 3,
+       "title": "Primeira etapa – Processar toda a internet",
+       "kind": "video",
+       "duration": "5:13"
+      },
+      {
+       "id": "LLM-001.L04",
+       "n": 4,
+       "title": "Segunda etapa – Tokenização",
+       "kind": "video",
+       "duration": "6:46"
+      },
+      {
+       "id": "LLM-001.L05",
+       "n": 5,
+       "title": "Terceira etapa – Realizando o pretraining",
+       "kind": "video",
+       "duration": "11:00"
+      },
+      {
+       "id": "LLM-001.L06",
+       "n": 6,
+       "title": "As propriedades de um modelo BASE",
+       "kind": "video",
+       "duration": "9:45"
+      },
+      {
+       "id": "LLM-001.L07",
+       "n": 7,
+       "title": "Quarta etapa – O Supervised Fine-Tuning",
+       "kind": "video",
+       "duration": "8:50"
+      },
+      {
+       "id": "LLM-001.L08",
+       "n": 8,
+       "title": "Quiz 1",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "LLM-001.M3",
+     "title": "Aprimorando uma LLM",
+     "lessons": [
+      {
+       "id": "LLM-001.L09",
+       "n": 9,
+       "title": "Lidando com Alucinações e usando Ferramentas",
+       "kind": "video",
+       "duration": "12:04"
+      },
+      {
+       "id": "LLM-001.L10",
+       "n": 10,
+       "title": "Modelos precisam de tokens para pensar",
+       "kind": "video",
+       "duration": "5:05"
+      },
+      {
+       "id": "LLM-001.L11",
+       "n": 11,
+       "title": "Quiz 2",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "LLM-001.M4",
+     "title": "Aprendizado por reforço",
+     "lessons": [
+      {
+       "id": "LLM-001.L12",
+       "n": 12,
+       "title": "Quinta etapa – Reinforcement Learning",
+       "kind": "video",
+       "duration": "6:21"
+      },
+      {
+       "id": "LLM-001.L13",
+       "n": 13,
+       "title": "DeepSeek, AI Leaderboard e fechamento",
+       "kind": "video",
+       "duration": "7:27"
+      },
+      {
+       "id": "LLM-001.L14",
+       "n": 14,
+       "title": "Teste final",
+       "kind": "quiz"
+      }
+     ]
+    }
+   ]
+  },
+  "LOGIC-001": {
+   "title": "Introdução à Lógica de Programação",
+   "type": "curso",
+   "card_min": 51,
+   "competencies": [
+    "python"
+   ],
+   "modules": [
+    {
+     "id": "LOGIC-001.M1",
+     "title": "Apresentação do curso",
+     "lessons": [
+      {
+       "id": "LOGIC-001.L01",
+       "n": 1,
+       "title": "Boas-vindas",
+       "kind": "video",
+       "duration": "1:11"
+      },
+      {
+       "id": "LOGIC-001.L02",
+       "n": 2,
+       "title": "Asimov Academy: nossos princípios",
+       "kind": "video",
+       "duration": "2:25"
+      },
+      {
+       "id": "LOGIC-001.L03",
+       "n": 3,
+       "title": "O que é uma linguagem de programação",
+       "kind": "video",
+       "duration": "2:25"
+      },
+      {
+       "id": "LOGIC-001.L04",
+       "n": 4,
+       "title": "O que podemos e não podemos fazer com Python",
+       "kind": "video",
+       "duration": "2:27"
+      },
+      {
+       "id": "LOGIC-001.L05",
+       "n": 5,
+       "title": "Como tirar suas dúvidas?",
+       "kind": "video",
+       "duration": "3:38"
+      }
+     ]
+    },
+    {
+     "id": "LOGIC-001.M2",
+     "title": "Lógica de programação",
+     "lessons": [
+      {
+       "id": "LOGIC-001.L06",
+       "n": 6,
+       "title": "Apresentação à lógica de programação",
+       "kind": "video",
+       "duration": "2:20"
+      },
+      {
+       "id": "LOGIC-001.L07",
+       "n": 7,
+       "title": "O Conceito de Algoritmo",
+       "kind": "video",
+       "duration": "7:10"
+      },
+      {
+       "id": "LOGIC-001.L08",
+       "n": 8,
+       "title": "Exemplos práticos de algoritmos",
+       "kind": "video",
+       "duration": "8:40"
+      },
+      {
+       "id": "LOGIC-001.L09",
+       "n": 9,
+       "title": "Estrutura dos algoritmos",
+       "kind": "video",
+       "duration": "2:10"
+      },
+      {
+       "id": "LOGIC-001.L10",
+       "n": 10,
+       "title": "Elementos básicos da programação",
+       "kind": "video",
+       "duration": "2:53"
+      },
+      {
+       "id": "LOGIC-001.L11",
+       "n": 11,
+       "title": "Quiz – Algoritmos",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "LOGIC-001.M3",
+     "title": "Variáveis, operadores e estruturas",
+     "lessons": [
+      {
+       "id": "LOGIC-001.L12",
+       "n": 12,
+       "title": "Variáveis",
+       "kind": "video",
+       "duration": "5:20"
+      },
+      {
+       "id": "LOGIC-001.L13",
+       "n": 13,
+       "title": "Operadores",
+       "kind": "video",
+       "duration": "4:42"
+      },
+      {
+       "id": "LOGIC-001.L14",
+       "n": 14,
+       "title": "Estruturas de controle de fluxo",
+       "kind": "video",
+       "duration": "2:46"
+      },
+      {
+       "id": "LOGIC-001.L15",
+       "n": 15,
+       "title": "Estruturas de repetição",
+       "kind": "video",
+       "duration": "3:13"
+      },
+      {
+       "id": "LOGIC-001.L16",
+       "n": 16,
+       "title": "Quiz – Variáveis, operadores e estruturas",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "LOGIC-001.M4",
+     "title": "Teste final",
+     "lessons": [
+      {
+       "id": "LOGIC-001.L17",
+       "n": 17,
+       "title": "Teste final – Lógica de programação",
+       "kind": "quiz"
+      }
+     ]
+    }
+   ]
+  },
+  "PYTHON-001": {
+   "title": "Aprendendo Python: Conceitos Básicos",
+   "type": "curso",
+   "card_min": 372,
+   "competencies": [
+    "python"
+   ],
+   "modules": [
+    {
+     "id": "PYTHON-001.M1",
+     "title": "Fundamentos de Python",
+     "lessons": [
+      {
+       "id": "PYTHON-001.L01",
+       "n": 1,
+       "title": "Como vamos aprender Python?",
+       "kind": "video",
+       "duration": "4:53"
+      },
+      {
+       "id": "PYTHON-001.L02",
+       "n": 2,
+       "title": "Criando nosso primeiro script",
+       "kind": "video",
+       "duration": "11:56"
+      },
+      {
+       "id": "PYTHON-001.L03",
+       "n": 3,
+       "title": "Números em Python",
+       "kind": "video",
+       "duration": "7:52"
+      },
+      {
+       "id": "PYTHON-001.L04",
+       "n": 4,
+       "title": "Texto em Python",
+       "kind": "video",
+       "duration": "11:44"
+      },
+      {
+       "id": "PYTHON-001.L05",
+       "n": 5,
+       "title": "Variáveis",
+       "kind": "video",
+       "duration": "10:14"
+      },
+      {
+       "id": "PYTHON-001.L06",
+       "n": 6,
+       "title": "Pegando valores do usuário",
+       "kind": "video",
+       "duration": "6:44"
+      },
+      {
+       "id": "PYTHON-001.L07",
+       "n": 7,
+       "title": "Desafio – entrevista",
+       "kind": "video",
+       "duration": "10:11"
+      },
+      {
+       "id": "PYTHON-001.L08",
+       "n": 8,
+       "title": "Formatação de texto",
+       "kind": "video",
+       "duration": "9:41"
+      },
+      {
+       "id": "PYTHON-001.L09",
+       "n": 9,
+       "title": "Quiz – Fundamentos do Python",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "PYTHON-001.M2",
+     "title": "Controle de fluxo",
+     "lessons": [
+      {
+       "id": "PYTHON-001.L10",
+       "n": 10,
+       "title": "Controle de fluxo",
+       "kind": "video",
+       "duration": "10:35"
+      },
+      {
+       "id": "PYTHON-001.L11",
+       "n": 11,
+       "title": "Operadores de comparação",
+       "kind": "video",
+       "duration": "12:24"
+      },
+      {
+       "id": "PYTHON-001.L12",
+       "n": 12,
+       "title": "Operadores booleanos",
+       "kind": "video",
+       "duration": "7:44"
+      },
+      {
+       "id": "PYTHON-001.L13",
+       "n": 13,
+       "title": "Desafio – usuário e senha",
+       "kind": "video",
+       "duration": "10:25"
+      },
+      {
+       "id": "PYTHON-001.L14",
+       "n": 14,
+       "title": "Desafio – acerte o número",
+       "kind": "video",
+       "duration": "7:43"
+      },
+      {
+       "id": "PYTHON-001.L15",
+       "n": 15,
+       "title": "Quiz – Controle de fluxo",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "PYTHON-001.M3",
+     "title": "Sequências e loops",
+     "lessons": [
+      {
+       "id": "PYTHON-001.L16",
+       "n": 16,
+       "title": "Listas",
+       "kind": "video",
+       "duration": "6:02"
+      },
+      {
+       "id": "PYTHON-001.L17",
+       "n": 17,
+       "title": "Tuplas e dados mutáveis",
+       "kind": "video",
+       "duration": "5:29"
+      },
+      {
+       "id": "PYTHON-001.L18",
+       "n": 18,
+       "title": "Sequências",
+       "kind": "video",
+       "duration": "7:32"
+      },
+      {
+       "id": "PYTHON-001.L19",
+       "n": 19,
+       "title": "Slicing",
+       "kind": "video",
+       "duration": "8:13"
+      },
+      {
+       "id": "PYTHON-001.L20",
+       "n": 20,
+       "title": "A função range",
+       "kind": "video",
+       "duration": "5:28"
+      },
+      {
+       "id": "PYTHON-001.L21",
+       "n": 21,
+       "title": "For loops",
+       "kind": "video",
+       "duration": "7:58"
+      },
+      {
+       "id": "PYTHON-001.L22",
+       "n": 22,
+       "title": "Iterando sobre sequências",
+       "kind": "video",
+       "duration": "10:49"
+      },
+      {
+       "id": "PYTHON-001.L23",
+       "n": 23,
+       "title": "While loops",
+       "kind": "video",
+       "duration": "5:08"
+      },
+      {
+       "id": "PYTHON-001.L24",
+       "n": 24,
+       "title": "Break e continue",
+       "kind": "video",
+       "duration": "11:05"
+      },
+      {
+       "id": "PYTHON-001.L25",
+       "n": 25,
+       "title": "Desafio – iteração",
+       "kind": "video",
+       "duration": "8:05"
+      },
+      {
+       "id": "PYTHON-001.L26",
+       "n": 26,
+       "title": "Desafio – iteração com múltiplas listas",
+       "kind": "video",
+       "duration": "10:13"
+      },
+      {
+       "id": "PYTHON-001.L27",
+       "n": 27,
+       "title": "Quiz – Sequências e loops",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "PYTHON-001.M4",
+     "title": "Dicionários e métodos",
+     "lessons": [
+      {
+       "id": "PYTHON-001.L28",
+       "n": 28,
+       "title": "Dicionários",
+       "kind": "video",
+       "duration": "9:06"
+      },
+      {
+       "id": "PYTHON-001.L29",
+       "n": 29,
+       "title": "O operador in",
+       "kind": "video",
+       "duration": "6:00"
+      },
+      {
+       "id": "PYTHON-001.L30",
+       "n": 30,
+       "title": "Métodos em Python",
+       "kind": "video",
+       "duration": "6:01"
+      },
+      {
+       "id": "PYTHON-001.L31",
+       "n": 31,
+       "title": "Métodos de dicionários",
+       "kind": "video",
+       "duration": "7:57"
+      },
+      {
+       "id": "PYTHON-001.L32",
+       "n": 32,
+       "title": "Métodos de strings e números",
+       "kind": "video",
+       "duration": "14:35"
+      },
+      {
+       "id": "PYTHON-001.L33",
+       "n": 33,
+       "title": "Métodos de listas e tuplas",
+       "kind": "video",
+       "duration": "11:03"
+      },
+      {
+       "id": "PYTHON-001.L34",
+       "n": 34,
+       "title": "Desafio – contador de caracteres",
+       "kind": "video",
+       "duration": "6:31"
+      },
+      {
+       "id": "PYTHON-001.L35",
+       "n": 35,
+       "title": "Desafio – jogo dos estados",
+       "kind": "video",
+       "duration": "13:14"
+      },
+      {
+       "id": "PYTHON-001.L36",
+       "n": 36,
+       "title": "Aula extra – Compreensão de lista",
+       "kind": "video",
+       "duration": "6:39"
+      },
+      {
+       "id": "PYTHON-001.L37",
+       "n": 37,
+       "title": "Quiz – Dicionários e métodos",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "PYTHON-001.M5",
+     "title": "Funções e importação",
+     "lessons": [
+      {
+       "id": "PYTHON-001.L38",
+       "n": 38,
+       "title": "Funções",
+       "kind": "video",
+       "duration": "8:24"
+      },
+      {
+       "id": "PYTHON-001.L39",
+       "n": 39,
+       "title": "Parâmetros e argumentos",
+       "kind": "video",
+       "duration": "8:26"
+      },
+      {
+       "id": "PYTHON-001.L40",
+       "n": 40,
+       "title": "O valor None",
+       "kind": "video",
+       "duration": "9:02"
+      },
+      {
+       "id": "PYTHON-001.L41",
+       "n": 41,
+       "title": "Importação de módulos",
+       "kind": "video",
+       "duration": "8:29"
+      },
+      {
+       "id": "PYTHON-001.L42",
+       "n": 42,
+       "title": "A biblioteca padrão de Python",
+       "kind": "video",
+       "duration": "11:52"
+      },
+      {
+       "id": "PYTHON-001.L43",
+       "n": 43,
+       "title": "Quiz – Funções e importação",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "PYTHON-001.M6",
+     "title": "Desafios finais",
+     "lessons": [
+      {
+       "id": "PYTHON-001.L44",
+       "n": 44,
+       "title": "Desafio – cifra de César",
+       "kind": "video",
+       "duration": "14:33"
+      },
+      {
+       "id": "PYTHON-001.L45",
+       "n": 45,
+       "title": "Desafio – baralho de cartas",
+       "kind": "video",
+       "duration": "19:45"
+      },
+      {
+       "id": "PYTHON-001.L46",
+       "n": 46,
+       "title": "Teste final – Python Básico",
+       "kind": "quiz"
+      },
+      {
+       "id": "PYTHON-001.L47",
+       "n": 47,
+       "title": "Para onde seguir?",
+       "kind": "video",
+       "duration": "2:58"
+      }
+     ]
+    }
+   ]
+  },
+  "SETUP-001": {
+   "title": "Criando seu Setup para Programação Python",
+   "type": "curso",
+   "card_min": 161,
+   "competencies": [
+    "python",
+    "aicoding"
+   ],
+   "modules": [
+    {
+     "id": "SETUP-001.M1",
+     "title": "Introdução ao curso",
+     "lessons": [
+      {
+       "id": "SETUP-001.L01",
+       "n": 1,
+       "title": "O que você vai aprender",
+       "kind": "video",
+       "duration": "5:13"
+      },
+      {
+       "id": "SETUP-001.L02",
+       "n": 2,
+       "title": "O que é um terminal",
+       "kind": "video",
+       "duration": "6:58"
+      },
+      {
+       "id": "SETUP-001.L03",
+       "n": 3,
+       "title": "Quiz – Terminal",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "SETUP-001.M2",
+     "title": "Instalando Python em todos os sistemas operacionais",
+     "lessons": [
+      {
+       "id": "SETUP-001.L04",
+       "n": 4,
+       "title": "O terminal do Windows",
+       "kind": "video",
+       "duration": "8:19"
+      },
+      {
+       "id": "SETUP-001.L05",
+       "n": 5,
+       "title": "Instalando Python no Windows",
+       "kind": "video",
+       "duration": "9:10"
+      },
+      {
+       "id": "SETUP-001.L06",
+       "n": 6,
+       "title": "O terminal do Mac",
+       "kind": "video",
+       "duration": "5:35"
+      },
+      {
+       "id": "SETUP-001.L07",
+       "n": 7,
+       "title": "Instalando Python no Mac",
+       "kind": "video",
+       "duration": "7:08"
+      },
+      {
+       "id": "SETUP-001.L08",
+       "n": 8,
+       "title": "O terminal do Linux",
+       "kind": "video",
+       "duration": "4:30"
+      },
+      {
+       "id": "SETUP-001.L09",
+       "n": 9,
+       "title": "Instalando Python no Linux",
+       "kind": "video",
+       "duration": "12:16"
+      },
+      {
+       "id": "SETUP-001.L10",
+       "n": 10,
+       "title": "Outras opções de instalação",
+       "kind": "video",
+       "duration": "9:43"
+      },
+      {
+       "id": "SETUP-001.L11",
+       "n": 11,
+       "title": "Quiz – Instalação do Python",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "SETUP-001.M3",
+     "title": "Entendendo e configurando IDEs",
+     "lessons": [
+      {
+       "id": "SETUP-001.L12",
+       "n": 12,
+       "title": "O que são IDEs",
+       "kind": "video",
+       "duration": "4:58"
+      },
+      {
+       "id": "SETUP-001.L13",
+       "n": 13,
+       "title": "Instalando e configurando o VS Code",
+       "kind": "video",
+       "duration": "9:47"
+      },
+      {
+       "id": "SETUP-001.L14",
+       "n": 14,
+       "title": "Instalando e configurando o Pycharm",
+       "kind": "video",
+       "duration": "10:46"
+      },
+      {
+       "id": "SETUP-001.L15",
+       "n": 15,
+       "title": "O console de iPython",
+       "kind": "video",
+       "duration": "5:22"
+      },
+      {
+       "id": "SETUP-001.L16",
+       "n": 16,
+       "title": "Jupyter Notebook e Jupyter Lab",
+       "kind": "video",
+       "duration": "11:05"
+      },
+      {
+       "id": "SETUP-001.L17",
+       "n": 17,
+       "title": "Outras opções de IDEs",
+       "kind": "video",
+       "duration": "6:53"
+      },
+      {
+       "id": "SETUP-001.L18",
+       "n": 18,
+       "title": "Quiz – Entendendo e configurando IDEs",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "SETUP-001.M4",
+     "title": "Ambientes virtuais",
+     "lessons": [
+      {
+       "id": "SETUP-001.L19",
+       "n": 19,
+       "title": "O que é um ambiente virtual",
+       "kind": "video",
+       "duration": "4:39"
+      },
+      {
+       "id": "SETUP-001.L20",
+       "n": 20,
+       "title": "Criando e ativando seu ambiente virtual",
+       "kind": "video",
+       "duration": "10:26"
+      },
+      {
+       "id": "SETUP-001.L21",
+       "n": 21,
+       "title": "Selecionando o interpretador de Python nas IDEs",
+       "kind": "video",
+       "duration": "6:03"
+      },
+      {
+       "id": "SETUP-001.L22",
+       "n": 22,
+       "title": "Quiz – Ambientes virtuais",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "SETUP-001.M5",
+     "title": "Estruturando seu projeto",
+     "lessons": [
+      {
+       "id": "SETUP-001.L23",
+       "n": 23,
+       "title": "Importando arquivos com código – a variável __name__",
+       "kind": "video",
+       "duration": "6:56"
+      },
+      {
+       "id": "SETUP-001.L24",
+       "n": 24,
+       "title": "Estrutura do projeto e erros de importação",
+       "kind": "video",
+       "duration": "15:40"
+      },
+      {
+       "id": "SETUP-001.L25",
+       "n": 25,
+       "title": "Teste final – Criando seu setup para programação Python",
+       "kind": "quiz"
+      }
+     ]
+    }
+   ]
+  },
+  "PROMPT-001": {
+   "title": "Engenharia de Prompts",
+   "type": "curso",
+   "card_min": 129,
+   "competencies": [
+    "prompt"
+   ],
+   "modules": [
+    {
+     "id": "PROMPT-001.M1",
+     "title": "Introdução",
+     "lessons": [
+      {
+       "id": "PROMPT-001.L01",
+       "n": 1,
+       "title": "Apresentação ao curso de Engenharia de Prompt",
+       "kind": "video",
+       "duration": "4:54"
+      },
+      {
+       "id": "PROMPT-001.L02",
+       "n": 2,
+       "title": "Conceitos Gerais de LLMs",
+       "kind": "video",
+       "duration": "19:03"
+      },
+      {
+       "id": "PROMPT-001.L03",
+       "n": 3,
+       "title": "Atualização importante: o Playground da OpenAI mudou",
+       "kind": "other"
+      },
+      {
+       "id": "PROMPT-001.L04",
+       "n": 4,
+       "title": "Os princípios de um bom prompt",
+       "kind": "video",
+       "duration": "10:03"
+      }
+     ]
+    },
+    {
+     "id": "PROMPT-001.M2",
+     "title": "Clareza e especificidade",
+     "lessons": [
+      {
+       "id": "PROMPT-001.L05",
+       "n": 5,
+       "title": "Criando prompts claros e específicos",
+       "kind": "video",
+       "duration": "10:00"
+      },
+      {
+       "id": "PROMPT-001.L06",
+       "n": 6,
+       "title": "Elementos de um Prompt",
+       "kind": "video",
+       "duration": "6:55"
+      },
+      {
+       "id": "PROMPT-001.L07",
+       "n": 7,
+       "title": "Persona, Público e Exemplos",
+       "kind": "video",
+       "duration": "8:04"
+      },
+      {
+       "id": "PROMPT-001.L08",
+       "n": 8,
+       "title": "Delimitadores e Saídas Estruturadas",
+       "kind": "video",
+       "duration": "8:03"
+      },
+      {
+       "id": "PROMPT-001.L09",
+       "n": 9,
+       "title": "Prompt Zero, One e Few-Shot",
+       "kind": "video",
+       "duration": "8:24"
+      },
+      {
+       "id": "PROMPT-001.L10",
+       "n": 10,
+       "title": "Quiz – Clareza e Especificidade",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "PROMPT-001.M3",
+     "title": "Dando tempo para o modelo pensar",
+     "lessons": [
+      {
+       "id": "PROMPT-001.L11",
+       "n": 11,
+       "title": "Dando tempo para o modelo pensar (COT)",
+       "kind": "video",
+       "duration": "9:14"
+      },
+      {
+       "id": "PROMPT-001.L12",
+       "n": 12,
+       "title": "Prompts avançados: exemplos do Claude",
+       "kind": "other"
+      },
+      {
+       "id": "PROMPT-001.L13",
+       "n": 13,
+       "title": "Encadeamento (Chaining)",
+       "kind": "video",
+       "duration": "11:01"
+      }
+     ]
+    },
+    {
+     "id": "PROMPT-001.M4",
+     "title": "Aplicações comuns de prompts",
+     "lessons": [
+      {
+       "id": "PROMPT-001.L14",
+       "n": 14,
+       "title": "Resumo e Extração",
+       "kind": "video",
+       "duration": "7:52"
+      },
+      {
+       "id": "PROMPT-001.L15",
+       "n": 15,
+       "title": "Inferência e Análise de Sentimento",
+       "kind": "video",
+       "duration": "7:03"
+      },
+      {
+       "id": "PROMPT-001.L16",
+       "n": 16,
+       "title": "Transformando, traduzindo e modificando",
+       "kind": "video",
+       "duration": "6:40"
+      },
+      {
+       "id": "PROMPT-001.L17",
+       "n": 17,
+       "title": "Criação de Chatbots Personalizados",
+       "kind": "video",
+       "duration": "7:51"
+      },
+      {
+       "id": "PROMPT-001.L18",
+       "n": 18,
+       "title": "Quiz – Aplicações de Prompts",
+       "kind": "quiz"
+      },
+      {
+       "id": "PROMPT-001.L19",
+       "n": 19,
+       "title": "Finalizando o curso de Engenharia de Prompt",
+       "kind": "video",
+       "duration": "4:21"
+      }
+     ]
+    },
+    {
+     "id": "PROMPT-001.M5",
+     "title": "Teste final",
+     "lessons": [
+      {
+       "id": "PROMPT-001.L20",
+       "n": 20,
+       "title": "Teste Final – Engenharia de Prompts",
+       "kind": "quiz"
+      }
+     ]
+    }
+   ],
+   "note": "Aulas 2, 4 e 16: zero riscado [VERIFICAR]."
+  },
+  "AGNO-001": {
+   "title": "Criando Agentes com Agno",
+   "type": "curso",
+   "card_min": 370,
+   "competencies": [
+    "agents",
+    "tools",
+    "rag",
+    "multiagent",
+    "apis",
+    "python"
+   ],
+   "modules": [
+    {
+     "id": "AGNO-001.M1",
+     "title": "Introdução",
+     "lessons": [
+      {
+       "id": "AGNO-001.L01",
+       "n": 1,
+       "title": "O que o Agno tem de especial?",
+       "kind": "video",
+       "duration": "3:07"
+      },
+      {
+       "id": "AGNO-001.L02",
+       "n": 2,
+       "title": "Aviso de versão",
+       "kind": "other"
+      },
+      {
+       "id": "AGNO-001.L03",
+       "n": 3,
+       "title": "O que são agentes de IA?",
+       "kind": "video",
+       "duration": "2:37"
+      },
+      {
+       "id": "AGNO-001.L04",
+       "n": 4,
+       "title": "Como um agente executa tarefas?",
+       "kind": "video",
+       "duration": "3:40"
+      },
+      {
+       "id": "AGNO-001.L05",
+       "n": 5,
+       "title": "Agno ou Langchain?",
+       "kind": "video",
+       "duration": "1:58"
+      },
+      {
+       "id": "AGNO-001.L06",
+       "n": 6,
+       "title": "Quiz 1 – Introdução",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "AGNO-001.M2",
+     "title": "Criando agentes com Agno",
+     "lessons": [
+      {
+       "id": "AGNO-001.L07",
+       "n": 7,
+       "title": "Configurando o Agno",
+       "kind": "video",
+       "duration": "11:04"
+      },
+      {
+       "id": "AGNO-001.L08",
+       "n": 8,
+       "title": "Guia de Instalação e Configuração do Agno",
+       "kind": "other"
+      },
+      {
+       "id": "AGNO-001.L09",
+       "n": 9,
+       "title": "Criando nosso primeiro Agente",
+       "kind": "video",
+       "duration": "11:57"
+      },
+      {
+       "id": "AGNO-001.L10",
+       "n": 10,
+       "title": "Criando nossas próprias Tools",
+       "kind": "video",
+       "duration": "7:18"
+      },
+      {
+       "id": "AGNO-001.L11",
+       "n": 11,
+       "title": "Usando o ChatGPT via API",
+       "kind": "video",
+       "duration": "6:21"
+      },
+      {
+       "id": "AGNO-001.L12",
+       "n": 12,
+       "title": "AgentOS e AgentUI: instalação e integração",
+       "kind": "video",
+       "duration": "19:26"
+      },
+      {
+       "id": "AGNO-001.L13",
+       "n": 13,
+       "title": "Storage",
+       "kind": "video",
+       "duration": "20:58"
+      },
+      {
+       "id": "AGNO-001.L14",
+       "n": 14,
+       "title": "Memória",
+       "kind": "video",
+       "duration": "10:37"
+      },
+      {
+       "id": "AGNO-001.L15",
+       "n": 15,
+       "title": "Adicionando conhecimento externo ao agente com RAG",
+       "kind": "video",
+       "duration": "26:30"
+      },
+      {
+       "id": "AGNO-001.L16",
+       "n": 16,
+       "title": "Sistemas multi-agentes",
+       "kind": "video",
+       "duration": "27:45"
+      },
+      {
+       "id": "AGNO-001.L17",
+       "n": 17,
+       "title": "Quiz 2 – Criando Agentes com Agno",
+       "kind": "quiz"
+      }
+     ]
+    },
+    {
+     "id": "AGNO-001.M3",
+     "title": "Deploy com Agno",
+     "lessons": [
+      {
+       "id": "AGNO-001.L18",
+       "n": 18,
+       "title": "O que é o deploy?",
+       "kind": "video",
+       "duration": "3:26"
+      },
+      {
+       "id": "AGNO-001.L19",
+       "n": 19,
+       "title": "O que você precisa saber para fazer seu deploy",
+       "kind": "video",
+       "duration": "27:05"
+      },
+      {
+       "id": "AGNO-001.L20",
+       "n": 20,
+       "title": "FastAPI – nossa escolha para deploy",
+       "kind": "video",
+       "duration": "17:38"
+      },
+      {
+       "id": "AGNO-001.L21",
+       "n": 21,
+       "title": "Guia de Instalação e Configuração de Deploy com Agno",
+       "kind": "other"
+      },
+      {
+       "id": "AGNO-001.L22",
+       "n": 22,
+       "title": "Como funciona uma API com FastAPI?",
+       "kind": "video",
+       "duration": "21:16"
+      },
+      {
+       "id": "AGNO-001.L23",
+       "n": 23,
+       "title": "Criando endpoints para agentes com FastAPI",
+       "kind": "video",
+       "duration": "26:29"
+      },
+      {
+       "id": "AGNO-001.L24",
+       "n": 24,
+       "title": "Agno AgentOS – uma alternativa simplificada",
+       "kind": "video",
+       "duration": "22:53"
+      },
+      {
+       "id": "AGNO-001.L25",
+       "n": 25,
+       "title": "Frontend para sua API com AgentUI",
+       "kind": "video",
+       "duration": "15:36"
+      },
+      {
+       "id": "AGNO-001.L26",
+       "n": 26,
+       "title": "Frontend para sua API com Streamlit",
+       "kind": "video",
+       "duration": "57:09"
+      },
+      {
+       "id": "AGNO-001.L27",
+       "n": 27,
+       "title": "GitHub e Deploy no Render",
+       "kind": "other"
+      },
+      {
+       "id": "AGNO-001.L28",
+       "n": 28,
+       "title": "Deploy do projeto no Render",
+       "kind": "video",
+       "duration": "25:29"
+      },
+      {
+       "id": "AGNO-001.L29",
+       "n": 29,
+       "title": "Quiz 3 – Deploy com Agno",
+       "kind": "quiz"
+      },
+      {
+       "id": "AGNO-001.L30",
+       "n": 30,
+       "title": "Teste Final – Criando Agentes com Agno",
+       "kind": "quiz"
+      }
+     ]
+    }
+   ]
+  },
+  "AGENT-001": {
+   "title": "Agente de Curadoria de Notícias",
+   "type": "projeto",
+   "card_min": 63,
+   "competencies": [
+    "agents",
+    "multiagent"
+   ],
+   "modules": [
+    {
+     "id": "AGENT-001.M1",
+     "title": "Projeto completo",
+     "lessons": [
+      {
+       "id": "AGENT-001.L01",
+       "n": 1,
+       "title": "Introdução – Agente de Curadoria de Notícias",
+       "kind": "video",
+       "duration": "2:48"
+      },
+      {
+       "id": "AGENT-001.L02",
+       "n": 2,
+       "title": "Visão do projeto",
+       "kind": "video",
+       "duration": "12:37"
+      },
+      {
+       "id": "AGENT-001.L03",
+       "n": 3,
+       "title": "Monolito com prompt embutido",
+       "kind": "video",
+       "duration": "9:42"
+      },
+      {
+       "id": "AGENT-001.L04",
+       "n": 4,
+       "title": "Skills externas e separação prompt × código",
+       "kind": "video",
+       "duration": "13:50"
+      },
+      {
+       "id": "AGENT-001.L05",
+       "n": 5,
+       "title": "Pipeline multiagente sequencial",
+       "kind": "video",
+       "duration": "10:11"
+      },
+      {
+       "id": "AGENT-001.L06",
+       "n": 6,
+       "title": "Workflow declarativo",
+       "kind": "video",
+       "duration": "14:11"
+      }
+     ]
+    }
+   ]
+  },
+  "AGENT-002": {
+   "title": "Agente de IA para criação de conteúdo",
+   "type": "projeto",
+   "card_min": 93,
+   "competencies": [
+    "agents",
+    "systems"
+   ],
+   "modules": [
+    {
+     "id": "AGENT-002.M1",
+     "title": "Projeto completo",
+     "lessons": [
+      {
+       "id": "AGENT-002.L01",
+       "n": 1,
+       "title": "Apresentação do projeto",
+       "kind": "video",
+       "duration": "3:28"
+      },
+      {
+       "id": "AGENT-002.L02",
+       "n": 2,
+       "title": "AI Setup",
+       "kind": "video",
+       "duration": "7:16"
+      },
+      {
+       "id": "AGENT-002.L03",
+       "n": 3,
+       "title": "Setup manual",
+       "kind": "video",
+       "duration": "9:58"
+      },
+      {
+       "id": "AGENT-002.L04",
+       "n": 4,
+       "title": "O Agente em ação",
+       "kind": "video",
+       "duration": "8:27"
+      },
+      {
+       "id": "AGENT-002.L05",
+       "n": 5,
+       "title": "Como construiremos este projeto",
+       "kind": "video",
+       "duration": "2:46"
+      },
+      {
+       "id": "AGENT-002.L06",
+       "n": 6,
+       "title": "Criando o Transcripter",
+       "kind": "video",
+       "duration": "17:18"
+      },
+      {
+       "id": "AGENT-002.L07",
+       "n": 7,
+       "title": "Criando o Agente",
+       "kind": "video",
+       "duration": "6:09"
+      },
+      {
+       "id": "AGENT-002.L08",
+       "n": 8,
+       "title": "O cérebro do modelo – desenvolvendo o prompt",
+       "kind": "video",
+       "duration": "21:35"
+      },
+      {
+       "id": "AGENT-002.L09",
+       "n": 9,
+       "title": "Lendo as transcrições",
+       "kind": "video",
+       "duration": "16:29"
+      }
+     ]
+    }
+   ]
+  },
+  "AGENT-003": {
+   "title": "FilmPro - Agente para Recomendação de Filmes",
+   "type": "projeto",
+   "card_min": 115,
+   "competencies": [
+    "agents",
+    "apis",
+    "systems"
+   ],
+   "modules": [
+    {
+     "id": "AGENT-003.M1",
+     "title": "Agente de recomendações de filmes",
+     "lessons": [
+      {
+       "id": "AGENT-003.L01",
+       "n": 1,
+       "title": "Introdução",
+       "kind": "video",
+       "duration": "2:11"
+      },
+      {
+       "id": "AGENT-003.L02",
+       "n": 2,
+       "title": "Arquitetura do Projeto",
+       "kind": "video",
+       "duration": "5:03"
+      },
+      {
+       "id": "AGENT-003.L03",
+       "n": 3,
+       "title": "Versão Básica do FilmPro",
+       "kind": "video",
+       "duration": "21:03"
+      },
+      {
+       "id": "AGENT-003.L04",
+       "n": 4,
+       "title": "Pydantic com Agno – Saídas Estruturadas",
+       "kind": "video",
+       "duration": "22:45"
+      },
+      {
+       "id": "AGENT-003.L05",
+       "n": 5,
+       "title": "Ferramenta com Agno – API do OMDB",
+       "kind": "video",
+       "duration": "14:03"
+      }
+     ]
+    },
+    {
+     "id": "AGENT-003.M2",
+     "title": "API de recomendações de filmes",
+     "lessons": [
+      {
+       "id": "AGENT-003.L06",
+       "n": 6,
+       "title": "Reorganização do Código",
+       "kind": "video",
+       "duration": "15:23"
+      },
+      {
+       "id": "AGENT-003.L07",
+       "n": 7,
+       "title": "FastAPI – API de Recomendações",
+       "kind": "video",
+       "duration": "20:23"
+      }
+     ]
+    },
+    {
+     "id": "AGENT-003.M3",
+     "title": "Construindo a interface web",
+     "lessons": [
+      {
+       "id": "AGENT-003.L08",
+       "n": 8,
+       "title": "Interface Web",
+       "kind": "video",
+       "duration": "14:18"
+      }
+     ]
+    }
+   ]
+  },
+  "AGENT-004": {
+   "title": "Auto Retoucher - Criando uma AI para fotógrafos",
+   "type": "projeto",
+   "card_min": 105,
+   "competencies": [
+    "agents",
+    "tools",
+    "apis",
+    "systems"
+   ],
+   "modules": [
+    {
+     "id": "AGENT-004.M1",
+     "title": "Projeto completo",
+     "lessons": [
+      {
+       "id": "AGENT-004.L01",
+       "n": 1,
+       "title": "Apresentação",
+       "kind": "video",
+       "duration": "2:13"
+      },
+      {
+       "id": "AGENT-004.L02",
+       "n": 2,
+       "title": "AI Setup",
+       "kind": "video",
+       "duration": "4:45"
+      },
+      {
+       "id": "AGENT-004.L03",
+       "n": 3,
+       "title": "Setup manual",
+       "kind": "video",
+       "duration": "6:20"
+      },
+      {
+       "id": "AGENT-004.L04",
+       "n": 4,
+       "title": "Como construiremos o nosso projeto",
+       "kind": "video",
+       "duration": "5:08"
+      },
+      {
+       "id": "AGENT-004.L05",
+       "n": 5,
+       "title": "Que modelos de IA serão utilizados",
+       "kind": "video",
+       "duration": "6:21"
+      },
+      {
+       "id": "AGENT-004.L06",
+       "n": 6,
+       "title": "Rodando o Moondreeam3",
+       "kind": "video",
+       "duration": "15:08"
+      },
+      {
+       "id": "AGENT-004.L07",
+       "n": 7,
+       "title": "Integrando com FalAI",
+       "kind": "video",
+       "duration": "10:28"
+      },
+      {
+       "id": "AGENT-004.L08",
+       "n": 8,
+       "title": "Desenvolvendo o Agente com Gemini",
+       "kind": "video",
+       "duration": "11:47"
+      },
+      {
+       "id": "AGENT-004.L09",
+       "n": 9,
+       "title": "Criando nossa Tool",
+       "kind": "video",
+       "duration": "14:03"
+      },
+      {
+       "id": "AGENT-004.L10",
+       "n": 10,
+       "title": "Criando nossa API usando AI",
+       "kind": "video",
+       "duration": "9:24"
+      },
+      {
+       "id": "AGENT-004.L11",
+       "n": 11,
+       "title": "Criando o Frontend",
+       "kind": "video",
+       "duration": "20:05"
+      }
+     ]
+    }
+   ]
   }
  }
 }

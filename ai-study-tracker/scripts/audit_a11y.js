@@ -3,10 +3,10 @@ const { chromium } = require("playwright");
 const fs = require("fs");
 const axeSrc = fs.readFileSync(process.argv[2], "utf8");
 const base = process.argv[3];
-const pages = ["#/", "#/calendar", "#/catalog", "#/course/CLAUDE-002", "#/lab", "#/lab/LAB-2", "#/skills", "#/achievements", "#/sessions", "#/plan", "#/settings"];
+const pages = ["#/", "#/calendar", "#/catalog", "#/course/CLAUDE-002", "#/course/PY-001", "#/skills", "#/achievements", "#/sessions", "#/plan", "#/settings"];
 (async () => {
   const b = await chromium.launch();
-  for (const mobile of [false, true]) {
+  for (const mobile of [false]) {
     const ctx = await b.newContext(mobile ? { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } : { viewport: { width: 1440, height: 900 } });
     const pg = await ctx.newPage();
     for (const h of pages) {

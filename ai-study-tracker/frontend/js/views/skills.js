@@ -23,7 +23,7 @@ function radar(items, size = 340) {
 export default async function skills(el) {
   el.innerHTML = skeleton(500);
   const { competencies: cs } = await api("/competencies");
-  const W = { content: "Conteúdo", practice: "Prática", project: "Projetos", review: "Revisões" };
+  const W = { content: "Cursos", review: "Revisões" };
   el.innerHTML = `
   <div class="page-head"><div><p class="eyebrow">Programação/Automação → AI Engineering → AI Agent Engineering → AI Systems</p><h1>Mapa de competências</h1></div></div>
   <div class="grid grid-2">
@@ -31,16 +31,15 @@ export default async function skills(el) {
       ${cs.map((c) => `<div class="skill">
         <span style="font-weight:500">${esc(c.label)}</span><b class="num">${pct(c.level)}</b>
         <div class="bar" title="Base (conhecimento prévio): ${pct(c.baseline)}"><i style="width:${c.level * 100}%"></i><span class="base" style="width:${c.baseline * 100}%"></span></div>
-        <div class="why">${c.baseline ? `base ${pct(c.baseline)} · ` : ""}${Object.entries(c.parts).map(([k, v]) => `${W[k]} ${pct(v)}`).join(" · ") || "sem evidências ainda"}${c.stages.length ? ` · Lab ${c.stages.join(", ")}` : ""}</div></div>`).join("")}
+        <div class="why">${c.baseline ? `base ${pct(c.baseline)} · ` : ""}${Object.entries(c.parts).map(([k, v]) => `${W[k]} ${pct(v)}`).join(" · ") || "sem evidências ainda"}${c.courses_total ? ` · ${c.courses_done}/${c.courses_total} cursos` : ""}</div></div>`).join("")}
     </section>
     <div class="stack">
       <section class="panel" style="display:grid;place-items:center">${radar(cs)}
         <div class="legend" style="margin-top:6px"><span><span class="dot" style="background:var(--accent)"></span>Atual</span><span><span class="dot" style="background:var(--text-3)"></span>Ponto de partida (experiência prévia)</span></div></section>
       <section class="panel"><h2 style="margin-bottom:10px">Como é calculado</h2>
-        <p class="muted" style="margin:0 0 10px;font-size:13px">Cada competência parte de um ponto de partida <b>estimado e editável</b> (Ajustes) — não é um fato medido — e evolui com evidências reais de aprendizado:</p>
-        <div class="mini-list"><div><span class="dot k-video"></span>Conteúdo assistido<span class="spacer"></span><b>35%</b></div><div><span class="dot k-practice"></span>Prática concluída<span class="spacer"></span><b>30%</b></div>
-        <div><span class="dot k-project"></span>Projetos do Lab (horas + checklist)<span class="spacer"></span><b>25%</b></div><div><span class="dot k-review"></span>Revisões em dia<span class="spacer"></span><b>10%</b></div></div>
-        <p class="faint" style="font-size:12.5px;margin:10px 0 0">${icon("info", "icon icon-sm")} RAG não aparece nos cursos visíveis: essa competência evolui pelo LAB-6 do AI Agent Lab.</p></section>
+        <p class="muted" style="margin:0 0 10px;font-size:13px">Cada competência parte de um ponto de partida <b>estimado e editável</b> (Ajustes) — não é um fato medido — e evolui com evidências reais de estudo. A classificação dos cursos por competência é do sistema (INFERIDA).</p>
+        <div class="mini-list"><div><span class="dot k-video"></span>Cursos concluídos da competência<span class="spacer"></span><b>80%</b></div>
+        <div><span class="dot k-review"></span>Revisões em dia<span class="spacer"></span><b>20%</b></div></div></section>
     </div>
   </div>`;
 }

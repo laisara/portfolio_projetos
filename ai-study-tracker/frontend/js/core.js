@@ -56,6 +56,10 @@ export function hm(min, { zero = "0m", compact = false } = {}) {
   if (compact) return m ? `${h}h${String(m).padStart(2, "0")}` : `${h}h`;
   return m ? `${h}h ${String(m).padStart(2, "0")}min` : `${h}h`;
 }
+// duração de aula: "-" quando a plataforma não informa (conta 0 min)
+export const dur = (min, has = true) => (has === false || has === 0 ? '<span class="dash" title="Sem duração no player">-</span>' : hm(min, { zero: "0m" }));
+export function mmss(min) { const s = Math.round(min * 60); return s >= 3600 ? `${Math.floor(s / 3600)}:${String(Math.floor(s % 3600 / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}` : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; }
+export const COMP_LABEL = { python: "Python", apis: "APIs", fundamentals: "Fundamentos de LLM", prompt: "Prompt Engineering", aicoding: "Dev. assistido por IA", tools: "Tools/MCP", agents: "AI Agents", rag: "RAG", multiagent: "Multi-Agent", systems: "AI Systems" };
 export const hours = (min) => `${(min / 60).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}h`;
 export const pct = (x) => `${Math.round((x || 0) * 100)}%`;
 export const WEEK = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
@@ -74,8 +78,8 @@ export function fmtDate(iso, style = "short") {
 
 export const KIND = {
   video: { label: "Aula", phase: "APRENDER", cls: "k-video", type: "VIDEO" },
-  practice: { label: "Prática", phase: "CONSTRUIR", cls: "k-practice", type: "PRACTICE" },
-  project: { label: "Projeto", phase: "CONSOLIDAR", cls: "k-project", type: "PROJECT" },
+  practice: { label: "Prática", phase: "PRÁTICA", cls: "k-practice", type: "PRACTICE" },
+  project: { label: "Projeto", phase: "PROJETO", cls: "k-project", type: "PROJECT" },
   review: { label: "Revisão", phase: "REVISAR", cls: "k-review", type: "REVIEW" },
   rest: { label: "Descanso", phase: "DESCANSO", cls: "k-rest" },
 };
@@ -89,7 +93,7 @@ export function segbar(x, n = 20) {
   return `<div class="segbar" role="progressbar" aria-label="Progresso geral" aria-valuenow="${Math.round(x * 100)}" aria-valuemin="0" aria-valuemax="100">${
     Array.from({ length: n }, (_, i) => `<span class="${i + 1 <= filled ? "on" : i < filled ? "half" : ""}"></span>`).join("")}</div>`;
 }
-export const verify = (on = true, txt = "VERIFICAR") => (on ? `<span class="verify" title="Informação não visível/legível nos prints">[${txt}]</span>` : "");
+export const verify = (on = true, txt = "VERIFICAR") => (on ? `<span class="verify" title="Leitura incerta">[${txt}]</span>` : "");
 export const phaseTag = (kind, phase) => `<span class="phase ${KIND[kind]?.cls || "k-other"}">${esc(phase || KIND[kind]?.phase || kind)}</span>`;
 export function ring(x, size = 34, stroke = 3.5, color = "var(--accent)") {
   const r = (size - stroke) / 2, c = 2 * Math.PI * r;

@@ -8,8 +8,6 @@ if not exist ".venv\Scripts\python.exe" (
   call install.bat
   if errorlevel 1 exit /b 1
 )
-rem Uso: start.bat            (somente este PC)
-rem      start.bat --lan      (celular na mesma rede Wi-Fi; qualquer aparelho da rede acessa)
-rem      start.bat --lan --https
+rem Abre http://localhost:8000 (somente neste PC). Para encerrar: Ctrl+C ou feche a janela.
 ".venv\Scripts\python.exe" scripts\run.py %*
 pause

@@ -3,33 +3,32 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT);
 CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 
--- Catálogo -----------------------------------------------------------------
+-- Catálogo (vem de data/catalog.json) --------------------------------------
 CREATE TABLE IF NOT EXISTS tracks (
-  id TEXT PRIMARY KEY, ord INTEGER NOT NULL, title TEXT NOT NULL, name TEXT,
-  confirmed INTEGER NOT NULL DEFAULT 0
+  id TEXT PRIMARY KEY, ord INTEGER NOT NULL, title TEXT NOT NULL,
+  group_name TEXT NOT NULL DEFAULT '', header_min REAL
 );
 CREATE TABLE IF NOT EXISTS contents (
-  id TEXT PRIMARY KEY, title TEXT NOT NULL, instructor TEXT, nature TEXT,
-  practice_ratio REAL NOT NULL, duration_min REAL NOT NULL, lesson_count INTEGER,
-  lessons_known INTEGER NOT NULL DEFAULT 0, intro INTEGER NOT NULL DEFAULT 0,
-  verify INTEGER NOT NULL DEFAULT 0, confidence TEXT NOT NULL DEFAULT '{}',
-  study_ord INTEGER NOT NULL, competencies TEXT NOT NULL DEFAULT '[]', overlap_note TEXT, nature_default_ratio REAL
+  id TEXT PRIMARY KEY, title TEXT NOT NULL, type TEXT NOT NULL DEFAULT 'curso',
+  study_ord INTEGER NOT NULL, competencies TEXT NOT NULL DEFAULT '[]',
+  card_min REAL, duration_min REAL NOT NULL, lesson_count INTEGER NOT NULL, note TEXT
 );
--- Aparições de um curso nos prints. track_id NULL = trilha A VERIFICAR.
+-- Um curso pode aparecer em várias trilhas; o cadastro e o progresso são únicos.
 CREATE TABLE IF NOT EXISTS appearances (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   content_id TEXT NOT NULL REFERENCES contents(id) ON DELETE CASCADE,
-  track_id TEXT, position INTEGER NOT NULL, inferred_group TEXT
+  track_id TEXT NOT NULL REFERENCES tracks(id) ON DELETE CASCADE,
+  position INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS modules (
   id TEXT PRIMARY KEY, content_id TEXT NOT NULL REFERENCES contents(id) ON DELETE CASCADE,
-  ord INTEGER NOT NULL, title TEXT NOT NULL, verify INTEGER NOT NULL DEFAULT 0
+  ord INTEGER NOT NULL, title TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS lessons (
   id TEXT PRIMARY KEY, module_id TEXT NOT NULL REFERENCES modules(id) ON DELETE CASCADE,
-  content_id TEXT NOT NULL, ord INTEGER NOT NULL, seq INTEGER NOT NULL,
-  title TEXT NOT NULL, duration_min REAL NOT NULL,
-  verify INTEGER NOT NULL DEFAULT 0, segment INTEGER NOT NULL DEFAULT 0
+  content_id TEXT NOT NULL, ord INTEGER NOT NULL, num INTEGER NOT NULL, seq INTEGER NOT NULL,
+  title TEXT NOT NULL, duration_min REAL NOT NULL DEFAULT 0, has_duration INTEGER NOT NULL DEFAULT 1,
+  kind TEXT NOT NULL DEFAULT 'video'
 );
 
 -- Progresso real (sem FK: sobrevive à reimportação do catálogo) -------------
@@ -51,22 +50,6 @@ CREATE TABLE IF NOT EXISTS review_log (
   due_on TEXT NOT NULL, done_on TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS achievements_unlocked (id TEXT PRIMARY KEY, unlocked_on TEXT NOT NULL);
-
--- AI Agent Lab -------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS lab_stages (
-  id TEXT PRIMARY KEY, ord INTEGER NOT NULL, title TEXT NOT NULL, subtitle TEXT,
-  objective TEXT, implementation TEXT, competencies TEXT NOT NULL DEFAULT '[]',
-  unlock_after TEXT, planned_hours REAL NOT NULL, status TEXT NOT NULL DEFAULT 'locked',
-  notes TEXT NOT NULL DEFAULT '', repo_url TEXT NOT NULL DEFAULT ''
-);
-CREATE TABLE IF NOT EXISTS lab_tasks (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, stage_id TEXT NOT NULL REFERENCES lab_stages(id) ON DELETE CASCADE,
-  ord INTEGER NOT NULL, title TEXT NOT NULL, done_on TEXT
-);
-CREATE TABLE IF NOT EXISTS lab_milestones (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, stage_id TEXT NOT NULL REFERENCES lab_stages(id) ON DELETE CASCADE,
-  ord INTEGER NOT NULL, title TEXT NOT NULL, done_on TEXT
-);
 
 -- Planejamento -------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS plan_items (

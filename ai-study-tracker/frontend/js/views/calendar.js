@@ -1,7 +1,7 @@
 import { api, esc, fmtDate, hm, icon, isoDate, KIND, MON3, MONTHS, openLayer, parseDate, skeleton, TYPE_LABEL, TYPE_KIND, WEEK } from "../core.js";
 import { bindStart, taskRow } from "./dashboard.js";
 
-const ORDER = ["video", "practice", "project", "review"];
+const ORDER = ["video", "review"];
 let cursor = null;
 let mode = null;
 
@@ -62,7 +62,7 @@ export default async function calendar(el) {
       <button class="btn icon-only" id="next" aria-label="Próximo mês">${icon("chevron-right")}</button>
       <button class="btn" id="today">Hoje</button></div>
     </div></div>
-    <div class="legend" style="margin-bottom:14px">${["video", "practice", "project", "review"].map((k) => `<span><span class="dot ${KIND[k].cls}"></span>${KIND[k].label}</span>`).join("")}<span><span class="dot k-rest" style="background:var(--c-rest);outline:1px solid var(--border-2)"></span>Descanso</span></div>
+    <div class="legend" style="margin-bottom:14px">${["video", "review"].map((k) => `<span><span class="dot ${KIND[k].cls}"></span>${KIND[k].label}</span>`).join("")}<span><span class="dot k-rest" style="background:var(--c-rest);outline:1px solid var(--border-2)"></span>Descanso</span><span class="faint">Prática e projetos próprios: registre em Sessões</span></div>
     <div id="cal-body">${skeleton(600)}</div>`;
   const body = el.querySelector("#cal-body");
 

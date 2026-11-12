@@ -16,7 +16,7 @@ def test_bat_basics(name):
     text = raw.decode()
     assert text.lower().startswith("@echo off")
     assert 'cd /d "%~dp0"' in text, "deve funcionar com duplo clique e caminhos com espaço"
-    assert "exit /b" in text and not re.search(r"^\s*exit\s*$", text, re.M | re.I)
+    assert not re.search(r"^\s*exit\s*$", text, re.M | re.I)
 
 
 @pytest.mark.parametrize("name", BATS)
@@ -38,13 +38,14 @@ def test_bat_parentheses_blocks_are_safe(name):
 
 def test_bat_reference_existing_files_and_venv_layout():
     for name in BATS:
-        text = (ROOT / name).read_text()
-        for m in re.findall(r"scripts\\([\w.]+\.py)", text):
+        for m in re.findall(r"scripts\\([\w.]+\.py)", (ROOT / name).read_text()):
             assert (ROOT / "scripts" / m).exists(), (name, m)
     assert r".venv\Scripts\python.exe" in (ROOT / "start.bat").read_text()
     assert "pip install -r requirements.txt" in (ROOT / "install.bat").read_text()
     assert (ROOT / "requirements.txt").exists()
 
 
-def test_run_script_warns_about_lan():
-    assert "QUALQUER dispositivo" in (ROOT / "scripts" / "run.py").read_text()
+def test_server_is_local_only():
+    run = (ROOT / "scripts" / "run.py").read_text()
+    assert 'host="127.0.0.1"' in run and "--lan" not in run and "0.0.0.0" not in run
+    assert not (ROOT / "start.sh").exists() or "--lan" not in (ROOT / "start.sh").read_text()

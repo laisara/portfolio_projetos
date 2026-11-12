@@ -1,8 +1,7 @@
-"""AI Engineer Study Tracker — API FastAPI + PWA estático (local-first)."""
+"""AI Engineer Study Tracker — API FastAPI + PWA estático (local-first, só desktop)."""
 from __future__ import annotations
 
 import json
-import os
 import sqlite3
 from contextlib import asynccontextmanager
 from datetime import date, timedelta
@@ -15,17 +14,16 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from . import backup as backup_mod
 from . import catalog as catalog_mod
-from . import config, db, gamification, lab, services, tracker
+from . import config, db, gamification, services, tracker
 from . import settings as settings_mod
 from .db import get_conn
+from .domain import COMPETENCY_IDS
 
 
 def bootstrap() -> None:
     with db.session_scope() as conn:
         db.init_schema(conn)
-        cfg = settings_mod.load(conn)
         catalog_mod.ensure_catalog(conn, config.catalog_path())
-        lab.seed_lab(conn, config.lab_path())
         tracker.ensure_plan_fresh(conn)
         services.plan_summary(conn)  # grava a data final do plano original
 
@@ -68,8 +66,7 @@ def _reward(conn: sqlite3.Connection, before: dict, reason: str) -> dict:
 # ------------------------------------------------------------------- básicos
 @app.get("/api/health")
 def health(conn: sqlite3.Connection = Depends(get_conn)):
-    return {"ok": True, "version": config.APP_VERSION, "today": config.today().isoformat(),
-            "db": str(config.db_path()), "lan": os.environ.get("AST_LAN") == "1"}
+    return {"ok": True, "version": config.APP_VERSION, "today": config.today().isoformat(), "db": str(config.db_path())}
 
 
 @app.get("/api/dashboard")
@@ -81,20 +78,17 @@ def dashboard(conn: sqlite3.Connection = Depends(get_conn)):
 @app.get("/api/catalog")
 def get_catalog(conn: sqlite3.Connection = Depends(get_conn)):
     snap = services.snapshot(conn)
-    cfg = snap["cfg"]
-    apps: dict[str, list] = {}
-    for a in db.rows(conn, "SELECT * FROM appearances ORDER BY position"):
-        apps.setdefault(a["content_id"], []).append(a)
+    shared: dict[str, list[str]] = {}
+    for a in db.rows(conn, "SELECT content_id, track_id FROM appearances ORDER BY track_id"):
+        shared.setdefault(a["content_id"], []).append(a["track_id"])
     courses = []
     for c in snap["cat"]["contents"].values():
         pc = snap["prog"]["per_content"][c["id"]]
-        courses.append({"id": c["id"], "title": c["title"], "instructor": c["instructor"], "nature": c["nature"],
-                        "duration_min": c["duration_min"], "lesson_count": c["lesson_count"] if c["lessons_known"] or c["lesson_count"] else None,
-                        "lessons_identified": bool(c["lessons_known"]), "intro": bool(c["intro"]),
-                        "practice_ratio": tracker.practice_ratio(c, cfg), "practice_est_min": pc["practice_total"],
-                        "confidence": db.loads(c["confidence"], {}), "appearances": apps.get(c["id"], []),
-                        "pct": pc["pct"], "study_ord": c["study_ord"]})
-    return {"analysis": catalog_mod.analysis(conn), "tracks": services.tracks_progress(conn, snap), "courses": courses}
+        courses.append({"id": c["id"], "title": c["title"], "type": c["type"], "duration_min": c["duration_min"],
+                        "card_min": c["card_min"], "lessons": pc["lessons"], "lessons_done": pc["lessons_done"],
+                        "durationless": pc["durationless"], "pct": pc["pct"], "complete": pc["complete"],
+                        "tracks": shared.get(c["id"], []), "study_ord": c["study_ord"]})
+    return {"analysis": catalog_mod.analysis(conn), "tracks": snap["tracks"], "courses": courses}
 
 
 @app.get("/api/contents/{content_id}")
@@ -104,46 +98,69 @@ def get_content(content_id: str, conn: sqlite3.Connection = Depends(get_conn)):
     if not c:
         raise KeyError(content_id)
     lp = tracker.lesson_state(conn)
-    pp, pc = snap["prog"]["practice_planned"], snap["prog"]["practice_credit"]
     modules = []
     for m in sorted((m for m in snap["cat"]["modules"].values() if m["content_id"] == content_id), key=lambda m: m["ord"]):
         lessons = [{**l, "completed_on": (lp.get(l["id"]) or {}).get("completed_on"),
-                    "watched_min": (lp.get(l["id"]) or {}).get("watched_min", 0)}
+                    "watched_min": (lp.get(l["id"]) or {}).get("watched_min", 0), "required": tracker.is_required(l)}
                    for l in snap["cat"]["lessons"] if l["module_id"] == m["id"]]
-        modules.append({**m, "lessons": lessons, "practice_planned": pp.get(m["id"], 0), "practice_done": min(pp.get(m["id"], 0), pc.get(m["id"], 0))})
-    appearances = db.rows(conn, "SELECT * FROM appearances WHERE content_id=? ORDER BY position", (content_id,))
+        pm = snap["prog"]["per_module"][m["id"]]
+        modules.append({**m, "lessons": lessons, "video_total": pm["video_total"], "video_done": pm["video_done"],
+                        "lessons_done": pm["lessons_done"], "lessons_required": pm["lessons"], "complete": pm["complete"]})
+    apps = db.rows(conn, "SELECT t.id, t.title, t.group_name, a.position FROM appearances a JOIN tracks t ON t.id=a.track_id WHERE a.content_id=? ORDER BY t.ord", (content_id,))
     planned = db.rows(conn, "SELECT date, kind, minutes FROM plan_items WHERE content_id=? ORDER BY date", (content_id,))
-    sessions = db.rows(conn, "SELECT * FROM sessions WHERE target_id IN (SELECT id FROM lessons WHERE content_id=? UNION SELECT id FROM modules WHERE content_id=?) ORDER BY date DESC LIMIT 20", (content_id, content_id))
-    stages = [{"id": s["id"], "title": s["title"], "status": s["effective_status"]} for s in snap["stages"] if s["unlock_after"] == content_id]
-    from .domain import NATURES
-    return {**c, "progress": snap["prog"]["per_content"][content_id], "modules": modules, "appearances": appearances,
-            "confidence": db.loads(c.get("confidence"), {}), "practice_ratio_effective": tracker.practice_ratio(c, snap["cfg"]),
+    sessions = db.rows(conn, "SELECT * FROM sessions WHERE target_id IN (SELECT id FROM lessons WHERE content_id=?) OR target_id=? ORDER BY date DESC LIMIT 20", (content_id, content_id))
+    return {**c, "progress": snap["prog"]["per_content"][content_id], "modules": modules, "tracks": apps,
             "plan": {"first": planned[0]["date"] if planned else None, "last": planned[-1]["date"] if planned else None,
-                     "minutes": sum(p["minutes"] for p in planned)},
-            "sessions": sessions, "lab_stages": stages, "nature_info": NATURES.get(c["nature"], {})}
+                     "minutes": sum(p["minutes"] for p in planned)}, "sessions": sessions}
 
 
-class LessonToggle(BaseModel):
+class Toggle(BaseModel):
     completed: bool
     date: Optional[date] = None
 
 
+def _set_lessons(conn: sqlite3.Connection, lesson_ids: list[str], completed: bool, d: date) -> None:
+    for lid in lesson_ids:
+        if completed:
+            conn.execute("INSERT INTO lesson_progress(lesson_id, completed_on) VALUES (?,?) ON CONFLICT(lesson_id) DO UPDATE SET completed_on=COALESCE(lesson_progress.completed_on, excluded.completed_on)", (lid, d.isoformat()))
+        else:
+            conn.execute("UPDATE lesson_progress SET completed_on=NULL WHERE lesson_id=?", (lid,))
+
+
+def _required_lessons(conn, where: str, arg: str) -> list[str]:
+    return [r["id"] for r in db.rows(conn, f"SELECT id FROM lessons WHERE {where}=? AND kind!='placeholder' ORDER BY seq", (arg,))]
+
+
 @app.post("/api/lessons/{lesson_id}/toggle")
-def toggle_lesson(lesson_id: str, body: LessonToggle, conn: sqlite3.Connection = Depends(get_conn)):
+def toggle_lesson(lesson_id: str, body: Toggle, conn: sqlite3.Connection = Depends(get_conn)):
     if not db.row(conn, "SELECT id FROM lessons WHERE id=?", (lesson_id,)):
         raise KeyError(lesson_id)
     before = _xp_state(conn)
-    d = (body.date or config.today()).isoformat()
-    if body.completed:
-        conn.execute("INSERT INTO lesson_progress(lesson_id, completed_on) VALUES (?,?) ON CONFLICT(lesson_id) DO UPDATE SET completed_on=excluded.completed_on", (lesson_id, d))
-    else:
-        conn.execute("UPDATE lesson_progress SET completed_on=NULL WHERE lesson_id=?", (lesson_id,))
+    _set_lessons(conn, [lesson_id], body.completed, body.date or config.today())
     return _reward(conn, before, "aula atualizada")
+
+
+@app.post("/api/modules/{module_id}/complete")
+def complete_module(module_id: str, body: Toggle, conn: sqlite3.Connection = Depends(get_conn)):
+    if not db.row(conn, "SELECT id FROM modules WHERE id=?", (module_id,)):
+        raise KeyError(module_id)
+    before = _xp_state(conn)
+    _set_lessons(conn, _required_lessons(conn, "module_id", module_id), body.completed, body.date or config.today())
+    return _reward(conn, before, "módulo atualizado")
+
+
+@app.post("/api/contents/{content_id}/complete")
+def complete_content(content_id: str, body: Toggle, conn: sqlite3.Connection = Depends(get_conn)):
+    """Concluir/desmarcar um curso vale em TODAS as trilhas, módulos e aulas que o contêm."""
+    if not db.row(conn, "SELECT id FROM contents WHERE id=?", (content_id,)):
+        raise KeyError(content_id)
+    before = _xp_state(conn)
+    _set_lessons(conn, _required_lessons(conn, "content_id", content_id), body.completed, body.date or config.today())
+    return _reward(conn, before, "curso atualizado")
 
 
 @app.post("/api/catalog/import")
 def import_catalog(payload: dict, conn: sqlite3.Connection = Depends(get_conn)):
-    cfg = settings_mod.load(conn)
     try:
         result = catalog_mod.import_catalog(conn, payload)
     except ValidationError as exc:
@@ -193,7 +210,7 @@ SessionType = Literal["VIDEO", "PRACTICE", "PROJECT", "REVIEW", "OTHER"]
 class SessionIn(BaseModel):
     date: date
     type: SessionType
-    target_kind: Literal["lesson", "module", "stage", "review", "content", "free"] = "free"
+    target_kind: Literal["lesson", "content", "review", "free"] = "free"
     target_id: Optional[str] = Field(default=None, max_length=200)
     title: str = Field(min_length=1, max_length=200)
     planned_min: float = Field(default=0, ge=0, le=720)
@@ -223,18 +240,19 @@ class SessionIn(BaseModel):
 
 def _apply_side_effects(conn: sqlite3.Connection, s: SessionIn) -> None:
     d = s.date.isoformat()
-    if s.type == "VIDEO" and s.target_kind == "lesson" and s.target_id and s.target_id not in s.complete_lessons and s.status != "missed":
+    if s.type == "VIDEO" and s.target_kind == "lesson" and s.target_id and s.status != "missed":
+        les = db.row(conn, "SELECT duration_min FROM lessons WHERE id=?", (s.target_id,))
+        if not les:
+            raise ValueError(f"Aula inexistente: {s.target_id}")
         conn.execute("INSERT INTO lesson_progress(lesson_id, watched_min) VALUES (?, ?) ON CONFLICT(lesson_id) DO UPDATE SET watched_min = watched_min + excluded.watched_min",
                      (s.target_id, s.actual_min))
-        les = db.row(conn, "SELECT duration_min FROM lessons WHERE id=?", (s.target_id,))
-        if les and les["duration_min"] and s.status == "done":
-            w = db.row(conn, "SELECT watched_min FROM lesson_progress WHERE lesson_id=?", (s.target_id,))["watched_min"]
-            if w >= les["duration_min"] * 0.95:
-                conn.execute("UPDATE lesson_progress SET completed_on=COALESCE(completed_on, ?) WHERE lesson_id=?", (d, s.target_id))
+        w = db.row(conn, "SELECT watched_min FROM lesson_progress WHERE lesson_id=?", (s.target_id,))["watched_min"]
+        if les["duration_min"] and s.status == "done" and w >= les["duration_min"] * 0.95:
+            conn.execute("UPDATE lesson_progress SET completed_on=COALESCE(completed_on, ?) WHERE lesson_id=?", (d, s.target_id))
     for lid in s.complete_lessons:
         if not db.row(conn, "SELECT id FROM lessons WHERE id=?", (lid,)):
             raise ValueError(f"Aula inexistente: {lid}")
-        conn.execute("INSERT INTO lesson_progress(lesson_id, completed_on) VALUES (?,?) ON CONFLICT(lesson_id) DO UPDATE SET completed_on=COALESCE(lesson_progress.completed_on, excluded.completed_on)", (lid, d))
+        _set_lessons(conn, [lid], True, s.date)
     for key in s.review_keys:
         try:
             learned, iv = key.split(":D")
@@ -305,45 +323,7 @@ def review_done(key: str, conn: sqlite3.Connection = Depends(get_conn)):
 
 @app.get("/api/reviews")
 def reviews(conn: sqlite3.Connection = Depends(get_conn)):
-    snap = services.snapshot(conn)
-    return {"reviews": snap["reviews"]}
-
-
-# ------------------------------------------------------------------- lab
-@app.get("/api/lab")
-def get_lab(conn: sqlite3.Connection = Depends(get_conn)):
-    snap = services.snapshot(conn)
-    planned = {r["ref"]: r for r in db.rows(conn, "SELECT ref, MIN(date) AS first, MAX(date) AS last, SUM(minutes) AS m FROM plan_items WHERE kind='project' GROUP BY ref")}
-    from .domain import COMPETENCIES
-    labels = {c["id"]: c["label"] for c in COMPETENCIES}
-    return {"stages": [{**s, "plan": planned.get(s["id"]), "competency_labels": [labels.get(c, c) for c in s["competencies"]]} for s in snap["stages"]]}
-
-
-class StagePatch(BaseModel):
-    status: Optional[Literal["locked", "available", "in_progress", "done"]] = None
-    notes: Optional[str] = Field(default=None, max_length=20000)
-    repo_url: Optional[str] = Field(default=None, max_length=500)
-
-
-@app.patch("/api/lab/stages/{stage_id}")
-def patch_stage(stage_id: str, body: StagePatch, conn: sqlite3.Connection = Depends(get_conn)):
-    before = _xp_state(conn)
-    lab.update_stage(conn, stage_id, body.model_dump(exclude_none=True), config.today().isoformat())
-    return _reward(conn, before, "lab atualizado")
-
-
-@app.post("/api/lab/tasks/{item_id}/toggle")
-def toggle_task(item_id: int, conn: sqlite3.Connection = Depends(get_conn)):
-    before = _xp_state(conn)
-    lab.toggle(conn, "lab_tasks", item_id, config.today().isoformat())
-    return _reward(conn, before, "tarefa do lab")
-
-
-@app.post("/api/lab/milestones/{item_id}/toggle")
-def toggle_milestone(item_id: int, conn: sqlite3.Connection = Depends(get_conn)):
-    before = _xp_state(conn)
-    lab.toggle(conn, "lab_milestones", item_id, config.today().isoformat())
-    return _reward(conn, before, "milestone do lab")
+    return {"reviews": services.snapshot(conn)["reviews"]}
 
 
 # ------------------------------------------------------------------- gamificação e competências
@@ -367,36 +347,10 @@ def get_settings(conn: sqlite3.Connection = Depends(get_conn)):
 class SettingsIn(BaseModel):
     start_date: Optional[date] = None
     rest_weekday: Optional[int] = Field(default=None, ge=0, le=6)
-    project_weekday: Optional[int] = Field(default=None, ge=0, le=6)
     capacity: Optional[dict[str, int]] = None
     holidays: Optional[dict[str, float]] = None
     focus_minutes: Optional[int] = Field(default=None, ge=5, le=180)
-    block_minutes: Optional[int] = Field(default=None, ge=20, le=90)
-    practice_overrides: Optional[dict[str, float]] = None
     competency_baselines: Optional[dict[str, float]] = None
-
-    @field_validator("practice_overrides")
-    @classmethod
-    def _pr(cls, v):
-        if v is None:
-            return v
-        for k, x in v.items():
-            if not 0 <= x <= 3:
-                raise ValueError(f"razão de prática de {k} deve ficar entre 0 e 3 (0%–300%)")
-        return v
-
-    @field_validator("competency_baselines")
-    @classmethod
-    def _bl(cls, v):
-        from .domain import COMPETENCY_IDS
-        if v is None:
-            return v
-        for k, x in v.items():
-            if k not in COMPETENCY_IDS:
-                raise ValueError(f"competência desconhecida: {k}")
-            if not 0 <= x <= 1:
-                raise ValueError("ponto de partida entre 0 e 1")
-        return v
 
     @field_validator("capacity")
     @classmethod
@@ -422,6 +376,18 @@ class SettingsIn(BaseModel):
                 raise ValueError("multiplicador entre 0 e 1")
         return v
 
+    @field_validator("competency_baselines")
+    @classmethod
+    def _bl(cls, v):
+        if v is None:
+            return v
+        for k, x in v.items():
+            if k not in COMPETENCY_IDS:
+                raise ValueError(f"competência desconhecida: {k}")
+            if not 0 <= x <= 1:
+                raise ValueError("ponto de partida entre 0 e 1")
+        return v
+
 
 @app.put("/api/settings")
 def put_settings(body: SettingsIn, conn: sqlite3.Connection = Depends(get_conn)):
@@ -429,12 +395,11 @@ def put_settings(body: SettingsIn, conn: sqlite3.Connection = Depends(get_conn))
     if "start_date" in values:
         values["start_date"] = values["start_date"].isoformat()
     if body.rest_weekday is not None and body.capacity is None:
-        cap = settings_mod.load(conn)["capacity"]
-        values["capacity"] = cap
+        values["capacity"] = settings_mod.load(conn)["capacity"]
     cfg = settings_mod.save(conn, values)
     tracker.recalculate(conn, "ajustes alterados")
     summary = services.plan_summary(conn)
-    return {"settings": cfg, "end": summary["end"]}
+    return {"settings": cfg, "end": summary["end"], "lessons_end": summary["lessons_end"]}
 
 
 @app.get("/api/export")

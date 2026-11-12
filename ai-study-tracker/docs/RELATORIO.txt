@@ -1,0 +1,139 @@
+================================================================================
+AI ENGINEER STUDY TRACKER — RELATÓRIO GERAL
+Data: 12/11/2026 · Branch: ccr-97dc7c3e-vbe1hb · Pasta: ai-study-tracker/
+================================================================================
+
+1. O QUE É O PRODUTO (escopo final decidido por você)
+--------------------------------------------------------------------------------
+- App pessoal e local-first, SOMENTE DESKTOP (Windows), para CONTROLAR OS ESTUDOS:
+  Formação -> Trilhas -> Módulos -> Aulas.
+- REMOVIDO por decisão sua: AI Agent Lab, mobile, modo LAN e prática automática.
+- Stack: Python + FastAPI + SQLite; frontend HTML/CSS/JS sem build; PWA (manifest +
+  service worker). Servidor escuta apenas em 127.0.0.1.
+- Identidade visual: Dark + verde esmeralda (tokens --bg-primary, --green-primary etc.).
+
+2. CATÁLOGO (fonte: player da plataforma, enviado por você)
+--------------------------------------------------------------------------------
+- 8 trilhas em 2 grupos:
+  Grupo "Produtividade pessoal com IA":
+    1 Dominando o ecossistema Claude (5 cursos)       6h53m03s  (site: 6h50)
+    2 Dominando Openclaw (4)                          5h24m30s  (site: 5h24)
+    3 Criando Agentes Pessoais com Hermes Agent (3)   3h35m40s  (site: 3h35)
+    4 Agentes com GPT (3)                             2h23m07s  (site: 2h23)
+  Grupo "Criando sistemas profissionais de inteligência artificial":
+    5 Aplicações Inteligentes com IA (7)              9h47m26s  (site: 9h47)
+    6 Ferramentas de AI para Desenvolvedores (6)      8h51m32s  (site: 8h51)
+    7 Criando agentes de atendimento no N8N (8)      10h15m10s  (site: 10h15)
+    8 Aplicações AI com Python (12)                  27h20m11s  (site: 26h51)
+- 48 aparições de cursos -> 42 cursos ÚNICOS -> 463 aulas (1 é aviso "em breve").
+- Carga bruta (8 trilhas) ........ 74h30m39s
+- Conteúdo duplicado ............. 8h09m02s
+    (Fundamentos da IA Generativa em 6 trilhas; Masterclass Claude Code em 2)
+- CONTEÚDO ÚNICO A ESTUDAR ....... 66h21m37s  (soma das durações das aulas)
+- Declarado pela plataforma ...... 62h34  (só informativo; diferença +3h47)
+- Regras aplicadas (suas decisões):
+    * duração do curso = soma das aulas;
+    * aula sem duração = "-" (56 itens: quizzes, testes, guias), conta 0 min;
+    * módulo sem título = "Módulo N";
+    * eletivos FORA: Projetos para Professores, Para se aprofundar, Git e GitHub;
+    * curso repetido = 1 cadastro; concluir aula/módulo/curso vale em todas as trilhas.
+- Cada um dos 42 cursos confere com o card do site em até 2 minutos.
+  Só a trilha 8 difere do cabeçalho do site (+29 min), apesar de os cards baterem.
+- Correção feita durante o recebimento: Dominando Automações com n8n soma 2h47m26s
+  (um erro de aritmética meu havia indicado 3h35; não havia aulas repetidas).
+
+3. CRONOGRAMA (só aulas + revisão)
+--------------------------------------------------------------------------------
+- Início 13/11/2026 · ÚLTIMA AULA 21/12/2026 · última revisão D+30: 20/01/2027.
+- Formação 66h22 + Revisão 9h26 = TEMPO TOTAL DE APRENDIZADO 75h48.
+- 33 dias de aula · 20 dias só com revisão (cauda D+7/D+30) · 6 dias de descanso até a
+  última aula · média 2h14 por dia de aula · maior dia 3h33 (sábado).
+- Rotina: Seg/Ter/Qui 2h15 · Qua 2h · Sex 1h45 · Sáb 3h30 · Dom descanso;
+  24/12 e 31/12 com meia carga; 25/12 e 01/01 descanso.
+- A data NÃO é carga ÷ dias: sai do algoritmo (capacidade por dia, descanso, revisão).
+- Adaptativo: recalcula só o futuro; histórico e "foto" do plano de cada dia preservados.
+- Prática e projetos próprios: você registra como sessões (valem mais XP); não entram
+  no plano automático.
+- Dia a dia completo: docs/CRONOGRAMA.md.
+
+4. FUNCIONALIDADES IMPLEMENTADAS
+--------------------------------------------------------------------------------
+Painel (progresso geral, FORMAÇÃO / REVISÃO / TEMPO TOTAL separados, reviews de hoje,
+o que estudar hoje agrupado por curso) · Calendário (mês/agenda) · Formação (trilhas,
+cursos únicos, carga) · Curso (módulos, aulas, "-", concluir aula/módulo/curso) ·
+Sessões (registro manual) · Focus Mode (timer com pausa) · revisão espaçada
+D+1/D+7/D+30 · XP (aula 1x, revisão 1,5x, prática 2x, projeto 2,5x) · 6 níveis ·
+17 conquistas · competências (pontos de partida editáveis) · Planejamento ·
+Ajustes · backup/restore (.db) · export/import (JSON) · PWA.
+
+5. QUALIDADE E VALIDAÇÃO (o que foi realmente verificado)
+--------------------------------------------------------------------------------
+- 66 testes pytest passando: catálogo, duplicidades, números oficiais, planner,
+  aula sem duração, progresso compartilhado entre trilhas (concluir/desmarcar),
+  placeholder, sessões, XP, revisão, adaptação (atraso/adiantamento), backup,
+  restore (inclui arquivo corrompido), import, PWA e checagem estática dos .bat.
+- axe-core (acessibilidade): 0 violações nas 10 telas (desktop).
+- Performance (CPU 4x + 4G lento): 1ª renderização ~1,0 s, 138 KB, 23 requisições,
+  0 externas, heap ~10 MB.
+- Chrome (CDP): 0 erros de instalabilidade e de manifest; abre offline com os últimos
+  dados (testado nesta versão).
+- Screenshots reais do app rodando: docs/screenshots/ (13 telas, banco de demonstração).
+
+6. NÃO VALIDADO (declaração explícita)
+--------------------------------------------------------------------------------
+- install.bat, start.bat, backup.bat e restore.bat NUNCA foram executados em
+  Windows real (ambiente Linux). Só houve checagem estática (CRLF, ASCII, parênteses,
+  arquivos referenciados). Podem existir erros que só o Windows revela.
+- Instalação do PWA em Chrome/Edge do Windows real: só emulação (Chromium/CDP).
+- Lighthouse completo não foi executado (foi usado axe-core + medição própria).
+- Não há testes automatizados de interface (JS); validação por screenshots e axe.
+- Os dados dos prints/vídeos/fotos foram lidos visualmente por mim; erros de
+  transcrição são possíveis (ver item 7.3).
+
+7. PENDÊNCIAS
+--------------------------------------------------------------------------------
+7.1 Você precisa rodar no Windows e me dizer se install.bat/start.bat funcionam.
+7.2 Trilha 8: o cabeçalho do site (26h51) é 29 min menor que a soma das aulas
+    (27h20); os cards de cada curso batem com as aulas. Provável cabeçalho
+    desatualizado; mantido como informativo.
+7.3 Leituras com zero riscado (poucos segundos de erro cada), a conferir se quiser:
+    - Antigravity "Conectando MCPs": 0:01 adotado (poderia ser 8:01; só 0:01 fecha
+      com o card); ordem das aulas 10/11 do mesmo curso.
+    - Conceitos Gerais de LLMs 19:03 · Os princípios de um bom prompt 10:03 ·
+      Transformando, traduzindo e modificando 6:40.
+    - Hermes Agent aula 6 (30:50) · Claude Desktop aulas 8 e 20 · Claude Avançado
+      aulas 3, 5 e 8 · WhatsApp aulas 11 e 15 · Cursor AI aula 11 (10:10).
+    - Posição dos guias de instalação dentro do Coder Toolbox.
+7.4 56 itens sem duração entram com 0 min. Se algum tiver vídeo no player, a carga sobe.
+7.5 Fotos de baixa qualidade: se algum título tiver erro de digitação, ajustar em
+    scripts/build_catalog.py e rodar de novo.
+7.6 Estados de tela ainda sem print: Focus Mode em andamento (print 07 mostra o seletor)
+    e modal de registrar sessão.
+
+8. DECISÕES QUE PRECISAM DE VOCÊ
+--------------------------------------------------------------------------------
+D1. Ritmo diário: manter 2h15 (seg/ter/qui), 2h (qua), 1h45 (sex), 3h30 (sáb)?
+    Terminar as aulas até 15/01 não é mais problema (termina em 21/12); dá para
+    REDUZIR a carga diária e ainda terminar bem antes. Quer um ritmo mais leve
+    (ex.: 1h30–1h45 nos dias úteis)? Recomendação: manter e usar a folga para prática.
+D2. Cauda de revisões D+7/D+30 (20 dias só com revisão, 5–25 min/dia): manter ou
+    agrupar em menos dias? Recomendação: manter.
+D3. Ordem de estudo: hoje segue a plataforma (trilha 1, 2, ... 8; curso repetido na
+    primeira aparição). Prefere uma ordem pedagógica (fundamentos/Python antes das
+    ferramentas)? Recomendação: manter a ordem da plataforma.
+D4. Competências: a classificação de cada curso por competência é minha (inferida) e
+    os pontos de partida (ex.: Python 70%) são estimativas. Quer revisar?
+D5. XP/níveis: os limiares (1.000 / 3.500 / 7.500 / 12.500 / 18.000 XP) são
+    palpites meus. Ajustar após as primeiras semanas de uso real?
+D6. Git e GitHub (eletivo, 3h08): quer que fique cadastrado como "opcional", fora
+    do progresso, para você poder estudar depois? Hoje não está no sistema.
+
+9. ARQUIVOS
+--------------------------------------------------------------------------------
+README.md · docs/ANALISE.md · docs/CRONOGRAMA.md · docs/RELATORIO.txt ·
+docs/screenshots/ · data/catalog.json · scripts/build_catalog.py ·
+backend/app/ · frontend/ · tests/ · install.bat · start.bat · backup.bat · restore.bat
+
+================================================================================
+FIM DO RELATÓRIO
+================================================================================

@@ -1,4 +1,4 @@
-import { api, busy, confirmDialog, esc, fmtDate, hm, icon, pct, toast, WEEK } from "../core.js";
+import { api, busy, confirmDialog, esc, fmtDate, hm, icon, toast, WEEK } from "../core.js";
 
 function download(blob, name) {
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click();
@@ -14,12 +14,9 @@ export default async function settings(el) {
     <section class="panel"><div class="panel-head"><h2>Rotina de estudo</h2><span class="faint num" id="weekly">${hm(weekly)} / semana</span></div>
       <form id="cap-form">
         ${WEEK.map((d, i) => `<div class="row" style="padding:6px 0;border-top:${i ? "1px solid var(--border)" : "0"}">
-          <label for="cap-${i}" style="flex:1">${d}${i === s.rest_weekday ? ` <span class="chip">descanso</span>` : ""}${i === s.project_weekday ? ` <span class="chip warn">projeto</span>` : ""}</label>
+          <label for="cap-${i}" style="flex:1">${d}${i === s.rest_weekday ? ` <span class="chip">descanso</span>` : ""}</label>
           <input id="cap-${i}" class="input num" type="number" min="0" max="480" step="5" value="${s.capacity[i]}" style="width:96px" ${i === s.rest_weekday ? "disabled" : ""}><span class="faint" style="width:30px">min</span></div>`).join("")}
-        <div class="field-row" style="margin-top:14px">
-          <div class="field"><label for="rest">Dia de descanso</label><select id="rest" class="input">${WEEK.map((d, i) => `<option value="${i}" ${i === s.rest_weekday ? "selected" : ""}>${d}</option>`).join("")}</select></div>
-          <div class="field"><label for="proj">Dia de projeto</label><select id="proj" class="input">${WEEK.map((d, i) => `<option value="${i}" ${i === s.project_weekday ? "selected" : ""}>${d}</option>`).join("")}</select></div>
-        </div>
+        <div class="field" style="margin-top:14px"><label for="rest">Dia de descanso</label><select id="rest" class="input">${WEEK.map((d, i) => `<option value="${i}" ${i === s.rest_weekday ? "selected" : ""}>${d}</option>`).join("")}</select></div>
         <div class="field-row">
           <div class="field"><label for="start">Início</label><input id="start" class="input" type="date" value="${s.start_date}"></div>
           <div class="field"><label for="focus">Bloco do Focus (min)</label><input id="focus" class="input num" type="number" min="5" max="180" value="${s.focus_minutes}"></div>
@@ -35,11 +32,11 @@ export default async function settings(el) {
           <button class="btn" id="ex">${icon("download")} Exportar JSON</button>
           <label class="btn" for="im">${icon("upload")} Importar JSON</label><input type="file" id="im" accept="application/json,.json" class="sr-only">
         </div></section>
-      <section class="panel"><h2 style="margin-bottom:6px">Catálogo da formação</h2><p class="faint" style="font-size:12.5px;margin:0 0 14px">Quando tiver os prints que faltam, importe o <span class="mono">catalog.json</span> atualizado. O progresso é preservado pelos IDs das aulas.</p>
+      <section class="panel"><h2 style="margin-bottom:6px">Catálogo da formação</h2><p class="faint" style="font-size:12.5px;margin:0 0 14px">Importe um <span class="mono">catalog.json</span> atualizado. O progresso é preservado pelos IDs das aulas.</p>
         <div class="row wrap"><a class="btn" href="/api/catalog/export">${icon("file-json")} Baixar catalog.json</a>
           <label class="btn" for="cat">${icon("upload")} Importar catálogo</label><input type="file" id="cat" accept="application/json,.json" class="sr-only"></div></section>
       <section class="panel"><h2 style="margin-bottom:6px">Instalar como app</h2>
-        <p class="faint" style="font-size:12.5px;margin:0 0 14px">Windows (Chrome/Edge): ícone de instalar na barra de endereço. Android (Chrome): menu ⋮ → Instalar app. Veja o README para acesso pelo celular.</p>
+        <p class="faint" style="font-size:12.5px;margin:0 0 14px">Chrome ou Edge no Windows: ícone de instalar na barra de endereço. O app abre em janela própria; o servidor (start.bat) precisa estar rodando.</p>
         <button class="btn" id="install" disabled>${icon("download")} Instalar AI Engineer Study Tracker</button></section>
       <p class="faint" style="font-size:12px">Versão ${esc(h.version)} · hoje ${fmtDate(h.today, "full")}</p>
     </div>
@@ -57,8 +54,7 @@ export default async function settings(el) {
     for (let i = 0; i < 7; i++) capacity[i] = i === +rest.value ? 0 : Math.round(+el.querySelector(`#cap-${i}`).value || 0);
     busy(btn);
     try {
-      const r = await api("/settings", { method: "PUT", body: { capacity, rest_weekday: +rest.value, project_weekday: +el.querySelector("#proj").value,
-        start_date: el.querySelector("#start").value, focus_minutes: +el.querySelector("#focus").value } });
+      const r = await api("/settings", { method: "PUT", body: { capacity, rest_weekday: +rest.value, start_date: el.querySelector("#start").value, focus_minutes: +el.querySelector("#focus").value } });
       toast(`Rotina salva · novo término ${fmtDate(r.end, "full")}`, { type: "good" });
       settings(el);
     } catch (err) { toast(err.message, { type: "error" }); busy(btn, false); }
@@ -92,35 +88,22 @@ export default async function settings(el) {
       window.dispatchEvent(new Event("study:changed"));
     } catch (err) { toast(err.message.startsWith("Unexpected") ? "JSON inválido." : err.message, { type: "error" }); }
   };
-  // LAN: aviso explícito
-  el.querySelector(".grid.grid-2").insertAdjacentHTML("beforebegin", h.lan
-    ? `<div class="notice" style="margin-bottom:16px">${icon("triangle-alert")}<div><b>Modo LAN ativo.</b> Qualquer dispositivo com acesso à sua rede Wi-Fi pode abrir este app e ler/alterar seus dados (não há senha). Use só em rede confiável.</div></div>` : "");
-
-  // Prática por curso e pontos de partida (estimativas editáveis)
-  const [cat, comps] = await Promise.all([api("/catalog"), api("/competencies")]);
-  el.insertAdjacentHTML("beforeend", `<div class="grid grid-2 section">
-    <section class="panel"><h2 style="margin-bottom:6px">Prática por curso <span class="chip" style="height:20px;font-size:11px">ESTIMATIVA DO SISTEMA</span></h2>
-      <p class="faint" style="font-size:12.5px;margin:0 0 12px">Prática = % da duração real do vídeo. Não vem dos prints.</p>
-      <form id="pr-form">${cat.courses.map((c) => `<div class="row" style="padding:5px 0;border-top:1px solid var(--border)">
-        <label for="pr-${c.id}" style="flex:1;min-width:0"><span style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(c.title)}</span><span class="faint" style="font-size:11.5px">vídeo ${hm(c.duration_min)} → prática ${hm(c.practice_est_min)}</span></label>
-        <input id="pr-${c.id}" data-id="${c.id}" class="input num" type="number" min="0" max="300" step="5" value="${Math.round(c.practice_ratio * 100)}" style="width:78px"><span class="faint">%</span></div>`).join("")}
-        <button class="btn primary" style="margin-top:12px" id="pr-save">${icon("check")} Salvar e recalcular</button></form></section>
-    <section class="panel"><h2 style="margin-bottom:6px">Competências: ponto de partida <span class="chip" style="height:20px;font-size:11px">ESTIMATIVA EDITÁVEL</span></h2>
-      <p class="faint" style="font-size:12.5px;margin:0 0 12px">Quanto você já domina antes da formação. Valores iniciais são chutes razoáveis; ajuste à sua realidade.</p>
-      <form id="bl-form">${comps.competencies.map((c) => `<div class="row" style="padding:5px 0;border-top:1px solid var(--border)">
+  // Pontos de partida das competências (estimativas editáveis)
+  const comps = await api("/competencies");
+  el.insertAdjacentHTML("beforeend", `<section class="panel section"><h2 style="margin-bottom:6px">Competências: ponto de partida <span class="chip" style="height:20px;font-size:11px">ESTIMATIVA EDITÁVEL</span></h2>
+      <p class="faint" style="font-size:12.5px;margin:0 0 12px">Quanto você já domina antes da formação. Os valores iniciais são estimativas, não fatos: ajuste à sua realidade.</p>
+      <form id="bl-form" style="columns:2;column-gap:32px">${comps.competencies.map((c) => `<div class="row" style="padding:5px 0;border-top:1px solid var(--border);break-inside:avoid">
         <label for="bl-${c.id}" style="flex:1">${esc(c.label)}</label>
         <input id="bl-${c.id}" data-id="${c.id}" class="input num" type="number" min="0" max="100" step="5" value="${Math.round(c.baseline * 100)}" style="width:78px"><span class="faint">%</span></div>`).join("")}
-        <button class="btn primary" style="margin-top:12px" id="bl-save">${icon("check")} Salvar</button></form></section></div>`);
-  const saveMap = (formSel, key, divisor, btnSel) => el.querySelector(formSel).onsubmit = async (e) => {
+        <div style="column-span:all;margin-top:12px"><button class="btn primary" id="bl-save">${icon("check")} Salvar</button></div></form></section>`);
+  el.querySelector("#bl-form").onsubmit = async (e) => {
     e.preventDefault();
     const map = {};
-    el.querySelectorAll(`${formSel} input[data-id]`).forEach((i) => { map[i.dataset.id] = Math.max(0, Math.min(key === "practice_overrides" ? 300 : 100, +i.value || 0)) / divisor; });
-    const btn = el.querySelector(btnSel); busy(btn);
-    try { await api("/settings", { method: "PUT", body: { [key]: map } }); toast("Salvo e plano recalculado.", { type: "good" }); window.dispatchEvent(new Event("study:changed")); }
+    el.querySelectorAll("#bl-form input[data-id]").forEach((i) => { map[i.dataset.id] = Math.max(0, Math.min(100, +i.value || 0)) / 100; });
+    const btn = el.querySelector("#bl-save"); busy(btn);
+    try { await api("/settings", { method: "PUT", body: { competency_baselines: map } }); toast("Pontos de partida salvos.", { type: "good" }); window.dispatchEvent(new Event("study:changed")); }
     catch (err) { toast(err.message, { type: "error" }); } finally { busy(btn, false); }
   };
-  saveMap("#pr-form", "practice_overrides", 100, "#pr-save");
-  saveMap("#bl-form", "competency_baselines", 100, "#bl-save");
 
   const inst = el.querySelector("#install");
   const enable = () => { if (window.__installPrompt) inst.disabled = false; };

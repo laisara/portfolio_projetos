@@ -11,7 +11,7 @@ from pathlib import Path
 from . import config, db
 
 USER_TABLES = ["settings", "lesson_progress", "sessions", "review_log", "achievements_unlocked", "day_baseline"]
-REQUIRED_TABLES = {"sessions", "lesson_progress", "lab_stages", "contents"}
+REQUIRED_TABLES = {"sessions", "lesson_progress", "contents", "lessons"}
 
 
 def backup_to_file(dest_dir: Path | None = None, label: str = "backup") -> Path:
@@ -71,9 +71,6 @@ def export_json(conn: sqlite3.Connection) -> dict:
     out = {"app": "ai-study-tracker", "version": config.APP_VERSION, "exported_at": datetime.now().isoformat(timespec="seconds"), "tables": {}}
     for t in USER_TABLES:
         out["tables"][t] = db.rows(conn, f"SELECT * FROM {t}")
-    out["tables"]["lab_stages"] = db.rows(conn, "SELECT id, status, notes, repo_url FROM lab_stages")
-    out["tables"]["lab_tasks"] = db.rows(conn, "SELECT stage_id, ord, done_on FROM lab_tasks")
-    out["tables"]["lab_milestones"] = db.rows(conn, "SELECT stage_id, ord, done_on FROM lab_milestones")
     out["catalog_meta"] = json.loads(db.get_meta(conn, "catalog_meta") or "{}")
     return out
 
@@ -90,11 +87,6 @@ def import_json(conn: sqlite3.Connection, data: dict) -> dict:
             cols = list(r.keys())
             conn.execute(f"INSERT INTO {t} ({','.join(cols)}) VALUES ({','.join('?' * len(cols))})", [r[c] for c in cols])
         counts[t] = len(rows)
-    for r in tables.get("lab_stages", []):
-        conn.execute("UPDATE lab_stages SET status=?, notes=?, repo_url=? WHERE id=?", (r["status"], r["notes"], r.get("repo_url", ""), r["id"]))
-    for t in ("lab_tasks", "lab_milestones"):
-        for r in tables.get(t, []):
-            conn.execute(f"UPDATE {t} SET done_on=? WHERE stage_id=? AND ord=?", (r["done_on"], r["stage_id"], r["ord"]))
     return counts
 
 

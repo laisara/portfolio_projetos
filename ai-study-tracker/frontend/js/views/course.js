@@ -1,72 +1,61 @@
-import { api, bar, esc, fmtDate, hm, icon, pct, rewardToast, skeleton, toast, TYPE_LABEL, verify } from "../core.js";
+import { api, bar, COMP_LABEL, esc, fmtDate, hm, icon, mmss, pct, rewardToast, skeleton, toast, TYPE_LABEL } from "../core.js";
 import { startFocusWith } from "../focus.js";
 
 export default async function course(el, id) {
   el.innerHTML = skeleton(500);
   const c = await api(`/contents/${encodeURIComponent(id)}`);
-  const p = c.progress, conf = c.confidence || {};
-  const unit = c.modules[0]?.lessons[0];
-  const courseLevel = !c.lessons_known;
-  const nextPractice = c.modules.find((m) => m.practice_done < m.practice_planned);
+  const p = c.progress;
+  const next = c.modules.flatMap((m) => m.lessons).find((l) => l.required && !l.completed_on);
+  const shared = c.tracks.length > 1;
   el.innerHTML = `
   <a class="btn ghost sm" href="#/catalog" style="margin-bottom:12px">${icon("chevron-left")} Formação</a>
   <div class="page-head"><div>
-      <div class="row wrap" style="margin-bottom:8px"><span class="id-tag">${esc(c.id)}</span>
-        ${c.appearances.map((a) => `<span class="chip">print #${a.position}</span>`).join("")}<span class="verify">TRILHA: VERIFICAR</span></div>
+      <div class="row wrap" style="margin-bottom:8px"><span class="id-tag">${esc(c.id)}</span>${c.type === "projeto" ? '<span class="chip warn">projeto</span>' : ""}
+        ${c.tracks.map((t) => `<span class="chip">${esc(t.title)} · #${t.position}</span>`).join("")}</div>
       <h1>${esc(c.title)}</h1>
-      <p class="muted" style="margin:6px 0 0">${c.instructor ? esc(c.instructor) + " · " : ""}${hm(c.duration_min)} de vídeo (duração real do print)${c.lesson_count ? ` · ${c.lesson_count} aulas` : ""}</p>
+      <p class="muted" style="margin:6px 0 0">${hm(c.duration_min)} (soma das ${c.lesson_count} aulas) · ${p.lessons_done}/${p.lessons} concluídas · <b class="num">${pct(p.pct)}</b></p>
     </div>
-    <button class="btn primary" id="start-next">${icon("play")} Estudar agora</button></div>
+    <div class="row"><button class="btn" id="mark-all">${icon("circle-check")} ${p.complete ? "Desmarcar curso" : "Concluir curso"}</button>
+      <button class="btn primary" id="start-next" ${next ? "" : "disabled"}>${icon("play")} Estudar próxima aula</button></div></div>
+
+  ${shared ? `<div class="notice info" style="margin-bottom:16px">${icon("git-branch")}<div>Este curso aparece em <b>${c.tracks.length} trilhas</b> (${c.tracks.map((t) => esc(t.title)).join(", ")}). Ele existe uma vez: concluir aulas, módulos ou o curso aqui vale em todas elas.</div></div>` : ""}
+  ${c.note ? `<div class="notice" style="margin-bottom:16px">${icon("triangle-alert")}<div>${esc(c.note)}</div></div>` : ""}
 
   <div class="grid grid-2">
     <section class="panel">
-      <div class="panel-head"><h2>Conteúdo</h2><span class="faint num">${pct(p.pct)}</span></div>
-      ${courseLevel ? `<div class="notice" style="margin-bottom:12px">${icon("triangle-alert")}<div>Módulos e aulas deste curso <span class="verify">NÃO IDENTIFICADO</span> nos prints${c.lesson_count ? ` (só se sabe que são ${c.lesson_count} aulas)` : ""}. O progresso é medido por tempo assistido do curso inteiro.</div></div>` : ""}
-      ${c.modules.map((m) => `${c.lessons_known ? `<div class="eyebrow" style="margin-top:14px">${esc(m.title)}</div>` : ""}
-        ${m.lessons.map((l) => `<div class="lesson ${l.completed_on ? "done" : ""}">
-          <button class="check" role="checkbox" aria-checked="${!!l.completed_on}" data-lesson="${esc(l.id)}" aria-label="${l.completed_on ? "Desmarcar" : "Concluir"} ${esc(l.title)}">${icon("check")}</button>
-          <div><div class="l-title">${courseLevel ? "Curso completo (vídeo)" : esc(l.title)}</div>
-            <div style="margin:6px 0 2px;max-width:300px">${bar(Math.min(1, l.completed_on ? 1 : l.watched_min / l.duration_min), "k-video", "thin")}</div>
-            <div class="faint" style="font-size:12px">${l.completed_on ? `concluído em ${fmtDate(l.completed_on)}` : `${hm(l.watched_min)} de ${hm(l.duration_min)} assistidos`}</div></div>
-          <div class="row"><span class="num faint">${hm(l.duration_min)}</span></div></div>`).join("")}
-        ${m.practice_planned ? `<div class="lesson" style="grid-template-columns:20px 1fr auto"><span class="dot k-practice" style="margin-left:6px"></span>
-          <div><div class="l-title">Prática (estimativa do sistema)</div><div class="faint" style="font-size:12px">${esc(c.nature_info.action || "")}</div></div>
-          <div class="row"><span class="num faint">${hm(m.practice_done)} / ${hm(m.practice_planned)}</span></div></div>` : ""}`).join("")}
+      ${c.modules.map((m) => `<div class="module">
+        <div class="module-head"><h2 style="font-size:13.5px">${esc(m.title)}</h2><span class="faint num" style="font-size:12px">${m.lessons_done}/${m.lessons_required} · ${hm(m.video_total)}</span><span class="spacer"></span>
+          <button class="btn ghost sm" data-module="${esc(m.id)}" data-done="${m.complete}">${m.complete ? "Desmarcar módulo" : "Concluir módulo"}</button></div>
+        <div class="lessons">${m.lessons.map((l) => `<div class="lesson ${l.completed_on ? "done" : ""}" ${l.required ? "" : 'style="opacity:.6"'}>
+          <button class="check" role="checkbox" aria-checked="${!!l.completed_on}" data-lesson="${esc(l.id)}" aria-label="${l.completed_on ? "Desmarcar" : "Concluir"} aula ${l.num}: ${esc(l.title)}" ${l.required ? "" : "disabled"}>${icon("check")}</button>
+          <div><div class="l-title"><span class="faint num">${l.num}.</span> ${esc(l.title)}${l.kind === "quiz" ? ' <span class="chip" style="height:18px;font-size:10.5px">quiz</span>' : ""}${!l.required ? ' <span class="chip" style="height:18px;font-size:10.5px">em breve</span>' : ""}</div>
+            ${l.completed_on ? `<div class="faint" style="font-size:12px">concluída em ${fmtDate(l.completed_on)}</div>` : l.watched_min ? `<div class="faint" style="font-size:12px">${hm(l.watched_min)} assistidos</div>` : ""}</div>
+          <div class="row">${l.required && !l.completed_on ? `<button class="btn ghost sm icon-only" data-play='${esc(JSON.stringify({ kind: "video", ref: l.id, title: l.title, minutes: l.has_duration ? Math.max(1, l.duration_min - l.watched_min) : 0, phase: "APRENDER", detail: { course: c.title, has_duration: !!l.has_duration } }))}' aria-label="Estudar ${esc(l.title)}">${icon("play")}</button>` : ""}
+            <span class="num faint" style="min-width:48px;text-align:right">${l.has_duration ? mmss(l.duration_min) : '<span class="dash">-</span>'}</span></div>
+        </div>`).join("")}</div></div>`).join("")}
     </section>
     <div class="stack">
-      <section class="panel"><h2 style="margin-bottom:14px">Duração real × prática estimada</h2>
-        <dl class="kv" style="grid-template-columns:150px 1fr">
-          <dt>Duração real</dt><dd class="num"><b>${hm(c.duration_min)}</b> <span class="chip good" style="height:20px;font-size:11px">CONFIRMADO</span></dd>
-          <dt>Prática estimada</dt><dd class="num"><b>${hm(p.practice_total)}</b> (${Math.round(c.practice_ratio_effective * 100)}% do vídeo) <span class="chip" style="height:20px;font-size:11px">ESTIMATIVA</span></dd>
-          <dt>Natureza</dt><dd>${esc(c.nature)} → ${esc(c.nature_info.phase || "")}</dd>
-          <dt>No cronograma</dt><dd>${c.plan.first ? `${fmtDate(c.plan.first)} → ${fmtDate(c.plan.last)}` : p.pct >= 1 ? "concluído" : "—"}</dd>
-          ${c.overlap_note ? `<dt>Atenção</dt><dd>${esc(c.overlap_note)}</dd>` : ""}
-          ${c.lab_stages.length ? `<dt>Libera no Lab</dt><dd>${c.lab_stages.map((s) => `<a href="#/lab/${s.id}" class="chip accent">${s.id} · ${esc(s.title)}</a>`).join(" ")}</dd>` : ""}
-        </dl><p class="faint" style="font-size:12px;margin:12px 0 0">O percentual de prática é ajustável em Ajustes → Prática por curso.</p></section>
+      <section class="panel"><h2 style="margin-bottom:14px">Progresso</h2>
+        <div class="row" style="margin-bottom:6px">Aulas<span class="spacer"></span><span class="num">${hm(p.video_done)} / ${hm(p.video_total)}</span></div>${bar(p.pct, "", "", "Progresso do curso")}
+        <hr class="divider"><dl class="kv">
+          <dt>Duração oficial</dt><dd class="num"><b>${hm(c.duration_min)}</b> <span class="faint">(soma das aulas)</span></dd>
+          ${c.card_min ? `<dt>Card do site</dt><dd class="num faint">${hm(c.card_min)} (só conferência)</dd>` : ""}
+          <dt>Aulas sem duração</dt><dd>${p.durationless} <span class="faint">(quizzes, testes e guias: "-")</span></dd>
+          <dt>No cronograma</dt><dd>${c.plan.first ? `${fmtDate(c.plan.first)} → ${fmtDate(c.plan.last)}` : p.complete ? "concluído" : "—"}</dd>
+          <dt>Competências</dt><dd>${(c.competencies || []).map((x) => COMP_LABEL[x] || x).join(", ") || "—"}</dd></dl></section>
       <section class="panel"><h2 style="margin-bottom:10px">Sessões deste curso</h2>
         ${c.sessions.length ? `<div class="mini-list">${c.sessions.map((s) => `<div><span>${fmtDate(s.date)}</span><span class="faint">${TYPE_LABEL[s.type]}</span><span class="spacer"></span><span class="num">${hm(s.actual_min)}</span></div>`).join("")}</div>` : `<p class="faint">Nenhuma sessão ainda.</p>`}
       </section>
     </div>
   </div>`;
 
-  el.querySelectorAll("[data-lesson]").forEach((b) => b.onclick = async () => {
-    const completed = b.getAttribute("aria-checked") !== "true";
-    b.setAttribute("aria-checked", completed); b.disabled = true;
-    try {
-      const r = await api(`/lessons/${encodeURIComponent(b.dataset.lesson)}/toggle`, { method: "POST", body: { completed } });
-      rewardToast(r, completed ? "Concluído" : "Desmarcado");
-      window.dispatchEvent(new Event("study:changed"));
-    } catch (e) { b.setAttribute("aria-checked", !completed); b.disabled = false; toast(e.message, { type: "error" }); }
-  });
-  const done = p.pct >= 1;
-  const btn = el.querySelector("#start-next");
-  btn.disabled = done;
-  btn.onclick = () => {
-    if (unit && !unit.completed_on) {
-      const rest = Math.max(5, unit.duration_min - unit.watched_min);
-      startFocusWith({ kind: "video", ref: unit.id, title: c.title, minutes: Math.min(45, rest), phase: "APRENDER", detail: { course_level: courseLevel, block: 1, of: Math.ceil(rest / 45) } });
-    } else if (nextPractice) {
-      startFocusWith({ kind: "practice", ref: nextPractice.id, title: `Prática · ${c.title}`, minutes: Math.max(5, nextPractice.practice_planned - nextPractice.practice_done), phase: c.nature_info.phase });
-    }
+  const post = async (path, completed, label) => {
+    try { const r = await api(path, { method: "POST", body: { completed } }); rewardToast(r, label); window.dispatchEvent(new Event("study:changed")); }
+    catch (e) { toast(e.message, { type: "error" }); }
   };
+  el.querySelectorAll("[data-lesson]").forEach((b) => b.onclick = () => { b.disabled = true; post(`/lessons/${encodeURIComponent(b.dataset.lesson)}/toggle`, b.getAttribute("aria-checked") !== "true", "Aula atualizada"); });
+  el.querySelectorAll("[data-module]").forEach((b) => b.onclick = () => post(`/modules/${encodeURIComponent(b.dataset.module)}/complete`, b.dataset.done !== "true", "Módulo atualizado"));
+  el.querySelector("#mark-all").onclick = () => post(`/contents/${encodeURIComponent(c.id)}/complete`, !p.complete, p.complete ? "Curso desmarcado em todas as trilhas" : "Curso concluído em todas as trilhas");
+  el.querySelectorAll("[data-play]").forEach((b) => b.onclick = () => startFocusWith(JSON.parse(b.dataset.play)));
+  el.querySelector("#start-next").onclick = () => next && startFocusWith({ kind: "video", ref: next.id, title: next.title, minutes: next.has_duration ? Math.max(1, next.duration_min - next.watched_min) : 0, phase: "APRENDER", detail: { course: c.title, has_duration: !!next.has_duration } });
 }
