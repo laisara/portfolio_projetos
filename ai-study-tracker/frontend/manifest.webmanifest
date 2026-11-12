@@ -1,0 +1,30 @@
+{
+  "name": "AI Engineer Study Tracker",
+  "short_name": "Study Tracker",
+  "description": "Jornada pessoal de AI Agent Engineering: aprender, entender, construir, revisar e consolidar.",
+  "id": "/",
+  "start_url": "/#/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "any",
+  "background_color": "#090b10",
+  "theme_color": "#090b10",
+  "lang": "pt-BR",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ],
+  "shortcuts": [
+    { "name": "Iniciar sessão", "url": "/#/focus", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Calendário", "url": "/#/calendar" },
+    { "name": "AI Agent Lab", "url": "/#/lab" }
+  ],
+  "screenshots": [
+    { "src": "/icons/screenshot-wide.png", "sizes": "1440x900", "type": "image/png", "form_factor": "wide", "label": "Painel" },
+    { "src": "/icons/screenshot-mobile.png", "sizes": "780x1688", "type": "image/png", "form_factor": "narrow", "label": "Painel no celular" }
+  ]
+}
