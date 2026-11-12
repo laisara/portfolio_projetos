@@ -1,0 +1,208 @@
+================================================================================
+AUDITORIA DAS DURAÇÕES — AI ENGINEER STUDY TRACKER
+Data: 12/11/2026 · Script: scripts/audit_durations.py · Testes: tests/test_durations.py
+================================================================================
+
+1. RESULTADO
+--------------------------------------------------------------------------------
+Nenhum erro encontrado; nenhuma duração precisou ser alterada.
+  Cursos únicos ........ 42        Aulas ............ 463 (462 obrigatórias + 1 aviso 'em breve')
+  Carga bruta (8 trilhas) 74:30:39  Duplicado ........ 8:09:02
+  CONTEÚDO ÚNICO ....... 66:21:37  (66,36 h)     Declarado pela plataforma: 62:34:00 (+3:47)
+  Aulas sem duração .... 56 (quizzes, testes, guias): contam 0 min, exibidas como '-'
+
+2. MÉTODO (6 verificações independentes)
+--------------------------------------------------------------------------------
+  1) Soma das aulas de cada curso x card do site. O card TRUNCA para minutos: floor(soma)==card nos 42 cursos.
+  2) Contagem de aulas x quantidade anunciada; numeração 1..N contínua; IDs únicos; títulos repetidos.
+  3) Sensibilidade das leituras com zero riscado (0<->8): quais trocas ainda fecham com o card.
+  4) Soma das trilhas x cabeçalho do site; carga bruta = único + duplicado.
+  5) Plano x catálogo: 462 aulas agendadas, cada uma uma vez, somando exatamente 66:21:37.
+  6) Banco de dados (importação real) x catálogo, curso a curso, ao segundo.
+
+3. CURSO A CURSO
+--------------------------------------------------------------------------------
+ID              Aulas  Soma real    Card Sem dur.   Curso
+START-CLAUDE        1    0:01:24     1m        0   Comece por aqui - Dominando o ecossistema Cl
+GENAI-001           9    1:32:32    92m        0   Fundamentos da IA Generativa
+CLAUDE-001         28    2:56:38   176m        0   Claude Desktop
+CODE-001            1    0:26:22    26m        0   Masterclass Claude Code
+CLAUDE-002         13    1:56:07   116m        0   Claude Avançado: Skills, Conectores, Artefat
+START-OPENCLAW      2    0:05:19     5m        0   Comece por aqui - Trilha Dominando OpenClaw
+OPENCLAW-001        8    2:14:18   134m        0   Dominando o OpenClaw
+OPENCLAW-002       10    1:32:21    92m        0   Criando um assistente pessoal com OpenClaw
+START-HERMES        1    0:03:13     3m        0   Comece por aqui - Criando Agentes Pessoais c
+HERMES-001          7    1:59:55   119m        0   Hermes Agent
+START-GPT           1    0:03:19     3m        0   Comece por aqui - Agentes com GPT
+GPT-001             5    0:47:16    47m        1   Criando agentes com GPT
+START-APPS          3    0:06:33     6m        0   Comece por aqui - Trilha Aplicações Intelige
+PY-001             26    2:16:45   136m       10   Pensando como um Programador (usando Python 
+PY-002             16    2:37:14   157m        3   Coder Toolbox - Conceitos essenciais para pr
+UI-001              2    0:25:32    25m        1   Masterclass - Criando Interfaces Absurdas co
+LANG-001           12    1:51:46   111m        0   Criando Sistemas Agenticos com Langchain
+LANG-002            6    0:57:04    57m        0   Langclean - Um agente de limpeza do computad
+START-TOOLS         1    0:01:12     1m        0   Comece por aqui - Ferramentas de AI para Des
+IDE-001            17    2:16:50   136m        1   Dominando o Antigravity
+IDE-002            10    1:51:52   111m        0   Cursor 3 - Desenvolvimento Assistido por IA
+IDE-003            11    1:33:09    93m        2   CursorAI - ganhe 10x mais produtividade com 
+CODE-002           13    2:42:07   162m        1   Claude Code na prática: evoluindo um projeto
+START-N8N           1    0:01:46     1m        0   Comece aqui - Nível intermediário Engenheiro
+N8N-001            23    2:47:26   167m        3   Dominando Automações com n8n
+N8N-002             5    0:48:36    48m        0   N8N Open-Source: Use a ferramenta de forma g
+N8N-003             9    0:47:41    47m        1   Banco de Integrações com n8n
+N8N-004            17    2:29:25   149m        3   Criando agentes de atendimento profissionais
+N8N-005             4    1:05:52    65m        0   IA de Agendamento no Google Agenda
+N8N-006             5    0:40:16    40m        0   UGC Factory - Crie um fluxo para produzir ví
+N8N-007             7    1:34:08    94m        0   Consumindo API's com n8n
+START-PYTHON        2    0:06:15     6m        0   Comece por aqui - Aplicações AI com Python
+LLM-001            14    1:18:31    78m        3   Por dentro das LLMs - como funcionam modelos
+LOGIC-001          17    0:51:20    51m        3   Introdução à Lógica de Programação
+PYTHON-001         47    6:12:43   372m        6   Aprendendo Python: Conceitos Básicos
+SETUP-001          25    2:41:27   161m        5   Criando seu Setup para Programação Python
+PROMPT-001         20    2:09:28   129m        5   Engenharia de Prompts
+AGNO-001           30    6:10:19   370m        8   Criando Agentes com Agno
+AGENT-001           6    1:03:19    63m        0   Agente de Curadoria de Notícias
+AGENT-002           9    1:33:26    93m        0   Agente de IA para criação de conteúdo
+AGENT-003           8    1:55:09   115m        0   FilmPro - Agente para Recomendação de Filmes
+AGENT-004          11    1:45:42   105m        0   Auto Retoucher - Criando uma AI para fotógra
+
+Todos: floor(soma em minutos) == card; contagem de aulas == anunciada.
+
+4. TRILHAS x CABEÇALHO DO SITE
+--------------------------------------------------------------------------------
+  T1 Dominando o ecossistema Claude               soma   6:53:03  cabeçalho 6h50  dif +3.1 min
+  T2 Dominando Openclaw                           soma   5:24:30  cabeçalho 5h24  dif +0.5 min
+  T3 Criando Agentes Pessoais com Hermes Agent    soma   3:35:40  cabeçalho 3h35  dif +0.7 min
+  T4 Agentes com GPT                              soma   2:23:07  cabeçalho 2h23  dif +0.1 min
+  T5 Aplicações Inteligentes com IA               soma   9:47:26  cabeçalho 9h47  dif +0.4 min
+  T6 Ferramentas de AI para Desenvolvedores       soma   8:51:32  cabeçalho 8h51  dif +0.5 min
+  T7 Criando agentes de atendimento no N8N        soma  10:15:10  cabeçalho 10h15  dif +0.2 min
+  T8 Aplicações AI com Python                     soma  27:20:11  cabeçalho 26h51  dif +29.2 min
+  Trilhas 2 a 7: cabeçalho = soma truncada (exato). Trilhas 1 (-3 min) e 8 (-29 min): divergem,
+  embora cada curso confira com o card. Hipótese NÃO confirmada: cabeçalho desatualizado
+  ('AULAS NOVAS' em cursos dessas trilhas). Vale a soma das aulas; o cabeçalho é informativo.
+
+5. LEITURAS INCERTAS (zero riscado nas fotos)
+--------------------------------------------------------------------------------
+Critério: manter a leitura que fecha com o card; quando duas fecham, manter a original (impacto <= 8 s).
+Cada curso fica em [card, card+1 min): o total único está entre 66:03:00 e 66:45:00; adotado 66:21:37.
+Resolvidas pelo card:
+  - Antigravity 'Conectando MCPs' = 0:01 (8:01 daria 2:24:50 != card 2:16)
+  - Hermes Agent aula 6 = 30:50 (30:58 daria 2:00:03 != card 1:59)
+Ambíguas (ambas fecham com o card; mantida a leitura original; lista completa abaixo):
+  80 aulas. Exemplos:
+   - GENAI-001 aula 1 «Apresentação» 2:08: alternativas que também fecham com o card: ['2:00'] (impacto ≤ 8s)
+   - GENAI-001 aula 8 «Alucinação (e como evitá-las?)» 9:48: alternativas que também fecham com o card: ['9:40'] (impacto ≤ 8s)
+   - GENAI-001 aula 9 «Skills, MCPs e nosso primeiro agente» 14:20: alternativas que também fecham com o card: ['14:28'] (impacto ≤ 8s)
+   - CLAUDE-001 aula 8 «Criando prompts mais produtivos» 7:30: alternativas que também fecham com o card: ['7:38'] (impacto ≤ 8s)
+   - CLAUDE-001 aula 16 «Realizando agendamentos no Claude Cowo» 6:08: alternativas que também fecham com o card: ['6:00'] (impacto ≤ 8s)
+   - CLAUDE-001 aula 20 «Usando o Claude como apoio pedagógico» 13:30: alternativas que também fecham com o card: ['13:38'] (impacto ≤ 8s)
+   - CLAUDE-001 aula 21 «Criando formulários com Claude» 3:08: alternativas que também fecham com o card: ['3:00'] (impacto ≤ 8s)
+   - CLAUDE-002 aula 3 «A Description e o Gatilho de Acionamen» 15:00: alternativas que também fecham com o card: ['15:08'] (impacto ≤ 8s)
+   - CLAUDE-002 aula 8 «Projetos: Contexto e Instruções Persis» 3:40: alternativas que também fecham com o card: ['3:48'] (impacto ≤ 8s)
+   - OPENCLAW-001 aula 1 «Introdução – Dominando o OpenClaw» 3:20: alternativas que também fecham com o card: ['3:28'] (impacto ≤ 8s)
+   - OPENCLAW-001 aula 3 «Instalação do OpenClaw» 18:28: alternativas que também fecham com o card: ['18:20'] (impacto ≤ 8s)
+   - OPENCLAW-001 aula 4 «Como OpenClaw funciona» 26:38: alternativas que também fecham com o card: ['26:30'] (impacto ≤ 8s)
+  (lista completa: python scripts/audit_durations.py --verbose)
+
+6. AULAS SEM DURAÇÃO (56) — contam 0 min
+--------------------------------------------------------------------------------
+  GPT-001 (1): 5. Indo além: engenharia de prompts
+  PY-001 (10): 4. Quiz – Variáveis; 6. Quiz Operadores; 8. Quiz if/else; 10. Quiz Listas; 12. Quiz Dicionários (JSON); 14. Quiz for Loops; 16. Quiz while; 18. Quiz Funções; 20. Quiz Programação Orientada a Objetos; 21. Teste Final
+  PY-002 (3): 3. Guia de Instalação – Python; 4. Guia de Instalação – Cursor; 8. Guia de Instalação – Git
+  UI-001 (1): 2. Guia de Instalação – Antigravity
+  IDE-001 (1): 10. Nova Localização das Skills no Antigravity IDE
+  IDE-003 (2): 6. Diferenciais e Recursos Avançados; 8. MCPs: Origem, Conceito e Aplicações no Cursor AI
+  CODE-002 (1): 13. Esse curso ainda está em produção
+  N8N-001 (3): 7. Quiz 1; 11. Quiz 2; 13. Teste final
+  N8N-003 (1): 9. Quiz – Banco de Integrações
+  N8N-004 (3): 9. Criando a tabela de memória do agente no Supabase (n8n_chat_histories); 10. Quiz – Configurando a API Oficial do WhatsApp; 17. Quiz – Desenvolvimento do Agente de IA
+  LLM-001 (3): 8. Quiz 1; 11. Quiz 2; 14. Teste final
+  LOGIC-001 (3): 11. Quiz – Algoritmos; 16. Quiz – Variáveis, operadores e estruturas; 17. Teste final – Lógica de programação
+  PYTHON-001 (6): 9. Quiz – Fundamentos do Python; 15. Quiz – Controle de fluxo; 27. Quiz – Sequências e loops; 37. Quiz – Dicionários e métodos; 43. Quiz – Funções e importação; 46. Teste final – Python Básico
+  SETUP-001 (5): 3. Quiz – Terminal; 11. Quiz – Instalação do Python; 18. Quiz – Entendendo e configurando IDEs; 22. Quiz – Ambientes virtuais; 25. Teste final – Criando seu setup para programação Python
+  PROMPT-001 (5): 3. Atualização importante: o Playground da OpenAI mudou; 10. Quiz – Clareza e Especificidade; 12. Prompts avançados: exemplos do Claude; 18. Quiz – Aplicações de Prompts; 20. Teste Final – Engenharia de Prompts
+  AGNO-001 (8): 2. Aviso de versão; 6. Quiz 1 – Introdução; 8. Guia de Instalação e Configuração do Agno; 17. Quiz 2 – Criando Agentes com Agno; 21. Guia de Instalação e Configuração de Deploy com Agno; 27. GitHub e Deploy no Render; 29. Quiz 3 – Deploy com Agno; 30. Teste Final – Criando Agentes com Agno
+  Observação: se alguma for aula com vídeo no player, a carga real sobe (premissa: 0 min).
+
+7. FORA DO PROGRAMA (não somados)
+--------------------------------------------------------------------------------
+  - Projetos para Professores (eletivo da trilha Dominando o ecossistema Claude) — fora do programa
+  - Para se aprofundar (eletivo da trilha Aplicações Inteligentes com IA) — fora do programa
+  - Git e GitHub – Controle de Versão e Colaboração (eletivo Webapps: 20 aulas, 3h08m34s) — fora do cronograma
+
+8. OBSERVAÇÕES
+--------------------------------------------------------------------------------
+  - Fase de coleta: um erro meu de soma no 'Dominando Automações com n8n' (indicava 3h35) foi corrigido
+    para 2h47m26s; não havia aulas repetidas (23 títulos distintos; só os cabeçalhos de módulo 1/4 se parecem).
+  - O app exibe durações arredondadas a minutos (66h22); o valor exato é 66:21:37.
+  - As leituras foram feitas visualmente a partir de prints, vídeos e fotos; o card do site é a
+    verificação cruzada que mantém cada curso correto ao minuto.
+
+9. SAÍDA BRUTA DO SCRIPT
+--------------------------------------------------------------------------------
+curso           aulas      soma   card  floor==card  contagem
+START-CLAUDE        1   0:01:24      1  OK           OK
+GENAI-001           9   1:32:32     92  OK           OK
+CLAUDE-001         28   2:56:38    176  OK           OK
+CODE-001            1   0:26:22     26  OK           OK
+CLAUDE-002         13   1:56:07    116  OK           OK
+START-OPENCLAW      2   0:05:19      5  OK           OK
+OPENCLAW-001        8   2:14:18    134  OK           OK
+OPENCLAW-002       10   1:32:21     92  OK           OK
+START-HERMES        1   0:03:13      3  OK           OK
+HERMES-001          7   1:59:55    119  OK           OK
+START-GPT           1   0:03:19      3  OK           OK
+GPT-001             5   0:47:16     47  OK           OK
+START-APPS          3   0:06:33      6  OK           OK
+PY-001             26   2:16:45    136  OK           OK
+PY-002             16   2:37:14    157  OK           OK
+UI-001              2   0:25:32     25  OK           OK
+LANG-001           12   1:51:46    111  OK           OK
+LANG-002            6   0:57:04     57  OK           OK
+START-TOOLS         1   0:01:12      1  OK           OK
+IDE-001            17   2:16:50    136  OK           OK
+IDE-002            10   1:51:52    111  OK           OK
+IDE-003            11   1:33:09     93  OK           OK
+CODE-002           13   2:42:07    162  OK           OK
+START-N8N           1   0:01:46      1  OK           OK
+N8N-001            23   2:47:26    167  OK           OK
+N8N-002             5   0:48:36     48  OK           OK
+N8N-003             9   0:47:41     47  OK           OK
+N8N-004            17   2:29:25    149  OK           OK
+N8N-005             4   1:05:52     65  OK           OK
+N8N-006             5   0:40:16     40  OK           OK
+N8N-007             7   1:34:08     94  OK           OK
+START-PYTHON        2   0:06:15      6  OK           OK
+LLM-001            14   1:18:31     78  OK           OK
+LOGIC-001          17   0:51:20     51  OK           OK
+PYTHON-001         47   6:12:43    372  OK           OK
+SETUP-001          25   2:41:27    161  OK           OK
+PROMPT-001         20   2:09:28    129  OK           OK
+AGNO-001           30   6:10:19    370  OK           OK
+AGENT-001           6   1:03:19     63  OK           OK
+AGENT-002           9   1:33:26     93  OK           OK
+AGENT-003           8   1:55:09    115  OK           OK
+AGENT-004          11   1:45:42    105  OK           OK
+
+Sensibilidade das leituras com zero riscado (troca 0↔8 em um dígito):
+  Cada curso fica em [card, card+1 min): o ÚNICO total está entre 66:03:00 e 66:45:00.
+  80 aulas têm alternativa de leitura que também fecharia com o card (impacto em segundos, cursos já conferem ao minuto).
+
+Trilhas (soma das aulas × cabeçalho do site):
+  T1 Dominando o ecossistema Claude                 6:53:03  cabeçalho 6h50  dif +3.1 min
+  T2 Dominando Openclaw                             5:24:30  cabeçalho 5h24  dif +0.5 min
+  T3 Criando Agentes Pessoais com Hermes Agent      3:35:40  cabeçalho 3h35  dif +0.7 min
+  T4 Agentes com GPT                                2:23:07  cabeçalho 2h23  dif +0.1 min
+  T5 Aplicações Inteligentes com IA                 9:47:26  cabeçalho 9h47  dif +0.4 min
+  T6 Ferramentas de AI para Desenvolvedores         8:51:32  cabeçalho 8h51  dif +0.5 min
+  T7 Criando agentes de atendimento no N8N         10:15:10  cabeçalho 10h15  dif +0.2 min
+  T8 Aplicações AI com Python                      27:20:11  cabeçalho 26h51  dif +29.2 min
+
+Bruta 74:30:39 · duplicado 8:09:02 · ÚNICO 66:21:37  (66.36 h)
+Cursos 42 · aulas 463 · sem duração 56
+
+Banco: único 66:21:37 · bruto 74:30:39 · aulas 463
+
+PROBLEMAS: nenhum
+================================================================================
