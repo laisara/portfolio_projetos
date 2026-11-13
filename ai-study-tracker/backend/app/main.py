@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 import json
+import logging
+import os
 import sqlite3
+import threading
 from contextlib import asynccontextmanager
 from datetime import date, timedelta
 from typing import Literal, Optional
@@ -29,10 +32,30 @@ def bootstrap() -> None:
         services.plan_summary(conn)  # grava a data final do plano original
 
 
+log = logging.getLogger("ast")
+
+
+def _safe_backup(label: str, min_hours: float) -> None:
+    try:
+        backup_mod.auto_backup(label, min_hours)
+    except Exception as exc:  # backup nunca pode impedir o app de abrir
+        log.warning("backup automático falhou: %s", exc)
+
+
+def _backup_loop(stop: threading.Event) -> None:
+    while not stop.wait(6 * 3600):
+        _safe_backup("auto", 5)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    _safe_backup("auto", 12)  # antes de qualquer migração/atualização do banco
     bootstrap()
+    stop = threading.Event()
+    threading.Thread(target=_backup_loop, args=(stop,), daemon=True).start()
     yield
+    stop.set()
+    _safe_backup("auto", 1)  # ao encerrar normalmente
 
 
 app = FastAPI(title="AI Engineer Study Tracker", version=config.APP_VERSION, lifespan=lifespan)
@@ -67,7 +90,23 @@ def _reward(conn: sqlite3.Connection, before: dict, reason: str) -> dict:
 # ------------------------------------------------------------------- básicos
 @app.get("/api/health")
 def health(conn: sqlite3.Connection = Depends(get_conn)):
-    return {"ok": True, "version": config.APP_VERSION, "today": config.today().isoformat(), "db": str(config.db_path())}
+    return {"ok": True, "app": "ai-study-tracker", "version": config.APP_VERSION, "today": config.today().isoformat(), "db": str(config.db_path())}
+
+
+@app.post("/api/shutdown")
+async def shutdown(request: Request):
+    """Encerra o servidor (usado pelo botão 'Encerrar' e pelo launcher). Só aceita este PC e exige o cabeçalho X-AST."""
+    if request.headers.get("x-ast") != "1" or (request.client and request.client.host not in ("127.0.0.1", "::1", "testclient")):
+        raise HTTPException(status_code=403, detail="Não permitido.")
+    backup_mod.auto_backup("ao-encerrar", 0)
+    if os.environ.get("AST_NO_EXIT") != "1":
+        threading.Timer(0.6, lambda: os._exit(0)).start()
+    return {"ok": True}
+
+
+@app.get("/api/backups")
+def backups():
+    return {"items": backup_mod.list_backups()}
 
 
 @app.get("/api/dashboard")
@@ -365,14 +404,19 @@ def toggle_project_item(item_id: int, conn: sqlite3.Connection = Depends(get_con
 
 
 class ProjectNotes(BaseModel):
-    notes: str = Field(max_length=20000)
+    notes: Optional[str] = Field(default=None, max_length=20000)
+    planned_hours: Optional[float] = Field(default=None, ge=0.5, le=100)   # estimativa; não afeta a duração das aulas
 
 
 @app.patch("/api/projects/{project_id}")
 def patch_project(project_id: str, body: ProjectNotes, conn: sqlite3.Connection = Depends(get_conn)):
     if not db.row(conn, "SELECT id FROM projects WHERE id=?", (project_id,)):
         raise KeyError(project_id)
-    conn.execute("UPDATE projects SET notes=? WHERE id=?", (body.notes, project_id))
+    if body.notes is not None:
+        conn.execute("UPDATE projects SET notes=? WHERE id=?", (body.notes, project_id))
+    if body.planned_hours is not None:
+        conn.execute("UPDATE projects SET planned_hours=? WHERE id=?", (body.planned_hours, project_id))
+        tracker.recalculate(conn, "estimativa de projeto alterada")
     return {"ok": True}
 
 
@@ -417,6 +461,7 @@ class SettingsIn(BaseModel):
     focus_minutes: Optional[int] = Field(default=None, ge=5, le=180)
     competency_baselines: Optional[dict[str, float]] = None
     practice_overrides: Optional[dict[str, float]] = None
+    practice_scale: Optional[float] = Field(default=None, ge=0, le=3)
 
     @field_validator("practice_overrides")
     @classmethod

@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import sqlite3
 import tempfile
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -79,16 +81,62 @@ def import_json(conn: sqlite3.Connection, data: dict) -> dict:
     if not isinstance(data, dict) or data.get("app") != "ai-study-tracker" or "tables" not in data:
         raise ValueError("Arquivo de exportação inválido.")
     tables = data["tables"]
-    counts = {}
+    if not isinstance(tables, dict):
+        raise ValueError("Arquivo de exportação inválido.")
+    # valida TUDO antes de apagar qualquer coisa: um arquivo ruim não pode destruir os dados atuais
+    valid_cols = {t: {r[1] for r in conn.execute(f"PRAGMA table_info({t})")} for t in USER_TABLES}
     for t in USER_TABLES:
         rows = tables.get(t, [])
-        conn.execute(f"DELETE FROM {t}")
+        if not isinstance(rows, list):
+            raise ValueError(f"Tabela '{t}' inválida no arquivo.")
         for r in rows:
-            cols = list(r.keys())
-            conn.execute(f"INSERT INTO {t} ({','.join(cols)}) VALUES ({','.join('?' * len(cols))})", [r[c] for c in cols])
-        counts[t] = len(rows)
+            if not isinstance(r, dict) or not r or not set(r) <= valid_cols[t]:
+                raise ValueError(f"Linha inválida na tabela '{t}': colunas desconhecidas.")
+    counts = {}
+    conn.execute("SAVEPOINT import_json")
+    try:
+        for t in USER_TABLES:
+            rows = tables.get(t, [])
+            conn.execute(f"DELETE FROM {t}")
+            for r in rows:
+                cols = list(r.keys())
+                conn.execute(f"INSERT INTO {t} ({','.join(cols)}) VALUES ({','.join('?' * len(cols))})", [r[c] for c in cols])
+            counts[t] = len(rows)
+    except sqlite3.Error as exc:
+        conn.execute("ROLLBACK TO import_json")
+        raise ValueError(f"Não foi possível importar (nada foi alterado): {exc}") from exc
+    conn.execute("RELEASE import_json")
     return counts
 
 
 def copy_db_file(dest: Path) -> None:
     shutil.copy2(config.db_path(), dest)
+
+
+# ------------------------------------------------------------- backup automático
+AUTO_KEEP = 30  # só os backups "auto-*" são podados; manuais e "antes-de-*" nunca são apagados
+
+
+def list_backups() -> list[dict]:
+    d = config.backup_dir()
+    if not d.exists():
+        return []
+    files = sorted(d.glob("*.db"), key=lambda f: f.stat().st_mtime, reverse=True)
+    return [{"name": f.name, "size": f.stat().st_size,
+             "at": datetime.fromtimestamp(f.stat().st_mtime).isoformat(timespec="seconds"),
+             "kind": re.sub(r"-\d{8}-\d{6}\.db$", "", f.name)} for f in files]
+
+
+def auto_backup(label: str = "auto", min_hours: float = 12) -> Path | None:
+    """Cria um backup se o último do mesmo tipo for mais antigo que `min_hours`. Nunca sobrescreve:
+    cada arquivo tem data e hora no nome. Retorna None se não era necessário (ou se não há banco)."""
+    if not config.db_path().exists():
+        return None
+    d = config.backup_dir()
+    recent = [f for f in d.glob(f"{label}-*.db") if time.time() - f.stat().st_mtime < min_hours * 3600] if d.exists() else []
+    if recent:
+        return None
+    dest = backup_to_file(label=label)
+    for old in sorted(d.glob(f"{label}-*.db"))[:-AUTO_KEEP]:
+        old.unlink(missing_ok=True)
+    return dest

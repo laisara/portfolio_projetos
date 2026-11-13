@@ -372,3 +372,89 @@ def test_lesson_kinds_quiz_test_guide_other(client):
             if not l["has_duration"]:
                 kinds.setdefault(cid, set()).add(l["kind"])
     assert kinds["PY-001"] == {"quiz", "test"} and kinds["PY-002"] == {"guide"} and kinds["GPT-001"] == {"other"}
+
+
+# ---------------------------------------------------------------- segurança dos dados / launcher
+def test_health_identifies_app_for_launcher(client):
+    h = client.get("/api/health").json()
+    assert h["ok"] is True and h["app"] == "ai-study-tracker"
+
+
+def test_shutdown_requires_header_and_makes_backup(client, monkeypatch):
+    monkeypatch.setenv("AST_NO_EXIT", "1")
+    assert client.post("/api/shutdown").status_code == 403           # sem o cabeçalho (ex.: página de outro site)
+    assert client.post("/api/shutdown", headers={"X-AST": "1"}).json() == {"ok": True}
+    kinds = {b["kind"] for b in client.get("/api/backups").json()["items"]}
+    assert "ao-encerrar" in kinds
+
+
+def test_auto_backup_throttles_prunes_and_never_touches_manual(client):
+    from backend.app import backup, config
+    first = backup.auto_backup("auto", 12)
+    assert first and first.exists()
+    assert backup.auto_backup("auto", 12) is None                     # já existe um recente
+    manual = backup.backup_to_file(label="backup")
+    d = config.backup_dir()
+    for i in range(backup.AUTO_KEEP + 5):                             # simula muitos backups antigos
+        f = d / f"auto-20200101-{i:06d}.db"
+        f.write_bytes(b"x")
+        import os; os.utime(f, (1, 1))
+    backup.auto_backup("auto", 0)
+    assert len(list(d.glob("auto-*.db"))) <= backup.AUTO_KEEP
+    assert manual.exists()                                            # manual nunca é podado
+
+
+def test_restore_invalid_file_keeps_current_data(client):
+    client.post("/api/lessons/START-CLAUDE.L01/toggle", json={"completed": True})
+    before = client.get("/api/dashboard").json()["lessons"]["done"]
+    r = client.post("/api/restore", files={"file": ("x.db", b"isto nao e um banco", "application/octet-stream")})
+    assert r.status_code == 400
+    assert client.get("/api/dashboard").json()["lessons"]["done"] == before == 1
+
+
+def test_import_json_bad_row_rolls_back_and_keeps_data(client):
+    client.post("/api/lessons/START-CLAUDE.L01/toggle", json={"completed": True})
+    bad = {"app": "ai-study-tracker", "tables": {"lesson_progress": [{"coluna_inexistente": 1}]}}
+    import json
+    r = client.post("/api/import", files={"file": ("x.json", json.dumps(bad).encode(), "application/json")})
+    assert r.status_code >= 400
+    assert client.get("/api/dashboard").json()["lessons"]["done"] == 1
+
+
+def test_restore_valid_backup_roundtrip_creates_safety_backup(client):
+    client.post("/api/lessons/START-CLAUDE.L01/toggle", json={"completed": True})
+    snap = client.get("/api/backup").content
+    client.post("/api/lessons/START-CLAUDE.L01/toggle", json={"completed": False})
+    assert client.get("/api/dashboard").json()["lessons"]["done"] == 0
+    r = client.post("/api/restore", files={"file": ("b.db", snap, "application/octet-stream")}).json()
+    assert r["restored"] and r["safety_backup"].startswith("antes-de-restaurar")
+    assert client.get("/api/dashboard").json()["lessons"]["done"] == 1
+
+
+# ---------------------------------------------------------------- estimativas e adiamento
+def test_editing_estimates_never_changes_official_duration(client):
+    before = client.get("/api/plan/summary").json()["totals"]
+    assert client.put("/api/settings", json={"practice_scale": 0.5}).status_code == 200
+    mid = client.get("/api/plan/summary").json()["totals"]
+    assert mid["practice"] < before["practice"] * 0.7 and mid["video"] == pytest.approx(before["video"])
+    pid = client.get("/api/projects").json()["projects"][0]["id"]
+    assert client.patch(f"/api/projects/{pid}", json={"planned_hours": 6}).status_code == 200
+    after = client.get("/api/plan/summary").json()["totals"]
+    assert after["project"] > before["project"] and after["video"] == pytest.approx(3981.62, abs=0.01)
+    assert client.patch(f"/api/projects/{pid}", json={"planned_hours": 0}).status_code == 422
+
+
+def test_postpone_day_becomes_rest_keeps_all_lessons_and_past_untouched(client):
+    client.post("/api/lessons/START-CLAUDE.L01/toggle", json={"completed": True})
+    cfg = client.get("/api/settings").json()
+    hol = {**cfg["holidays"], "2026-11-17": 0}
+    assert client.put("/api/settings", json={"holidays": hol}).status_code == 200
+    day = next(d for d in client.get("/api/calendar?start=2026-11-17&end=2026-11-17").json()["days"] if d["date"] == "2026-11-17")
+    assert day["rest"] and not day["items"]
+    assert client.get("/api/dashboard").json()["lessons"] == {"done": 1, "total": 462}      # concluída continua concluída
+    assert client.get("/api/plan/summary").json()["totals"]["video"] == pytest.approx(3981.62 - 1.4 * 1, abs=2)   # só o futuro
+
+
+def test_study_now_has_track_and_status(client):
+    sn = client.get("/api/dashboard").json()["study_now"]
+    assert sn["track"] and sn["track_ord"] == 1 and sn["status"] == "Não iniciada" and sn["course"]

@@ -84,17 +84,18 @@ def practice_ratio(content: dict, cfg: dict) -> float:
         return float(ov)
     t = cfg["practice_ratio"]
     cid = content["id"]
+    scale = float(cfg.get("practice_scale", 1.0))
     if cid.startswith("START-"):
-        return float(t["start"])
+        return float(t["start"]) * scale
     if cid in t["basic_ids"]:          # você já domina programação básica: pouca prática aqui
-        return float(t["basic"])
+        return float(t["basic"]) * scale
     if cid in t["conceptual_ids"]:
-        return float(t["conceptual"])
+        return float(t["conceptual"]) * scale
     if content["type"] == "projeto":
-        return float(t["project"])
+        return float(t["project"]) * scale
     if set(content["competencies"]) & {"agents", "tools", "rag", "multiagent"}:
-        return float(t["agents"])
-    return float(t["default"])
+        return float(t["agents"]) * scale
+    return float(t["default"]) * scale
 
 
 def practice_estimates(cat: dict, cfg: dict) -> dict[str, dict]:

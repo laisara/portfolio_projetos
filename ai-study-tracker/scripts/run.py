@@ -17,6 +17,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+# Iniciado pelo launcher (pythonw.exe) não há console: sys.stdout/stderr são None e o uvicorn quebraria.
+# Nesse caso tudo vai para database/server.log.
+if sys.stdout is None or sys.stderr is None:
+    (ROOT / "database").mkdir(exist_ok=True)
+    _log = open(ROOT / "database" / "server.log", "a", encoding="utf-8", buffering=1)
+    sys.stdout = sys.stdout or _log
+    sys.stderr = sys.stderr or _log
+
+
+def port_in_use(port: int) -> bool:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.settimeout(0.5)
+        return s.connect_ex(("127.0.0.1", port)) == 0
+
 
 def lan_ip() -> str:
     try:
@@ -36,6 +50,9 @@ def main() -> None:
     ap.add_argument("--https", action="store_true", help="usa certs/cert.pem e certs/key.pem")
     ap.add_argument("--no-browser", action="store_true")
     args = ap.parse_args()
+
+    if port_in_use(args.port):
+        sys.exit(f"A porta {args.port} ja esta em uso (o tracker provavelmente ja esta aberto: http://localhost:{args.port}).")
 
     import uvicorn
 

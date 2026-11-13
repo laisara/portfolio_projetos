@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-BATS = ["install.bat", "start.bat", "backup.bat", "restore.bat"]
+BATS = ["install.bat", "start.bat", "stop.bat", "criar-atalho.bat", "backup.bat", "restore.bat"]
 
 
 @pytest.mark.parametrize("name", BATS)

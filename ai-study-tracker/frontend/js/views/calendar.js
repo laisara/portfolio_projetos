@@ -44,6 +44,25 @@ function openDay(day) {
       <div class="t-meta"><span>${TYPE_LABEL[s.type]}</span><span class="num">plan. ${hm(s.planned_min)} · real ${hm(s.actual_min)}</span></div></div></div>`).join("")}` : ""}`,
     { kind: "drawer", label: `Dia ${fmtDate(day.date)}` });
   bindStart(box);
+  if (!day.past && day.in_plan) {
+    const manual = day.holiday && day.rest;      // dia que já virou descanso por data especial/adiamento
+    const btn = document.createElement("button");
+    btn.className = "btn " + (manual ? "" : "ghost"); btn.style.cssText = "margin-top:16px;width:100%";
+    btn.innerHTML = manual ? `${icon("rotate-ccw")} Voltar a estudar neste dia` : `${icon("coffee")} Adiar este dia (descansar)`;
+    btn.onclick = async () => {
+      btn.disabled = true;
+      try {
+        const cfg = await api("/settings");
+        const holidays = { ...cfg.holidays };
+        if (manual) delete holidays[day.date]; else holidays[day.date] = 0;
+        const r = await api("/settings", { method: "PUT", body: { holidays } });
+        toast(`${manual ? "Dia reativado" : "Dia adiado"} · novo término das revisões: ${fmtDate(r.end, "full")}`, { type: "good" });
+        document.querySelector("#overlay").innerHTML = "";
+        window.dispatchEvent(new Event("study:changed"));
+      } catch (e) { btn.disabled = false; toast(e.message, { type: "error" }); }
+    };
+    box.appendChild(btn);
+  }
 }
 
 export default async function calendar(el) {

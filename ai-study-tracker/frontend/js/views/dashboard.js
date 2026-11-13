@@ -42,8 +42,10 @@ export default async function dashboard(el) {
   const hero = sn ? `<section class="hero-study glass" aria-label="Estudar agora">
       <div class="eyebrow" style="margin:0 0 10px">${sn.today ? "ESTUDAR AGORA" : `PRÓXIMO ESTUDO · ${esc(fmtDate(t.next_day?.date))}`}</div>
       <div class="hs-course">${esc(sn.course || (sn.kind === "review" ? "Revisões" : ""))}</div>
+      ${sn.track ? `<div class="hs-track">Trilha ${sn.track_ord} · ${esc(sn.track)}</div>` : ""}
       <h2 class="hs-title">${sn.kind === "video" && sn.num ? `<span class="faint">Aula ${sn.num} ·</span> ` : ""}${esc(sn.title)}</h2>
       <div class="hs-time num">${sn.kind === "video" && sn.has_duration && sn.duration_min ? mmss(sn.duration_min) : sn.minutes > 0 ? hm(sn.minutes) : '<span class="dash">-</span>'}</div>
+      ${sn.status ? `<div class="hs-status"><span class="chip ${sn.continuing ? "accent" : ""}">${esc(sn.status)}</span></div>` : ""}
       <button class="btn xl primary" id="hs-start">${icon("play")} ${sn.continuing ? "Continuar estudo" : "Começar estudo"}</button>
     </section>`
     : `<section class="hero-study glass">${t.rest ? empty("coffee", "Dia de descanso", "Hoje não há aula nem revisão. Descansar também é estudar.") : empty("circle-check", "Tudo em dia", "Nada planejado por agora.")}</section>`;

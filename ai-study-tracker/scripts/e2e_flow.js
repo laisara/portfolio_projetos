@@ -22,7 +22,7 @@ const num = async (pg, sel) => +(await pg.textContent(sel)).replace(/\D/g, "");
   const startBtn = await pg.$("#se-start"); if (startBtn) { await startBtn.click(); await pg.waitForTimeout(1200); await pg.screenshot({ path: `${OUT}/e2e-2-sessao.png` }); await startBtn.click(); }
   // 3) conclui a aula
   await pg.click("#se-done"); await pg.waitForSelector(".done-badge");
-  assert((await pg.textContent(".session-title")).includes("Concluída"), "sessão mostra «Concluída»");
+  assert((await pg.textContent(".session-title")).toLowerCase().includes("concluída"), "sessão mostra «Aula concluída»");
   const nextTitle = await pg.textContent(".next-card b");
   assert(nextTitle && nextTitle.trim() !== first, `próxima atividade carregada: «${nextTitle.trim()}»`);
   await pg.screenshot({ path: `${OUT}/e2e-3-concluida.png` });

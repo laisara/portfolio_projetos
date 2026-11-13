@@ -1,76 +1,65 @@
 # AI Engineer Study Tracker
 
-App pessoal e **local-first** para estudar a formação **Engenheiro de Agentes de IA**:
-Formação → Trilhas → Cursos → Aulas, com plano diário, prática, projetos e revisão espaçada.
-Funciona no **desktop e no celular** (PWA instalável, offline, dados salvos no seu computador).
+App pessoal e **local-first** para estudar a formação **Engenheiro de Agentes de IA**
+(8 trilhas · 42 cursos · 463 aulas · **66h21m37s**). Mostra o que estudar hoje, registra o progresso (XP, sequência,
+revisões D+1/D+7/D+30) e guarda tudo no seu computador. Funciona no desktop e no celular (PWA).
 
 ![Painel](docs/screenshots/01-dashboard-desktop.png)
 
 | | |
 |---|---|
-| ![Mobile](docs/screenshots/02-dashboard-mobile.png) | ![Cronograma](docs/screenshots/04-cronograma.png) |
-| ![Trilhas](docs/screenshots/05-trilhas.png) | ![Sessão](docs/screenshots/07-sessao.png) |
+| ![Mobile](docs/screenshots/02-dashboard-mobile.png) | ![Cronograma](docs/screenshots/05-cronograma.png) |
 
 > Os prints usam um banco de **demonstração** (`scripts/demo_seed.py`), não dados reais.
 
-## Uso rápido
+## Como instalar (Windows, uma vez)
 
-1. Instale o [Python 3.10+](https://www.python.org/downloads/) (marque *Add python.exe to PATH*) e dê duplo clique em **`install.bat`**.
-2. Duplo clique em **`start.bat`** → abre <http://localhost:8000>.
-3. Tela **Hoje** → **Começar estudo** → *Iniciar / Concluir*. Ao concluir: aula marcada, progresso, XP, sequência,
-   revisão futura (D+1/D+7/D+30) e a próxima atividade carregada.
+1. Instale o [Python 3.10+](https://www.python.org/downloads/) marcando **"Add python.exe to PATH"**
+   (se não tiver, o `install.bat` tenta instalar sozinho pelo `winget`).
+2. Dê duplo clique em **`install.bat`**. Ele cria o ambiente, instala os pacotes e oferece criar o **atalho na Área de Trabalho**.
+   (Depois, `criar-atalho.bat` cria o atalho quando quiser.)
 
-Navegação: Hoje · Cronograma · Trilhas · Projetos · Revisões · AI Agent Lab · Progresso (no celular, barra inferior).
+## Como iniciar (todos os dias)
 
-## Instalar como app (PWA)
+**Duplo clique em `AI Engineer Study Tracker.exe`** (ou no atalho da Área de Trabalho).
+Ele inicia o servidor local, espera responder e abre o navegador em <http://localhost:8000>.
+Se já estiver aberto, só abre o navegador de novo (não cria outro servidor). Na primeira vez, se faltar o ambiente, ele roda o `install.bat`.
 
-- **Desktop (Chrome/Edge):** com o `start.bat` rodando, abra `localhost:8000` e clique em **Instalar** na barra de endereço.
-- **Celular:** o PWA exige HTTPS (ou localhost). Rode `start.bat --lan --https` (precisa de certificado, ex. `mkcert`),
-  abra o endereço mostrado no celular, mesma rede Wi-Fi, e use *Adicionar à tela inicial*. Sem HTTPS o site abre no celular,
-  mas não instala. O servidor padrão escuta só em 127.0.0.1.
-- Dados ficam no computador (`database/study_tracker.db`); o celular acessa o mesmo servidor.
+Para encerrar: **`Fechar AI Engineer Study Tracker.exe`** (ou `stop.bat`, ou Ajustes → *Encerrar o tracker*). Faz um backup antes.
 
-## O catálogo (fonte: player da plataforma)
+## Backup e restauração
 
-| | |
-|---|---|
-| Trilhas | 8 (2 grupos) |
-| Cursos únicos · aulas | 42 · 463 (462 obrigatórias + 1 aviso "em breve") |
-| Carga bruta (soma das 8 trilhas) | 74h30m39s |
-| Duplicado | 8h09m02s (*Fundamentos da IA Generativa* em 6 trilhas, *Masterclass Claude Code* em 2) |
-| **Formação (conteúdo único)** | **66h21m37s** (soma das durações das aulas) |
-| Sem duração (quiz, teste, guia, vídeo) | 56, contam 0 min e aparecem como "-" |
+- **Automático:** ao abrir, a cada 6 h e ao encerrar, em `database/backups` (os 30 mais recentes de cada tipo; nada manual é apagado).
+- **Botão:** Ajustes → **Exportar backup** (baixa um `.db`) e **Importar backup**. Antes de importar, o arquivo é validado e um
+  backup de segurança do estado atual é criado; se o arquivo for inválido, nada muda.
+- **Sem o app:** `backup.bat` e `restore.bat` (lista os backups e você escolhe; feche o tracker antes).
+- Atualizar o código **não** apaga o banco (`database/study_tracker.db` não é versionado).
 
-Duração do curso = soma das aulas (batem com os cards do site em 42/42 cursos; a trilha 8 diverge ~29 min do cabeçalho
-do site e a divergência não foi explicada: vale a soma das aulas). Eletivos *Projetos para Professores* e *Para se aprofundar*
-ficam fora; *Git e GitHub* é **opcional** (fora de progresso e plano). Curso repetido tem um cadastro só (progresso compartilhado).
+## Celular (PWA)
 
-## Cronograma (modelo VÍDEO → PRÁTICA → PROJETO → REVISÃO)
+O PWA só instala em **HTTPS**. No PC: crie um certificado (ex.: `mkcert`), salve em `certs/cert.pem` e `certs/key.pem` e rode
+`start.bat --lan --https`. No celular (mesma rede Wi-Fi) abra o endereço mostrado e use *Adicionar à tela inicial*.
+Atenção: em modo `--lan` qualquer aparelho da rede acessa seus dados (não há senha). Por padrão o servidor escuta só neste PC.
+No desktop: Chrome/Edge → ícone **Instalar** na barra de endereço (o servidor precisa estar ativo).
 
-Início **13/11/2026** · última aula ~**09/01/2027** · fim do trabalho ~**13/01/2027** · revisões D+30 até ~08/02/2027 ·
-51 dias de estudo · média 2h12 · máximo 3h30 · descanso aos domingos.
-Rotina: Seg/Ter/Qui 2h15 · Qua 2h · Sex 1h45 · Sáb 3h30 (dia de projeto) · Dom descanso; 24/12 e 31/12 metade; 25/12 e 01/01 descanso.
-Totais planejados: **Formação 66h21m37s** + Prática ~18h15 + Projetos ~18h + Revisão ~10h50 = **~113h25 de aprendizagem**.
-**Prática, projetos e revisão são estimativas do planejador**; só a formação é duração real. O plano recalcula só o futuro (atrasos/adiantamentos).
+## O que tem
 
-## Funcionalidades
+Hoje (Estudar agora + checklist) · Cronograma (adiar um dia → recalcula só o futuro) · Trilhas/Cursos/Aulas ·
+sessão (Iniciar/Pausar/Concluir) · Revisões · Projetos · AI Agent Lab · XP, níveis e sequência · Ajustes (rotina, estimativas, backup).
 
-Hoje (Estudar agora + checklist) · Cronograma · Trilhas/Cursos/Aulas · sessão (Iniciar/Pausar/Concluir) ·
-revisões · projetos (3 + final) · AI Agent Lab (9 etapas) · XP, 6 níveis, sequência e conquistas ·
-competências · backup/restauração (.db) · exportação/importação (JSON) · PWA offline.
+**Formação × Prática × Projetos × Revisão:** só a formação (66h21m37s, soma das aulas) é duração real; os outros são estimativas
+(~18h15, ~18h, ~10h50), editáveis em Ajustes. Plano: início 13/11/2026 · última aula 09/01/2027 · fim do trabalho 13/01/2027 · última revisão 08/02/2027.
+Trilha 8: soma das aulas 27h20m11s × cabeçalho do site 26h51 (divergência documentada, vale a soma). Opcionais fora do plano: Git e GitHub, Projetos para Professores, Para se aprofundar.
 
-## Backup
-
-`backup.bat`, `restore.bat <arquivo>` ou em *Ajustes e dados* (backup .db, restaurar, exportar/importar JSON).
-
-## Testes
+## Desenvolvimento
 
 ```bash
 python -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
-.venv/bin/python -m pytest            # 79 testes
-node scripts/e2e_flow.js http://localhost:8000/ out   # fluxo real no navegador (Playwright)
-python scripts/build_catalog.py && python scripts/audit_durations.py && python scripts/export_schedule.py
+.venv/bin/python -m pytest                                  # testes
+node scripts/e2e_flow.js http://localhost:8000/ out         # fluxo real no navegador (Playwright)
+bash scripts/build_launcher.sh                              # recompila os .exe (Go)
+python scripts/build_catalog.py && python scripts/audit_durations.py
 ```
 
-Variáveis: `AST_DB`, `AST_TODAY`, `AST_CATALOG`, `AST_BACKUP_DIR`. Fonte: Inter (Aptos é proprietária e não vem junto).
-Licenças: Inter e JetBrains Mono (OFL), ícones Lucide (ISC).
+Pastas: `backend/` (FastAPI + SQLite) · `frontend/` (PWA sem build) · `launcher/` (fonte do .exe, Go) · `data/catalog.json` · `docs/` · `tests/`.
+Variáveis: `AST_DB`, `AST_TODAY`, `AST_CATALOG`, `AST_BACKUP_DIR`. Fonte Inter (OFL), ícones Lucide (ISC). Ideias futuras: `docs/FUTURE.md`.

@@ -1,5 +1,5 @@
 // Service worker — app shell offline + cache dos últimos dados (local-first).
-const VERSION = "ast-v3.0.0";
+const VERSION = "ast-v3.1.1";
 const SHELL = [
   "/", "/index.html", "/css/app.css", "/manifest.webmanifest",
   "/js/app.js", "/js/core.js", "/js/focus.js",

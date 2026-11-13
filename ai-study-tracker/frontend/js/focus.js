@@ -138,12 +138,12 @@ async function showDone(it, r) {
   document.title = "AI Engineer Study Tracker";
   const box = shell(`
     <div class="done-badge">${icon("check", "icon icon-lg")}</div>
-    <h1 class="session-title" style="text-align:center">Concluída</h1>
+    <h1 class="session-title" style="text-align:center">${esc(it.kind === "review" ? "Revisão concluída" : it.kind === "video" ? "Aula concluída" : "Atividade concluída")}</h1>
     <p class="muted" style="text-align:center;margin:4px 0 0">${esc(it.kind === "review" ? "Revisão feita" : it.title)}</p>
     ${r?.xp_gained > 0 ? `<div class="xp-pop">+${r.xp_gained} XP</div>` : ""}
     ${(r?.new_achievements || []).map((a) => `<div class="chip accent" style="margin:6px auto;display:flex;width:fit-content">${icon("trophy")} ${esc(a)}</div>`).join("")}
     ${r?.level_up ? `<div class="chip good" style="margin:6px auto;display:flex;width:fit-content">Novo nível: ${esc(r.level.name)}</div>` : ""}
-    ${nxt ? `<div class="next-card"><div class="eyebrow" style="margin:0 0 6px">Próxima atividade</div><b>${esc(nxt.title)}</b>
+    ${nxt ? `<div class="next-card"><div class="eyebrow" style="margin:0 0 6px">Próxima</div><b>${esc(nxt.title)}</b>
       <div class="faint" style="font-size:13px;margin-top:2px">${esc(nxt.course || "")}${nxt.minutes > 0 ? ` · ${nxt.duration_min ? mmss(nxt.duration_min) : hm(nxt.minutes)}` : ""}</div></div>
       <div class="session-actions"><button class="btn lg" id="se-close">Encerrar por hoje</button><button class="btn lg primary" id="se-next">${icon("play")} Continuar</button></div>`
       : `<p class="muted" style="text-align:center;margin-top:18px">Nada mais planejado por agora.</p><div class="session-actions"><button class="btn lg primary" id="se-close">Fechar</button></div>`}`);

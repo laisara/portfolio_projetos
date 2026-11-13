@@ -1,90 +1,53 @@
 ================================================================================
-AI ENGINEER STUDY TRACKER - PARECER FINAL DO MVP
-Branch: ccr-97dc7c3e-vbe1hb (commit 6866616) | Pasta: ai-study-tracker/
+AI ENGINEER STUDY TRACKER v1.0 - PARECER FINAL (finalizacao do MVP)
 ================================================================================
 
-STATUS: PRONTO (com as ressalvas da secao 7)
+STATUS: PRONTO PARA USO, com a ressalva de que o launcher Windows (.exe), os .bat
+e o atalho ainda NAO foram executados em um Windows real (ver LIMITACOES).
 
-1. CORRIGIDO
---------------------------------------------------------------------------------
-- Aula dividida em dois dias: agora cada uma das 462 aulas obrigatorias aparece
-  uma unica vez no plano.
-- Dashboard em branco (import quebrado entre calendar.js e dashboard.js).
-- Testes desatualizados reescritos para o modelo novo.
-- Script e2e: comparacao do titulo ignorava o prefixo "Aula N -" (erro do script,
-  nao do app).
+IMPLEMENTADO
+- Launcher "AI Engineer Study Tracker.exe" (Go, sem console, icone proprio embutido):
+  verifica .venv e pacotes (roda install.bat se faltar), reutiliza o servidor se ja
+  estiver no ar, senao inicia o FastAPI sem janela, espera responder e abre o navegador.
+  Mutex evita duas instancias em cliques rapidos; detecta porta ocupada por outro programa.
+- "Fechar AI Engineer Study Tracker.exe" / stop.bat / botao "Encerrar o tracker" (faz backup antes).
+- Icone .ico com 7 tamanhos (16-256) a partir do icone do app; embutido no .exe (secao .rsrc).
+- Atalho na Area de Trabalho: install.bat oferece; criar-atalho.bat; "... .exe --shortcut".
+- install.bat (acha Python, tenta winget, venv, pacotes), start.bat (diagnostico), backup.bat,
+  restore.bat (lista e escolhe; valida; recusa com o tracker aberto).
+- Dados: backup automatico (ao abrir, a cada 6 h, ao encerrar; poda so os "auto"/"ao-encerrar"),
+  Exportar/Importar backup na interface, validacao antes de restaurar, backup de seguranca antes,
+  importacao JSON valida tudo antes de apagar (corrigido: antes dava erro 500 com coluna invalida).
+- Hoje/Dashboard: ESTUDAR AGORA com curso, trilha, aula, duracao, status e botao; confirmacao
+  "Aula concluida + XP + Proxima + Continuar"; revisoes; descanso no domingo.
+- Cronograma: adiar um dia (vira descanso, recalcula so o futuro).
+- Ajustes: estimativas editaveis (fator de pratica em %, horas de cada projeto) sem alterar aulas.
+- Visual: referencia aplicada (brilho teal na base dos cards, tiles pontilhados, rotulos espacados,
+  arcos de luz no fundo) em desktop e mobile.
+- Documentos: README curto, docs/FUTURE.md, .gitattributes (CRLF nos .bat).
 
-2. SIMPLIFICADO
---------------------------------------------------------------------------------
-- Tela Hoje: "Estudar agora" + checklist do dia.
-- Sessao: Iniciar / Concluir / Descartar.
-- Menu: Hoje, Cronograma, Trilhas, Projetos, Revisoes, AI Agent Lab, Progresso
-  (celular: barra inferior).
-- Visual: escuro + vidro + verde-azulado; fonte Inter.
+CATALOGO (inalterado): 8 trilhas, 42 cursos, 463 aulas (462 obrigatorias), 66h21m37s.
+Trilha 8: soma 27h20m11s x cabecalho 26h51 (divergencia documentada; vale a soma).
 
-3. CATALOGO (fonte da verdade: data/catalog.json)
---------------------------------------------------------------------------------
-- 8 trilhas, 42 cursos unicos, 463 aulas (462 obrigatorias + 1 "em breve").
-- Carga bruta ........ 74h30m39s
-- Duplicado .......... 8h09m02s (Fundamentos da IA Generativa em 6 trilhas;
-                       Masterclass Claude Code em 2)
-- FORMACAO (unico) ... 66h21m37s
-- 56 itens sem duracao: contam 0 min e aparecem como "-".
-- Duracao do curso = soma das aulas; confere com o card do site em 42/42 cursos.
-- Divergencia nao explicada: trilha 8 soma 27h20m11s contra 26h51 no cabecalho
-  do site (~29 min). Usada a soma das aulas; nenhuma duracao foi alterada.
-- Git e GitHub: opcional (20 aulas, 3h08m34s), fora de progresso e plano.
-- Projetos para Professores e Para se aprofundar: fora do programa.
+PLANO: inicio 13/11/2026, ultima aula 09/01/2027, fim do trabalho 13/01/2027,
+ultima revisao D+30 08/02/2027; ~2h12/dia; domingo descanso.
 
-4. PLANEJAMENTO (VIDEO -> PRATICA -> PROJETO -> REVISAO)
---------------------------------------------------------------------------------
-- Inicio ........................ 13/11/2026
-- Ultima aula ................... 09/01/2027
-- Fim do trabalho ............... 13/01/2027
-- Ultima revisao D+30 ........... 08/02/2027
-- Dias de estudo: 51 | media 2h12 | maximo 3h30 | descanso: domingos
-- Rotina: Seg/Ter/Qui 2h15, Qua 2h, Sex 1h45, Sab 3h30 (projeto), Dom descanso;
-  24/12 e 31/12 meia carga; 25/12 e 01/01 descanso.
-- Totais: Formacao 66h21m37s (real) + Pratica ~18h15 + Projetos ~18h
-  + Revisao ~10h50 = ~113h25 de aprendizagem.
-- Pratica, projetos e revisao sao ESTIMATIVAS do planejador; so a formacao e
-  duracao real. O plano recalcula apenas o futuro.
+TESTADO (de verdade, neste ambiente Linux)
+- pytest: 92 executados, 92 aprovados, 0 falhando.
+- E2E no navegador (16 verificacoes) com o servidor iniciado pelo launcher: todas OK.
+- Logica do launcher (versao Linux do mesmo codigo): inicia, reutiliza sem 2o processo,
+  detecta app, encerra pelo --stop com backup, reabre com os dados intactos.
+- backup.py / restore.py: backup, restore por menu, arquivo invalido recusado, servidor aberto recusado.
+- PWA (Chromium): 0 erros de instalabilidade/manifest; abre offline. axe: 0 violacoes (desktop e mobile).
+- Mobile: sem rolagem horizontal, barra inferior visivel. Screenshots reais em docs/screenshots/.
+- .exe: compila para Windows x64; PE GUI com secao de recursos (icone) presente.
 
-5. TESTES
---------------------------------------------------------------------------------
-- pytest: 79 rodados, 79 passaram, 0 falharam.
-- Fluxo real no navegador (scripts/e2e_flow.js): 16 verificacoes, todas OK:
-  abrir -> hoje -> sessao -> concluir aula -> progresso 0,00% -> 0,04% ->
-  XP 0 -> 241 -> aula deixa de ser pendente -> proxima carregada -> revisao D+1
-  criada -> dashboard atualizado -> dados persistem apos fechar/reabrir ->
-  mobile sem rolagem horizontal, sem erros de JavaScript.
-- Screenshots reais: docs/screenshots/ (13 telas, banco de demonstracao).
-
-6. COMO USAR
---------------------------------------------------------------------------------
-- Comando: start.bat      URL: http://localhost:8000
-- PWA desktop (Chrome/Edge): abrir a URL e clicar em Instalar na barra de endereco.
-- PWA celular: exige HTTPS. Rodar start.bat --lan --https (certificado tipo
-  mkcert), abrir o endereco no celular na mesma rede Wi-Fi e usar
-  "Adicionar a tela inicial".
-
-7. RESSALVAS / NAO VALIDADO
---------------------------------------------------------------------------------
-- install.bat, start.bat, backup.bat, restore.bat NUNCA foram executados em
-  Windows real (so checagem estatica).
-- Instalacao do PWA em celular real nao foi testada.
-- Imagem de referencia (login Asimov) nao foi recebida; segui a descricao em texto.
-- Fonte Aptos nao incluida (proprietaria); usa Inter.
-- Estimativas de pratica/projetos so editaveis via API (sem tela).
-- Leituras de duracao com zero riscado: adotado o valor mais coerente
-  (impacto maximo de segundos por aula).
-
-8. FICA PARA DEPOIS
---------------------------------------------------------------------------------
-- Tela para editar estimativas de pratica e projetos.
-- Teste em Windows real e em celular real.
-- Ajuste dos limiares de XP/niveis apos as primeiras semanas de uso.
-
-================================================================================
-FIM DO PARECER
+LIMITACOES REAIS (nao validado)
+- Nenhum .exe/.bat foi executado em Windows real (nao ha Windows aqui). Nao foi visto o
+  icone renderizado no Explorer/atalho, nem o MessageBox, nem winget/install.bat de ponta a ponta.
+- O .exe nao e assinado: o Windows SmartScreen/antivirus pode avisar na primeira execucao.
+- O atalho usa PowerShell (so para criar o .lnk, uma vez); o uso diario nao usa.
+- Celular: PWA exige HTTPS (mkcert); instalacao no Android nao testada em aparelho.
+- A imagem de referencia foi usada como inspiracao visual; nao ha comparacao pixel a pixel.
+- Fonte: Inter (Aptos e proprietaria).
 ================================================================================

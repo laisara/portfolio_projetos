@@ -29,6 +29,7 @@ DEFAULTS: dict[str, Any] = {
     "practice_ratio": {"default": 0.20, "agents": 0.30, "project": 0.15, "conceptual": 0.10, "basic": 0.05, "start": 0.0,
                        "basic_ids": ["LOGIC-001", "PYTHON-001", "SETUP-001", "PY-001", "PY-002"],
                        "conceptual_ids": ["LLM-001", "GENAI-001"]},
+    "practice_scale": 1.0,      # fator global da prática estimada (1.0 = padrão); não altera a duração das aulas
     "practice_overrides": {},   # {content_id: razão prática/vídeo}
     "competency_baselines": {},  # {competência: 0..1} — ponto de partida editável (estimativa, não fato)
     "focus_minutes": 25,

@@ -101,7 +101,7 @@ def week_summary(conn: sqlite3.Connection, today: date) -> dict:
             "pct": min(1.0, done / planned) if planned else 0.0}
 
 
-def study_now(today_items: list[dict], next_day: dict | None, cat: dict, lp: dict) -> dict | None:
+def study_now(today_items: list[dict], next_day: dict | None, cat: dict, lp: dict, conn: sqlite3.Connection | None = None) -> dict | None:
     """O próximo passo: primeira aula/prática/projeto do plano de hoje (ou do próximo dia de estudo)."""
     items = today_items or (next_day or {}).get("items") or []
     pick = next((i for i in items if i["kind"] in ("video", "practice", "project")), None) or next((i for i in items), None)
@@ -116,6 +116,13 @@ def study_now(today_items: list[dict], next_day: dict | None, cat: dict, lp: dic
             out["duration_min"] = l["duration_min"]
             out["lesson_kind"] = l["kind"]
             out["continuing"] = bool((lp.get(l["id"]) or {}).get("watched_min"))
+    out["status"] = "Em andamento" if out.get("continuing") else "Não iniciada"
+    cid = pick.get("content_id") or pick["detail"].get("content_id")
+    if conn is not None and cid:  # curso repetido em várias trilhas: mostra a primeira em que aparece
+        t = db.row(conn, "SELECT t.title, t.ord FROM appearances a JOIN tracks t ON t.id=a.track_id WHERE a.content_id=? ORDER BY t.ord LIMIT 1", (cid,))
+        if t:
+            out["track"] = t["title"]
+            out["track_ord"] = t["ord"]
     return out
 
 
@@ -143,7 +150,7 @@ def dashboard(conn: sqlite3.Connection) -> dict:
     core = {k: v for k, v in prog["per_content"].items() if not v["optional"]}
     hour = datetime.now().hour
     return {
-        "today": tv, "study_now": study_now(today_items, tv["next_day"], snap["cat"], tracker.lesson_state(conn)),
+        "today": tv, "study_now": study_now(today_items, tv["next_day"], snap["cat"], tracker.lesson_state(conn), conn),
         "greeting": "Bom dia" if hour < 12 else "Boa tarde" if hour < 18 else "Boa noite",
         "overall": prog["overall"],
         "video": {"done": prog["video_done"], "total": prog["video_total"], "remaining": prog["video_total"] - prog["video_done"]},

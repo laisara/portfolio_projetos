@@ -10,7 +10,7 @@ export const icon = (name, cls = "icon") => `<svg class="${cls}" aria-hidden="tr
 // ---------------------------------------------------------------- API
 const CACHE_PREFIX = "ast:get:";
 export async function api(path, { method = "GET", body, form } = {}) {
-  const opts = { method, headers: {} };
+  const opts = { method, headers: { "X-AST": "1" } };
   if (form) opts.body = form;
   else if (body !== undefined) { opts.body = JSON.stringify(body); opts.headers["Content-Type"] = "application/json"; }
   let res;
@@ -22,7 +22,7 @@ export async function api(path, { method = "GET", body, form } = {}) {
       const cached = readCache(path);
       if (cached) return cached;
     }
-    throw new Error("Servidor local indisponível. Verifique se o start.bat está rodando.");
+    throw new Error("Servidor local indisponível. Abra o AI Engineer Study Tracker.exe novamente.");
   }
   if (res.headers.get("X-Offline")) {  // service worker sem rede nem cache desta rota
     document.body.classList.add("offline");
