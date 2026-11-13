@@ -1,0 +1,90 @@
+================================================================================
+AI ENGINEER STUDY TRACKER - PARECER FINAL DO MVP
+Branch: ccr-97dc7c3e-vbe1hb (commit 6866616) | Pasta: ai-study-tracker/
+================================================================================
+
+STATUS: PRONTO (com as ressalvas da secao 7)
+
+1. CORRIGIDO
+--------------------------------------------------------------------------------
+- Aula dividida em dois dias: agora cada uma das 462 aulas obrigatorias aparece
+  uma unica vez no plano.
+- Dashboard em branco (import quebrado entre calendar.js e dashboard.js).
+- Testes desatualizados reescritos para o modelo novo.
+- Script e2e: comparacao do titulo ignorava o prefixo "Aula N -" (erro do script,
+  nao do app).
+
+2. SIMPLIFICADO
+--------------------------------------------------------------------------------
+- Tela Hoje: "Estudar agora" + checklist do dia.
+- Sessao: Iniciar / Concluir / Descartar.
+- Menu: Hoje, Cronograma, Trilhas, Projetos, Revisoes, AI Agent Lab, Progresso
+  (celular: barra inferior).
+- Visual: escuro + vidro + verde-azulado; fonte Inter.
+
+3. CATALOGO (fonte da verdade: data/catalog.json)
+--------------------------------------------------------------------------------
+- 8 trilhas, 42 cursos unicos, 463 aulas (462 obrigatorias + 1 "em breve").
+- Carga bruta ........ 74h30m39s
+- Duplicado .......... 8h09m02s (Fundamentos da IA Generativa em 6 trilhas;
+                       Masterclass Claude Code em 2)
+- FORMACAO (unico) ... 66h21m37s
+- 56 itens sem duracao: contam 0 min e aparecem como "-".
+- Duracao do curso = soma das aulas; confere com o card do site em 42/42 cursos.
+- Divergencia nao explicada: trilha 8 soma 27h20m11s contra 26h51 no cabecalho
+  do site (~29 min). Usada a soma das aulas; nenhuma duracao foi alterada.
+- Git e GitHub: opcional (20 aulas, 3h08m34s), fora de progresso e plano.
+- Projetos para Professores e Para se aprofundar: fora do programa.
+
+4. PLANEJAMENTO (VIDEO -> PRATICA -> PROJETO -> REVISAO)
+--------------------------------------------------------------------------------
+- Inicio ........................ 13/11/2026
+- Ultima aula ................... 09/01/2027
+- Fim do trabalho ............... 13/01/2027
+- Ultima revisao D+30 ........... 08/02/2027
+- Dias de estudo: 51 | media 2h12 | maximo 3h30 | descanso: domingos
+- Rotina: Seg/Ter/Qui 2h15, Qua 2h, Sex 1h45, Sab 3h30 (projeto), Dom descanso;
+  24/12 e 31/12 meia carga; 25/12 e 01/01 descanso.
+- Totais: Formacao 66h21m37s (real) + Pratica ~18h15 + Projetos ~18h
+  + Revisao ~10h50 = ~113h25 de aprendizagem.
+- Pratica, projetos e revisao sao ESTIMATIVAS do planejador; so a formacao e
+  duracao real. O plano recalcula apenas o futuro.
+
+5. TESTES
+--------------------------------------------------------------------------------
+- pytest: 79 rodados, 79 passaram, 0 falharam.
+- Fluxo real no navegador (scripts/e2e_flow.js): 16 verificacoes, todas OK:
+  abrir -> hoje -> sessao -> concluir aula -> progresso 0,00% -> 0,04% ->
+  XP 0 -> 241 -> aula deixa de ser pendente -> proxima carregada -> revisao D+1
+  criada -> dashboard atualizado -> dados persistem apos fechar/reabrir ->
+  mobile sem rolagem horizontal, sem erros de JavaScript.
+- Screenshots reais: docs/screenshots/ (13 telas, banco de demonstracao).
+
+6. COMO USAR
+--------------------------------------------------------------------------------
+- Comando: start.bat      URL: http://localhost:8000
+- PWA desktop (Chrome/Edge): abrir a URL e clicar em Instalar na barra de endereco.
+- PWA celular: exige HTTPS. Rodar start.bat --lan --https (certificado tipo
+  mkcert), abrir o endereco no celular na mesma rede Wi-Fi e usar
+  "Adicionar a tela inicial".
+
+7. RESSALVAS / NAO VALIDADO
+--------------------------------------------------------------------------------
+- install.bat, start.bat, backup.bat, restore.bat NUNCA foram executados em
+  Windows real (so checagem estatica).
+- Instalacao do PWA em celular real nao foi testada.
+- Imagem de referencia (login Asimov) nao foi recebida; segui a descricao em texto.
+- Fonte Aptos nao incluida (proprietaria); usa Inter.
+- Estimativas de pratica/projetos so editaveis via API (sem tela).
+- Leituras de duracao com zero riscado: adotado o valor mais coerente
+  (impacto maximo de segundos por aula).
+
+8. FICA PARA DEPOIS
+--------------------------------------------------------------------------------
+- Tela para editar estimativas de pratica e projetos.
+- Teste em Windows real e em celular real.
+- Ajuste dos limiares de XP/niveis apos as primeiras semanas de uso.
+
+================================================================================
+FIM DO PARECER
+================================================================================
